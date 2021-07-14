@@ -2,7 +2,6 @@ package Source;
 
 import java.lang.management.GarbageCollectorMXBean;
 import java.lang.management.ManagementFactory;
-import java.util.ArrayList;
 
 public abstract class TestCase
 {
@@ -71,12 +70,14 @@ public abstract class TestCase
     protected Metric test(Runnable runnable)
     {
         Metric metric = new Metric();
-        try {    
+        try {
+            Thread.sleep(1000);
             metric.bytesUsed = getReallyUsedMemory();
             metric.nanoTime = System.nanoTime();
             runnable.run();
             metric.nanoTime = System.nanoTime() - metric.nanoTime;
-            metric.bytesUsed -= getReallyUsedMemory();   
+            long afterFunc = getReallyUsedMemory();
+            metric.bytesUsed -= afterFunc;
         } catch (Exception e) {
             System.err.println(e);
         }
@@ -84,63 +85,44 @@ public abstract class TestCase
     }
     protected void testCompare(Runnable primary, Runnable secondary)
     {
-        final int PRIMARY_IDX = 0, SECONDARY_IDX = 1;
+        Metric primaryMetric = test(primary);
+        Metric secondaryMetric = test(secondary);
 
-        Metric[] metric = new Metric[2];
-        Runnable[] runnable = new Runnable[2];
-        runnable[PRIMARY_IDX] = primary;
-        runnable[SECONDARY_IDX] = secondary;
-
-        for (int i = 0; i < 2; ++i)
-        {
-            metric[i] = new Metric();
-            try {
-                metric[i].bytesUsed = getReallyUsedMemory();
-                metric[i].nanoTime = System.nanoTime();
-                runnable[i].run();
-                metric[i].nanoTime = System.nanoTime() - metric[i].nanoTime;
-                metric[i].bytesUsed -= getReallyUsedMemory();   
-            } catch (Exception e) {
-                System.err.println(e);
-            }
-        }
-        
         float percentageTimeRelative;
         String stringTimeRelative;
-        if (metric[PRIMARY_IDX].nanoTime > metric[SECONDARY_IDX].nanoTime)
+        if (primaryMetric.nanoTime > secondaryMetric.nanoTime)
         {
             stringTimeRelative = "Secondary Faster %f %%";
-            percentageTimeRelative = 100f * metric[PRIMARY_IDX].nanoTime / metric[SECONDARY_IDX].nanoTime - 100f;
+            percentageTimeRelative = 100f * primaryMetric.nanoTime / secondaryMetric.nanoTime - 100f;
         }
         else
         {
             stringTimeRelative = "Primary Faster %f %%";
-            percentageTimeRelative = 100f * metric[SECONDARY_IDX].nanoTime / metric[PRIMARY_IDX].nanoTime - 100f;
+            percentageTimeRelative = 100f * secondaryMetric.nanoTime / primaryMetric.nanoTime - 100f;
         }
+        System.out.format(
+            "Time | Primary: %d ns, Secondary: %d ns | " + stringTimeRelative + "\n",
+            primaryMetric.nanoTime,
+            secondaryMetric.nanoTime,
+            percentageTimeRelative
+        );
         
         float percentageMemoryRelative;
         String stringMemoryRelative;
-        if (metric[PRIMARY_IDX].bytesUsed > metric[SECONDARY_IDX].bytesUsed)
+        if (primaryMetric.bytesUsed > secondaryMetric.bytesUsed)
         {
             stringMemoryRelative = "Secondary Leaner %f %%";
-            percentageMemoryRelative = 100f * metric[PRIMARY_IDX].bytesUsed / metric[SECONDARY_IDX].bytesUsed - 100f;
+            percentageMemoryRelative = 100f * primaryMetric.bytesUsed / secondaryMetric.bytesUsed - 100f;
         }
         else
         {
             stringMemoryRelative = "Primary Leaner %f %%";
-            percentageMemoryRelative = 100f * metric[SECONDARY_IDX].bytesUsed / metric[PRIMARY_IDX].bytesUsed - 100f;
+            percentageMemoryRelative = 100f * secondaryMetric.bytesUsed / primaryMetric.bytesUsed - 100f;
         }
-
-        System.out.format(
-            "Time | Primary: %d ns, Secondary: %d ns | " + stringTimeRelative + "\n",
-            metric[PRIMARY_IDX].nanoTime,
-            metric[SECONDARY_IDX].nanoTime,
-            percentageTimeRelative
-        );
         System.out.format(
             "Memory | Primary: %d bytes, Secondary: %d bytes | " + stringMemoryRelative + "\n",
-            metric[PRIMARY_IDX].bytesUsed,
-            metric[SECONDARY_IDX].bytesUsed,
+            primaryMetric.bytesUsed,
+            secondaryMetric.bytesUsed,
             percentageMemoryRelative
         );
 
