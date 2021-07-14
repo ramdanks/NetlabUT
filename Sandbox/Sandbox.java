@@ -13,7 +13,15 @@ final class Sandbox extends TestCase
 
     @Override
     protected void scenario() {
-        testCompare(ALU.add(1, 4), ALU.add(5, 1));
-        ALU::add
+        testCompare(
+            ()->
+            {
+                String h = "Hello World!";
+            },
+            ()->
+            {
+                String v = "Hello People from Arround the World! It is pleasure to meet you!";
+            }
+        ); 
     }
 }
