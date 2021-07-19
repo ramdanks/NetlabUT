@@ -18,6 +18,52 @@ public class MetricList implements List<Metric>
         mCapacity = reserve;
     }
 
+    public long getAverageNano() {
+        long sum = 0;
+        for (int i = 0; i < mSize; ++i)
+            sum += mMetricArray[i].nanoTime;
+        return sum / mSize;
+    }
+
+    public long getAverageBytes() {
+        long sum = 0;
+        for (int i = 0; i < mSize; ++i)
+            sum += mMetricArray[i].bytesUsed;
+        return sum / mSize;
+    }
+
+    public long getMaxNano() {
+        long max = 0;
+        for (int i = 0; i < mSize; ++i)
+            if (max < mMetricArray[i].nanoTime)
+                max = mMetricArray[i].nanoTime;
+        return max;
+    }
+
+    public long getMaxBytes() {
+        long max = 0;
+        for (int i = 0; i < mSize; ++i)
+            if (max < mMetricArray[i].bytesUsed)
+                max = mMetricArray[i].bytesUsed;
+        return max;
+    }
+
+    public long getMinNano() {
+        long min = 0;
+        for (int i = 0; i < mSize; ++i)
+            if (min > mMetricArray[i].nanoTime)
+                min = mMetricArray[i].nanoTime;
+        return min;
+    }
+
+    public long getMinBytes() {
+        long min = 0;
+        for (int i = 0; i < mSize; ++i)
+            if (min > mMetricArray[i].bytesUsed)
+                min = mMetricArray[i].bytesUsed;
+        return min;
+    }
+
     @Override
     public int size() {
         return mSize;
@@ -62,7 +108,7 @@ public class MetricList implements List<Metric>
             else                resizeCapacity(mCapacity * 2);
         }
         // insert the object at the end
-        mMetricArray[mSize++] = (Metric) e;
+        mMetricArray[mSize++] = e;
         return true;
     }
 

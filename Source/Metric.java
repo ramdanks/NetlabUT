@@ -1,7 +1,8 @@
 package Source;
 
-public class Metric
+public class Metric<T>
 {
+    public T returnValue;
     public long nanoTime = 0;
     public long bytesUsed = 0;
 

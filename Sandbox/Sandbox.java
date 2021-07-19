@@ -1,27 +1,27 @@
 package Sandbox;
 
+import Source.Benchmark;
 import Source.Metric;
-import Source.TestCase;
-import UnderTest.ALU;
+import Source.NetlabUT;
 
-final class Sandbox extends TestCase
+final class Sandbox extends NetlabUT
 {
     public static void main(String[] args)
     {
-        new Sandbox().run();        
+        new Sandbox().run();
     }
 
     @Override
     protected void scenario() {
-        testCompare(
-            ()->
-            {
-                String h = "Hello World!";
-            },
-            ()->
-            {
-                String v = "Hello People from Arround the World! It is pleasure to meet you!";
-            }
-        ); 
+
+        {
+            Metric<String> m = Benchmark.run(() -> greet("Ramadhan"));
+            assumeEquals("Hello Ramadhan", m.returnValue);
+        }
+        
+    }
+
+    private String greet(String name) {
+        return "Hello " + name; 
     }
 }
