@@ -1,27 +1,14 @@
 package Sandbox;
 
-import Source.Benchmark;
-import Source.Metric;
-import Source.NetlabUT;
+import Source.*;
 
-final class Sandbox extends NetlabUT
+final class Sandbox 
 {
     public static void main(String[] args)
     {
-        new Sandbox().run();
-    }
+        NetlabUT[] unitList = { new Formatting() };
 
-    @Override
-    protected void scenario() {
-
-        {
-            Metric<String> m = Benchmark.run(() -> greet("Ramadhan"));
-            assumeEquals("Hello Ramadhan", m.returnValue);
-        }
-        
-    }
-
-    private String greet(String name) {
-        return "Hello " + name; 
+        GradeForm gf = new GradeForm("Modul 1 - Praktikum Pemrograman Berorientasi Obyek", unitList);
+        gf.setVisible(true);
     }
 }
