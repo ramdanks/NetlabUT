@@ -13,6 +13,12 @@ public abstract class NetlabUT extends UnitTest
 
     public String getTestName() { return mTestName; }
     public ArrayList<Profile> getTestProfile() { return mTestProfile; }
+
+    public void run()
+    {
+        mTestProfile.clear();
+        super.run();
+    }
      
     protected void assumeNull(Supplier<Object> actual)                       { assumeNull(actual, null); }
     protected void assumeNotNull(Supplier<Object> actual)                    { assumeNotNull(actual, null); }

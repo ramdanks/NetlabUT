@@ -2,11 +2,11 @@ package Source;
 
 public abstract class UnitTest
 {
-    private long mTestCount;
-    private long mSuccessCount;
+    private int mTestCount;
+    private int mSuccessCount;
 
-    public long getTestCount() { return mTestCount; }
-    public long getSuccessCount() { return mSuccessCount; }
+    public int getTestCount() { return mTestCount; }
+    public int getSuccessCount() { return mSuccessCount; }
 
     /** entry point for calculating unit test, call assume function to record testing */
     protected abstract void scenario();
