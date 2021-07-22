@@ -42,7 +42,7 @@ public class ProfilingResultsForm
 
         final int count = unitTest.getTestCount();
         final int success = unitTest.getSuccessCount();
-        final double percentage = 100.0 * count / success;
+        final double percentage = 100.0 * success / count;
 
         labelPercentage.setText(String.format("%.2f %%", percentage));
         labelPoints.setText(String.format("%d out of %d", success, count));
