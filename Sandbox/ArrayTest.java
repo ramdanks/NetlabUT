@@ -27,5 +27,7 @@ public class ArrayTest extends NetlabUT
 
         assumeFalse(() -> list.isEmpty(), "array emptyness");
         assumeTrue(() -> list.contains(123), "array contain");
+
+        assumeTrue(() -> list.isEmpty());
     }
 }

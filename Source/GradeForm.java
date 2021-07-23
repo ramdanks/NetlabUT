@@ -1,19 +1,18 @@
 package Source;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
+import java.awt.*;
 import java.awt.event.*;
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.function.BiConsumer;
 
 public class GradeForm extends JFrame
 {
     private JPanel mainPanel;
-    private JComboBox cbPackage;
     private JLabel labelDate;
     private JLabel labelScore;
-    private JLabel labelTestCount;
-    private JLabel labelSuccessCount;
+    private JLabel labelPoints;
+    private JLabel labelPercentage;
     private JLabel labelTitle;
     private JTabbedPane tabUnitTest;
     private JButton btnAllTest;
@@ -54,12 +53,25 @@ public class GradeForm extends JFrame
         refreshTestCount();
     }
 
+    private void setTabColor(int index, Color foreground, Color background)
+    {
+        tabUnitTest.setForegroundAt(index, foreground);
+        tabUnitTest.setBackgroundAt(index, background);
+    }
+
     private void onRunAllTest(ActionEvent evt)
     {
         for (int i = 0; i < formProfileResults.length; i++)
         {
-            formProfileResults[i].getUnitTest().run();
+            // run unit test
+            NetlabUT unitTest = formProfileResults[i].getUnitTest();
+            unitTest.run();
+            // refresh panel
             formProfileResults[i].refresh();
+            // set tab background color, if found any error, it will show red
+            Color background = unitTest.getSuccessCount() == unitTest.getTestCount() ?
+                    new Color(200, 255, 200) : new Color(255, 200, 200);
+            setTabColor(i, Color.BLACK, background);
         }
         refreshTestCount();
     }
@@ -74,9 +86,8 @@ public class GradeForm extends JFrame
             totalTestCount += unitTest.getTestCount();
             totalSuccessCount += unitTest.getSuccessCount();
         }
-        labelTestCount.setText(String.format("%d", totalTestCount));
-        labelSuccessCount.setText(String.format("%d", totalSuccessCount));
-        labelScore.setText(String.format("%.2f %%", 100.0 * totalSuccessCount / totalTestCount));
+        labelPoints.setText(String.format("%d out of %d", totalSuccessCount, totalTestCount));
+        labelPercentage.setText(String.format("%.2f %%", 100.0 * totalSuccessCount / totalTestCount));
     }
 
     public void onContextMenuAbout(ActionEvent evt) {

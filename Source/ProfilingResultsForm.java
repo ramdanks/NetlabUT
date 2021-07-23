@@ -1,7 +1,9 @@
 package Source;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import java.awt.*;
 import java.util.ArrayList;
 
 public class ProfilingResultsForm
@@ -12,7 +14,6 @@ public class ProfilingResultsForm
     private JLabel labelPercentage;
     private JLabel labelPoints;
     private JPanel mainPanel;
-
     private NetlabUT unitTest = null;
 
     public ProfilingResultsForm()
