@@ -1,6 +1,6 @@
 <component name="ArtifactManager">
-  <artifact type="jar" name="NetlabOOP_UnitTest:jar">
-    <output-path>$PROJECT_DIR$/out/artifacts/NetlabOOP_UnitTest_jar</output-path>
+  <artifact type="jar" name="NetlabUT:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/NetlabUT_jar</output-path>
     <root id="archive" name="NetlabOOP_UnitTest.jar">
       <element id="module-output" name="NetlabOOP_UnitTest" />
     </root>
