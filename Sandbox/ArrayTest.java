@@ -11,7 +11,7 @@ public class ArrayTest extends NetlabUT
     @Override
     protected void scenario()
     {
-        int[] sample = { 4, 6, 12, 51, 221, 41, 12, 6, 12, 123 };
+        Integer[] sample = { 4, 6, 12, 51, 221, 41, 12, 6, 12, 123 };
         ArrayList<Integer> list = new ArrayList<Integer>();
 
         assumeTrue(() -> list.isEmpty(), "array emptyness");
@@ -28,6 +28,6 @@ public class ArrayTest extends NetlabUT
         assumeFalse(() -> list.isEmpty(), "array emptyness");
         assumeTrue(() -> list.contains(123), "array contain");
 
-        assumeTrue(() -> list.isEmpty());
+        assumeArrayEquals(sample, () -> list.toArray(), "array equality");
     }
 }

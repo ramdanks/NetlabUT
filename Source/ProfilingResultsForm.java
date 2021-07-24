@@ -60,7 +60,7 @@ public class ProfilingResultsForm
             record[1] = "1";
             record[2] = Long.toString(profile.metric.nanoTime);
             record[3] = profile.expected;
-            record[4] = profile.metric.returnValue.toString();
+            record[4] = profile.getMetricReturnToString();
             model.addRow(record);
         }
     }
