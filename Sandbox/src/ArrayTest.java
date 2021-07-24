@@ -1,9 +1,11 @@
 import com.NetlabUT.NetlabUT;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class ArrayTest extends NetlabUT
 {
+    private Random rand = new Random();
     public ArrayTest() { super("Array"); }
 
     @Override
@@ -20,7 +22,7 @@ public class ArrayTest extends NetlabUT
             list.add(sample[i]);
             final int finalI = i;
             assumeEquals(sample[i], () -> list.get(finalI), "object get");
-            assumeEquals(i + 1, () -> list.size(), "array size");
+            assumeEquals(i + 1, () -> rand.nextInt() % 10, "array size");
         }
 
         assumeFalse(() -> list.isEmpty(), "array emptyness");

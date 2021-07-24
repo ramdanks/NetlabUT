@@ -36,14 +36,12 @@ public class WindowProfiler extends JFrame
         {
             if (unitList[i].getTestCount() == 0)
                 unitList[i].run();
+
             formProfileResults[i] = new ProfilingResultsForm(unitList[i]);
             tabUnitTest.addTab(unitList[i].getTestName(), formProfileResults[i].getContentPanel());
             cbUnitTest.addItem(unitList[i].getTestName());
 
-            // set tab background color, if found any error, it will show red
-            Color background = unitList[i].getSuccessCount() == unitList[i].getTestCount() ?
-                    new Color(200, 255, 200) : new Color(255, 200, 200);
-            setTabColor(i, Color.BLACK, background);
+            refreshUnitTest(i);
         }
         refreshTestCount();
 
@@ -51,18 +49,30 @@ public class WindowProfiler extends JFrame
         btnSelectedTest.addActionListener(this::onRunSelectedTest);
     }
 
-    private void onRunSelectedTest(ActionEvent evt)
+    private void runUnitTest(int index) { formProfileResults[index].getUnitTest().run(); }
+    private void refreshUnitTest(int index)
     {
-        int i = cbUnitTest.getSelectedIndex();
-        if (i == -1) return;
-        NetlabUT unitTest = formProfileResults[i].getUnitTest();
-        unitTest.run();
+        NetlabUT unitTest = formProfileResults[index].getUnitTest();
+        // refresh profile results panael
+        formProfileResults[index].refresh();
+        // set tooltip
+        int failCount = unitTest.getTestCount() - unitTest.getSuccessCount();
+        String tooltip = String.format("%s | Fail: %d", unitTest.getTestName(), failCount);
+        tabUnitTest.setToolTipTextAt(index, tooltip);
         // set tab background color, if found any error, it will show red
         Color background = unitTest.getSuccessCount() == unitTest.getTestCount() ?
                 new Color(200, 255, 200) : new Color(255, 200, 200);
-        setTabColor(i, Color.BLACK, background);
-        // refresh display
-        formProfileResults[i].refresh();
+        setTabColor(index, Color.BLACK, background);
+        // set tab title
+        String tabTitle = failCount == 0 ? unitTest.getTestName() : String.format("%s (%d)", unitTest.getTestName(), failCount);
+        tabUnitTest.setTitleAt(index, tabTitle);
+    }
+
+    private void onRunSelectedTest(ActionEvent evt)
+    {
+        int index = cbUnitTest.getSelectedIndex();
+        runUnitTest(index);
+        refreshUnitTest(index);
         refreshTestCount();
         labelDate.setText(new Date().toString());
     }
@@ -77,15 +87,8 @@ public class WindowProfiler extends JFrame
     {
         for (int i = 0; i < formProfileResults.length; i++)
         {
-            // run unit test
-            NetlabUT unitTest = formProfileResults[i].getUnitTest();
-            unitTest.run();
-            // refresh panel
-            formProfileResults[i].refresh();
-            // set tab background color, if found any error, it will show red
-            Color background = unitTest.getSuccessCount() == unitTest.getTestCount() ?
-                    new Color(200, 255, 200) : new Color(255, 200, 200);
-            setTabColor(i, Color.BLACK, background);
+            runUnitTest(i);
+            refreshUnitTest(i);
         }
         refreshTestCount();
         labelDate.setText(new Date().toString());
