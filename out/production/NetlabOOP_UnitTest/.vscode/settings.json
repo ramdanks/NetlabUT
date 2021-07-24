@@ -1,6 +1,0 @@
-{
-    "java.project.referencedLibraries": [
-        "lib/**/*.jar",
-        "Source/javabi-sizeof-0.2.jar"
-    ]
-}

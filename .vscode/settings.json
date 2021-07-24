@@ -1,6 +1,7 @@
 {
     "java.project.referencedLibraries": [
         "lib/**/*.jar",
-        "Source/javabi-sizeof-0.2.jar"
+        "Source/javabi-sizeof-0.2.jar",
+        "out/artifacts/NetlabOOP_UnitTest_jar/NetlabOOP_UnitTest.jar"
     ]
 }
