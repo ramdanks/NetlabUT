@@ -5,7 +5,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.Date;
 
-public class GradeForm extends JFrame
+public class WindowProfiler extends JFrame
 {
     private JPanel mainPanel;
     private JLabel labelDate;
@@ -19,9 +19,10 @@ public class GradeForm extends JFrame
 
     private ProfilingResultsForm[] formProfileResults;
 
-    public GradeForm(String title, NetlabUT[] unitList)
+    public WindowProfiler(String title, NetlabUT[] unitList)
     {
         setTitle("Unit Test Grading");
+        setVisible(true);
 
         setSize(600, 400);
         setContentPane(mainPanel);
@@ -33,10 +34,18 @@ public class GradeForm extends JFrame
         formProfileResults = new ProfilingResultsForm[unitList.length];
         for (int i = 0; i < unitList.length; i++)
         {
+            if (unitList[i].getTestCount() == 0)
+                unitList[i].run();
             formProfileResults[i] = new ProfilingResultsForm(unitList[i]);
             tabUnitTest.addTab(unitList[i].getTestName(), formProfileResults[i].getContentPanel());
             cbUnitTest.addItem(unitList[i].getTestName());
+
+            // set tab background color, if found any error, it will show red
+            Color background = unitList[i].getSuccessCount() == unitList[i].getTestCount() ?
+                    new Color(200, 255, 200) : new Color(255, 200, 200);
+            setTabColor(i, Color.BLACK, background);
         }
+        refreshTestCount();
 
         btnAllTest.addActionListener(this::onRunAllTest);
         btnSelectedTest.addActionListener(this::onRunSelectedTest);
@@ -46,9 +55,16 @@ public class GradeForm extends JFrame
     {
         int i = cbUnitTest.getSelectedIndex();
         if (i == -1) return;
-        formProfileResults[i].getUnitTest().run();
+        NetlabUT unitTest = formProfileResults[i].getUnitTest();
+        unitTest.run();
+        // set tab background color, if found any error, it will show red
+        Color background = unitTest.getSuccessCount() == unitTest.getTestCount() ?
+                new Color(200, 255, 200) : new Color(255, 200, 200);
+        setTabColor(i, Color.BLACK, background);
+        // refresh display
         formProfileResults[i].refresh();
         refreshTestCount();
+        labelDate.setText(new Date().toString());
     }
 
     private void setTabColor(int index, Color foreground, Color background)
@@ -72,6 +88,7 @@ public class GradeForm extends JFrame
             setTabColor(i, Color.BLACK, background);
         }
         refreshTestCount();
+        labelDate.setText(new Date().toString());
     }
 
     private void refreshTestCount()

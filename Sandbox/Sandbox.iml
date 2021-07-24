@@ -10,7 +10,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../out/artifacts/NetlabOOP_UnitTest_jar/NetlabOOP_UnitTest.jar!/" />
+          <root url="jar://$MODULE_DIR$/../out/artifacts/NetlabUT_jar/NetlabUT.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
