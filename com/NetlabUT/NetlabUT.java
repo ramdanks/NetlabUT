@@ -31,47 +31,47 @@ public abstract class NetlabUT extends UnitTest
     protected void assumeArrayNotEquals(Object[] expected, Supplier<Object[]> actual) { assumeArrayNotEquals(expected, actual, null); }
 
     protected void assumeNull(Supplier<Object> actual, String message) {
-        Profile<Object> p = new Profile<Object>(Benchmark.run(actual), "null", message, false);
+        Profile<Object> p = new Profile<Object>(Benchmark.run(actual), "null", message);
         mTestProfile.add(p);
         recordAssumption(p.metric.returnValue == null);
     }
     protected void assumeNotNull(Supplier<Object> actual, String message) {
-        Profile<Object> p = new Profile<Object>(Benchmark.run(actual), "not null", message, false);
+        Profile<Object> p = new Profile<Object>(Benchmark.run(actual), "not null", message);
         mTestProfile.add(p);
         recordAssumption(p.metric.returnValue != null);
     }
     protected void assumeSame(Object expected, Supplier<Object> actual, String message) {
-        Profile<Object> p = new Profile<Object>(Benchmark.run(actual), expected, message, false);
+        Profile<Object> p = new Profile<Object>(Benchmark.run(actual), expected, message);
         mTestProfile.add(p);
         recordAssumption(p.metric.returnValue == actual);
     }
     protected void assumeTrue(Supplier<Boolean> actual, String message) {
-        Profile<Boolean> p = new Profile<Boolean>(Benchmark.run(actual), true, message, false);
+        Profile<Boolean> p = new Profile<Boolean>(Benchmark.run(actual), true, message);
         mTestProfile.add(p);
         recordAssumption(p.metric.returnValue == true);
     }
     protected void assumeFalse(Supplier<Boolean> actual, String message) {
-        Profile<Boolean> p = new Profile<Boolean>(Benchmark.run(actual), false, message, false);
+        Profile<Boolean> p = new Profile<Boolean>(Benchmark.run(actual), false, message);
         mTestProfile.add(p);
         recordAssumption(p.metric.returnValue == false);
     }
     protected void assumeEquals(Object expected, Supplier<Object> actual, String message) {
-        Profile<Object> p = new Profile<Object>(Benchmark.run(actual), expected, message, false);
+        Profile<Object> p = new Profile<Object>(Benchmark.run(actual), expected, message);
         mTestProfile.add(p);
         recordAssumption(p.metric.returnValue.equals(expected) == true);
     }
     protected void assumeNotEquals(Object expected, Supplier<Object> actual, String message) {
-        Profile<Object> p = new Profile<Object>(Benchmark.run(actual), "not " + expected, message, false);
+        Profile<Object> p = new Profile<Object>(Benchmark.run(actual), "not " + expected, message);
         mTestProfile.add(p);
         recordAssumption(p.metric.returnValue.equals(expected) == false);
     }
     protected void assumeArrayEquals(Object[] expected, Supplier<Object[]> actual, String message) {
-        Profile<Object[]> p = new Profile<Object[]>(Benchmark.run(actual), expected, message, true);
+        Profile<Object[]> p = new Profile<Object[]>(Benchmark.run(actual), expected, message);
         mTestProfile.add(p);
         assumeArrayEquals(expected, p.metric.returnValue);
     }
     protected void assumeArrayNotEquals(Object[] expected, Supplier<Object[]> actual, String message) {
-        Profile<Object[]> p = new Profile<Object[]>(Benchmark.run(actual), "not " + Profile.toString(expected), message, true);
+        Profile<Object[]> p = new Profile<Object[]>(Benchmark.run(actual), "not " + Profile.toString(expected), message);
         mTestProfile.add(p);
         assumeArrayNotEquals(expected, p.metric.returnValue);
     }
