@@ -23,7 +23,8 @@ public class WindowProfiler extends JFrame
         setTitle("Unit Test Grading");
         setVisible(true);
 
-        setSize(600, 400);
+        setSize(mainPanel.getPreferredSize());
+        setMinimumSize(mainPanel.getMinimumSize());
         setContentPane(mainPanel);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
