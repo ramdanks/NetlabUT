@@ -16,7 +16,6 @@ public class WindowProfiler extends JFrame
     private JButton btnAllTest;
     private JButton btnSelectedTest;
     private JComboBox cbUnitTest;
-
     private ProfilingResultsForm[] formProfileResults;
 
     public WindowProfiler(String title, NetlabUT[] unitList)
@@ -60,8 +59,7 @@ public class WindowProfiler extends JFrame
         String tooltip = String.format("%s | Fail: %d", unitTest.getTestName(), failCount);
         tabUnitTest.setToolTipTextAt(index, tooltip);
         // set tab background color, if found any error, it will show red
-        Color background = unitTest.getSuccessCount() == unitTest.getTestCount() ?
-                new Color(200, 255, 200) : new Color(255, 200, 200);
+        Color background = unitTest.getSuccessCount() == unitTest.getTestCount() ? Style.CORRECT_COLOR : Style.WRONG_COLOR;
         setTabColor(index, Color.BLACK, background);
         // set tab title
         String tabTitle = failCount == 0 ? unitTest.getTestName() : String.format("%s (%d)", unitTest.getTestName(), failCount);

@@ -1,7 +1,9 @@
 package com.NetlabUT;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import java.awt.*;
 import java.util.ArrayList;
 
 public class ProfilingResultsForm
@@ -16,25 +18,17 @@ public class ProfilingResultsForm
 
     public ProfilingResultsForm()
     {
-        tableProfile.setModel(new DefaultTableModel(null, COLUMN_PROFILE) {
-            @Override /* all cels are not editable */
-            public boolean isCellEditable(int row, int column) { return false; }
-        });
+        initTable();;
     }
     public ProfilingResultsForm(NetlabUT unitTest)
     {
-        tableProfile.setModel(new DefaultTableModel(null, COLUMN_PROFILE) {
-            @Override /* all cels are not editable */
-            public boolean isCellEditable(int row, int column) { return false; }
-        });
-
+        initTable();
         setProfileResults(unitTest);
     }
 
     public JPanel getContentPanel() { return mainPanel; }
     public void refresh() { setProfileResults(unitTest); }
     public NetlabUT getUnitTest() { return unitTest; }
-
     public void setProfileResults(NetlabUT unitTest)
     {
         this.unitTest = unitTest;
@@ -54,12 +48,31 @@ public class ProfilingResultsForm
         String[] record = new String[5];
         for (Profile profile : profileList)
         {
-            record[0] = profile.message;
+            record[0] = profile.getMessage();
             record[1] = "1";
-            record[2] = Long.toString(profile.metric.nanoTime);
-            record[3] = profile.expected;
+            record[2] = Long.toString(profile.getMetric().nanoTime);
+            record[3] = profile.getExpected();
             record[4] = profile.getMetricReturnToString();
             model.addRow(record);
         }
+    }
+
+    private void initTable()
+    {
+        tableProfile.setModel(new DefaultTableModel(null, COLUMN_PROFILE) {
+            @Override /* all cels are not editable */
+            public boolean isCellEditable(int row, int column) { return false; }
+        });
+
+        tableProfile.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column)
+            {
+                final Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+                final Profile profile = ProfilingResultsForm.this.unitTest.getTestProfile().get(row);
+                c.setBackground(profile.isCorrect() ? Color.WHITE : Style.WRONG_COLOR);
+                return c;
+            }
+        });
     }
 }
