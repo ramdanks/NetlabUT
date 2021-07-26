@@ -4,7 +4,7 @@ import java.util.Date;
 
 public class ConsoleProfiler
 {
-    public ConsoleProfiler(String title, NetlabUT[] unitList)
+    public ConsoleProfiler(String title, UnitTest[] unitList)
     {
         int totalTest = 0;
         int totalSuccess = 0;

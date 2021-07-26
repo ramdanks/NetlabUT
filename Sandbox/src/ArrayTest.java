@@ -1,9 +1,9 @@
-import com.NetlabUT.NetlabUT;
+import com.NetlabUT.UnitTest;
 
 import java.util.ArrayList;
 import java.util.Random;
 
-public class ArrayTest extends NetlabUT
+public class ArrayTest extends UnitTest
 {
     private Random rand = new Random();
 

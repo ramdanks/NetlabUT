@@ -18,7 +18,7 @@ public class WindowProfiler extends JFrame
     private JComboBox cbUnitTest;
     private ProfilingResultsForm[] formProfileResults;
 
-    public WindowProfiler(String title, NetlabUT[] unitList)
+    public WindowProfiler(String title, UnitTest[] unitList)
     {
         setTitle("Unit Test Grading");
         setVisible(true);
@@ -52,7 +52,7 @@ public class WindowProfiler extends JFrame
     private void runUnitTest(int index) { formProfileResults[index].getUnitTest().run(); }
     private void refreshUnitTest(int index)
     {
-        NetlabUT unitTest = formProfileResults[index].getUnitTest();
+        UnitTest unitTest = formProfileResults[index].getUnitTest();
         // refresh profile results panael
         formProfileResults[index].refresh();
         // set tooltip
@@ -99,7 +99,7 @@ public class WindowProfiler extends JFrame
         int totalSuccessCount = 0;
         for (int i = 0; i < formProfileResults.length; i++)
         {
-            NetlabUT unitTest = formProfileResults[i].getUnitTest();
+            UnitTest unitTest = formProfileResults[i].getUnitTest();
             totalTestCount += unitTest.getTestCount();
             totalSuccessCount += unitTest.getSuccessCount();
         }

@@ -8,19 +8,19 @@ import java.util.ArrayList;
 
 public class ProfilingResultsForm
 {
-    private static final String[] COLUMN_PROFILE = { "Message", "Calls", "Time (ns)", "Expected", "Actual" };
+    private static final String[] COLUMN_PROFILE = { "Message", "Time (ns)", "Expected", "Actual" };
 
     private JTable tableProfile;
     private JLabel labelPercentage;
     private JLabel labelPoints;
     private JPanel mainPanel;
-    private NetlabUT unitTest = null;
+    private UnitTest unitTest = null;
 
     public ProfilingResultsForm()
     {
         initTable();;
     }
-    public ProfilingResultsForm(NetlabUT unitTest)
+    public ProfilingResultsForm(UnitTest unitTest)
     {
         initTable();
         setProfileResults(unitTest);
@@ -28,8 +28,8 @@ public class ProfilingResultsForm
 
     public JPanel getContentPanel() { return mainPanel; }
     public void refresh() { setProfileResults(unitTest); }
-    public NetlabUT getUnitTest() { return unitTest; }
-    public void setProfileResults(NetlabUT unitTest)
+    public UnitTest getUnitTest() { return unitTest; }
+    public void setProfileResults(UnitTest unitTest)
     {
         this.unitTest = unitTest;
 
@@ -48,11 +48,11 @@ public class ProfilingResultsForm
         String[] record = new String[5];
         for (Profile profile : profileList)
         {
+            Metric metric = profile.getMetric();
             record[0] = profile.getMessage();
-            record[1] = "1";
-            record[2] = Long.toString(profile.getMetric().nanoTime);
-            record[3] = profile.getExpected();
-            record[4] = profile.getMetricReturnToString();
+            record[1] = Long.toString(profile.getMetric().nanoTime);
+            record[2] = profile.getExpected();
+            record[3] = Profile.toString(metric.returnValue);
             model.addRow(record);
         }
     }

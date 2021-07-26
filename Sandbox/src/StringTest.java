@@ -1,6 +1,6 @@
-import com.NetlabUT.NetlabUT;
+import com.NetlabUT.UnitTest;
 
-public class StringTest extends NetlabUT
+public class StringTest extends UnitTest
 {
     @Override
     protected void scenario()
