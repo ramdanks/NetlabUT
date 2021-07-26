@@ -1,4 +1,3 @@
-import com.NetlabUT.ConsoleProfiler;
 import com.NetlabUT.WindowProfiler;
 import com.NetlabUT.NetlabUT;
 
@@ -8,6 +7,5 @@ final class Sandbox
     {
         NetlabUT[] unitList = { new StringTest(), new ArrayTest() };
         new WindowProfiler("Modul 1 - JDK, BlueJ, dan Git", unitList);
-        new ConsoleProfiler("Modul 1 - JDK, BlueJ, dan Git", unitList);
     }
 }

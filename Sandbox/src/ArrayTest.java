@@ -6,7 +6,6 @@ import java.util.Random;
 public class ArrayTest extends NetlabUT
 {
     private Random rand = new Random();
-    public ArrayTest() { super("Array"); }
 
     @Override
     protected void scenario()

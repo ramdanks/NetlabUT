@@ -8,7 +8,7 @@ public abstract class NetlabUT extends UnitTest
     private String mTestName = null;
     private ArrayList<Profile> mTestProfile = new ArrayList<>();
     
-    protected NetlabUT() {}
+    protected NetlabUT() { mTestName = this.getClass().getName(); }
     protected NetlabUT(String testName) { mTestName = testName; }
 
     public String getTestName() { return mTestName; }

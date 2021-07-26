@@ -2,8 +2,6 @@ import com.NetlabUT.NetlabUT;
 
 public class StringTest extends NetlabUT
 {
-    public StringTest() { super("Formatting"); }
-
     @Override
     protected void scenario()
     {
