@@ -23,6 +23,7 @@ public abstract class NetlabUT extends UnitTest
     protected void assumeNull(Supplier<Object> actual)                                { assumeNull(actual, null); }
     protected void assumeNotNull(Supplier<Object> actual)                             { assumeNotNull(actual, null); }
     protected void assumeSame(Object expected, Supplier<Object> actual)               { assumeSame(expected, actual, null); }
+    protected void assumeNotSame(Object expected, Supplier<Object> actual)            { assumeNotSame(expected, actual, null); }
     protected void assumeTrue(Supplier<Boolean> actual)                               { assumeTrue(actual, null); }
     protected void assumeFalse(Supplier<Boolean> actual)                              { assumeFalse(actual, null); }
     protected void assumeEquals(Object expected, Supplier<Object> actual)             { assumeEquals(expected, actual, null); }
@@ -43,6 +44,11 @@ public abstract class NetlabUT extends UnitTest
     protected void assumeSame(Object expected, Supplier<Object> actual, String message) {
         Metric<Object> m = Benchmark.run(actual);
         Profile<Object> p = new Profile<Object>(m, expected, message, recordAssumption(m.returnValue == actual));
+        mTestProfile.add(p);
+    }
+    protected void assumeNotSame(Object expected, Supplier<Object> actual, String message) {
+        Metric<Object> m = Benchmark.run(actual);
+        Profile<Object> p = new Profile<Object>(m, expected, message, recordAssumption(m.returnValue != actual));
         mTestProfile.add(p);
     }
     protected void assumeTrue(Supplier<Boolean> actual, String message) {
