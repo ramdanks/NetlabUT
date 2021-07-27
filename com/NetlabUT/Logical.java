@@ -2,14 +2,14 @@ package com.NetlabUT;
 
 final class Logical
 {
-    public static boolean equals(Object a, Object b)    { return a.equals(b); }
-    public static boolean notEquals(Object a, Object b) { return !a.equals(b); }
+    public static boolean equals(Object a, Object b)    { return a != null && a.equals(b); }
+    public static boolean notEquals(Object a, Object b) { return a != null && !a.equals(b); }
     public static boolean same(Object a, Object b)      { return a == b; }
     public static boolean notSame(Object a, Object b)   { return a != b; }
 
     public static <T extends Throwable> boolean throwing(T throwable)
     { return throwable != null; }
-    public static <T extends Throwable> boolean throwing(Class<T> expectedType, T throwable)
+    public static <T extends Throwable> boolean throwing(Class<T> expectedType, Throwable throwable)
     { return throwable != null && throwable.getClass() == expectedType; }
 
     // primitive array type cannot use generic array type

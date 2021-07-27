@@ -35,7 +35,7 @@ public abstract class UnitTest
     protected <T extends Throwable> void assumeThrows(Executable executable, String message)
     {
         Metric<T> m = Benchmark.run(executable);
-        Profile<T> p = new Profile<T>(m, Throwable.class.getName(), message, Logical.throwing(m.returnValue));
+        Profile<T> p = new Profile<T>(m, Throwable.class.getName(), message, Logical.throwing(m.throwable));
         increment(p.isCorrect());
         mTestProfile.add(p);
     }
@@ -43,7 +43,7 @@ public abstract class UnitTest
     protected <T extends Throwable> void assumeThrows(Class<T> expectedType, Executable executable, String message)
     {
         Metric<T> m = Benchmark.run(executable);
-        Profile<T> p = new Profile<T>(m, Throwable.class.getName(), message, Logical.throwing(expectedType, m.returnValue));
+        Profile<T> p = new Profile<T>(m, Throwable.class.getName(), message, Logical.throwing(expectedType, m.throwable));
         increment(p.isCorrect());
         mTestProfile.add(p);
     }
@@ -106,7 +106,7 @@ public abstract class UnitTest
     private <T> void record(T expected, Supplier<T> actual, String message, BiFunction<T, T, Boolean> comparator)
     {
         Metric<T> m = actual == null ? new Metric<>() : Benchmark.run(actual);
-        Profile<T> p = new Profile<T>(m, expected, message, comparator.apply(m.returnValue, expected));
+        Profile<T> p = new Profile<T>(m, expected, message, comparator.apply(m.returns, expected));
         increment(p.isCorrect());
         mTestProfile.add(p);
     }
@@ -121,7 +121,7 @@ public abstract class UnitTest
     private <T> void recordNot(T expected, Supplier<T> actual, String message, BiFunction<T, T, Boolean> comparator)
     {
         Metric<T> m = actual == null ? new Metric<>() : Benchmark.run(actual);
-        Profile<T> p = new Profile<T>(m, "not " + Profile.toString(expected), message, comparator.apply(m.returnValue, expected));
+        Profile<T> p = new Profile<T>(m, "not " + Profile.toString(expected), message, comparator.apply(m.returns, expected));
         increment(p.isCorrect());
         mTestProfile.add(p);
     }

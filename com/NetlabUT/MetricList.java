@@ -25,13 +25,6 @@ public class MetricList implements List<Metric>
         return sum / mSize;
     }
 
-    public long getAverageBytes() {
-        long sum = 0;
-        for (int i = 0; i < mSize; ++i)
-            sum += mMetricArray[i].bytesUsed;
-        return sum / mSize;
-    }
-
     public long getMaxNano() {
         long max = 0;
         for (int i = 0; i < mSize; ++i)
@@ -40,27 +33,11 @@ public class MetricList implements List<Metric>
         return max;
     }
 
-    public long getMaxBytes() {
-        long max = 0;
-        for (int i = 0; i < mSize; ++i)
-            if (max < mMetricArray[i].bytesUsed)
-                max = mMetricArray[i].bytesUsed;
-        return max;
-    }
-
     public long getMinNano() {
         long min = 0;
         for (int i = 0; i < mSize; ++i)
             if (min > mMetricArray[i].nanoTime)
                 min = mMetricArray[i].nanoTime;
-        return min;
-    }
-
-    public long getMinBytes() {
-        long min = 0;
-        for (int i = 0; i < mSize; ++i)
-            if (min > mMetricArray[i].bytesUsed)
-                min = mMetricArray[i].bytesUsed;
         return min;
     }
 

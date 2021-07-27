@@ -21,6 +21,6 @@ public class StringTest extends UnitTest
         assumeFalse(() -> s2.isEmpty(), "string emptyness");
         assumeTrue(() -> s2.isBlank(), "string blankness");
 
-        assumeThrows(StringIndexOutOfBoundsException.class, () -> s.charAt(9));
+        assumeThrows(() -> s.charAt(9));
     }
 }
