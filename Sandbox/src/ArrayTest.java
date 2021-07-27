@@ -11,6 +11,7 @@ public class ArrayTest extends UnitTest
     protected void scenario()
     {
         Integer[] sample = { 4, 6, 12, 51, 221, 41, 12, 6, 12, 123 };
+        Integer[] sample2 = { 5, 6, 12, 51, 221, 41, 12, 6, 12, 123 };
         ArrayList<Integer> list = new ArrayList<Integer>();
 
         assumeTrue(() -> list.isEmpty(), "array emptyness");
@@ -28,5 +29,6 @@ public class ArrayTest extends UnitTest
         assumeTrue(() -> list.contains(123), "array contain");
 
         assumeArrayEquals(sample, () -> list.toArray(), "array equality");
+        assumeArrayNotEquals( sample2, () -> list.toArray() );
     }
 }

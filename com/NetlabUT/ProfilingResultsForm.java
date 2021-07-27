@@ -16,10 +16,6 @@ public class ProfilingResultsForm
     private JPanel mainPanel;
     private UnitTest unitTest = null;
 
-    public ProfilingResultsForm()
-    {
-        initTable();;
-    }
     public ProfilingResultsForm(UnitTest unitTest)
     {
         initTable();
@@ -51,7 +47,7 @@ public class ProfilingResultsForm
             Metric metric = profile.getMetric();
             record[0] = profile.getMessage();
             record[1] = Long.toString(profile.getMetric().nanoTime);
-            record[2] = profile.getExpected();
+            record[2] = profile.getReferenceString();
             record[3] = metric.isThrowing() ? metric.throwable.toString() : Profile.toString(metric.returns);
             model.addRow(record);
         }
@@ -60,7 +56,7 @@ public class ProfilingResultsForm
     private void initTable()
     {
         tableProfile.setModel(new DefaultTableModel(null, COLUMN_PROFILE) {
-            @Override /* all cels are not editable */
+            @Override /* all cells are not editable */
             public boolean isCellEditable(int row, int column) { return false; }
         });
 
@@ -68,9 +64,21 @@ public class ProfilingResultsForm
             @Override
             public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column)
             {
-                final Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
                 final Profile profile = ProfilingResultsForm.this.unitTest.getTestProfile().get(row);
-                c.setBackground(profile.isCorrect() ? Color.WHITE : Style.WRONG_COLOR);
+                switch (profile.getReferenceStatus())
+                {
+                    case EQUAL:            setToolTipText("@Actual should EQUAL to @Expected"); break;
+                    case NOT_EQUAL:        setToolTipText("@Actual should NOT EQUAL to @Expected"); break;
+                    case REFERENCE:        setToolTipText("@Actual should REFERENCE @Expected"); break;
+                    case NOT_REFERENCE:    setToolTipText("@Actual should NOT REFERENCE @Expected"); break;
+                    case ARRAY_EQUAL:      setToolTipText("@Actual should ITERATIVELY EQUAL to @Expected"); break;
+                    case ARRAY_NOT_EQUAL:  setToolTipText("@Actual should NOT ITERATIVELY EQUAL to @Expected"); break;
+                    case THROWS:           setToolTipText("@Actual should THROWS any"); break;
+                    case THROWS_TYPE:      setToolTipText("@Actual should THROWS an @Expected"); break;
+                }
+                final Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+                if (profile.isCorrect())  c.setBackground(isSelected ? Style.NEUTRAL_FOCUS : Style.NEUTRAL);
+                else                      c.setBackground(isSelected ? Style.WRONG_COLOR_FOCUS : Style.WRONG_COLOR);
                 return c;
             }
         });

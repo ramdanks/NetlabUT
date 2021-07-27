@@ -15,7 +15,7 @@ public class Benchmark
         finally             { metric.nanoTime  = System.nanoTime() - metric.nanoTime; }
         return metric;
     }
-    public static <T extends Throwable> Metric<T> run(Executable exec)
+    public static <T> Metric<T> run(Executable exec)
     {
         Metric<T> metric = new Metric<>();
         try {
