@@ -1,5 +1,7 @@
 import com.NetlabUT.UnitTest;
 
+import com.NetlabUT.Executable;
+
 public class StringTest extends UnitTest
 {
     @Override
@@ -18,5 +20,7 @@ public class StringTest extends UnitTest
         String s2 = "\t  ";
         assumeFalse(() -> s2.isEmpty(), "string emptyness");
         assumeTrue(() -> s2.isBlank(), "string blankness");
+
+        assumeThrows(StringIndexOutOfBoundsException.class, () -> s.charAt(9));
     }
 }

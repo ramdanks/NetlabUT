@@ -28,6 +28,8 @@ public class Profile<T>
     public boolean isCorrect() { return correct; }
     public static <T> String toString(T object)
     {
+        if (object == null)
+            return "null";
         if (!object.getClass().isArray())
             return object.toString();
 

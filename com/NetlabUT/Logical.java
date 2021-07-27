@@ -7,6 +7,11 @@ final class Logical
     public static boolean same(Object a, Object b)      { return a == b; }
     public static boolean notSame(Object a, Object b)   { return a != b; }
 
+    public static <T extends Throwable> boolean throwing(T throwable)
+    { return throwable != null; }
+    public static <T extends Throwable> boolean throwing(Class<T> expectedType, T throwable)
+    { return throwable != null && throwable.getClass() == expectedType; }
+
     // primitive array type cannot use generic array type
     // conversion to wrapper class may provice cleaner code
     // but causes slower performance in runtime
