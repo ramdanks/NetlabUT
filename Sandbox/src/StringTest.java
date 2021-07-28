@@ -8,6 +8,8 @@ public class StringTest extends UnitTest
     protected void scenario()
     {
         String s = "Kevin";
+
+        assumeNotNull(s);
         assumeEquals('e', () -> s.charAt(1), "string, character at index 1");
         assumeEquals('v', () -> s.charAt(2), "string, character at index 2");
         assumeEquals(5, () -> s.length(), "string length");

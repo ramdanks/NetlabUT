@@ -30,5 +30,7 @@ public class ArrayTest extends UnitTest
 
         assumeArrayEquals(sample, () -> list.toArray(), "array equality");
         assumeArrayNotEquals( sample2, () -> list.toArray() );
+
+        assumeSame(list, list);
     }
 }

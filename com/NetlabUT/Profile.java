@@ -30,10 +30,15 @@ public class Profile<T>
 
     public Metric<T> getMetric()        { return metric; }
     public T getReference()             { return reference; }
-    public Class<T> getClassReference() { return classReference == null ? (Class<T>) reference.getClass() : classReference; }
-    public String getReferenceString()  { return reference == null ? classReference.getName() : toString(reference); }
-    public String getMessage()          { return message; }
+    public Class<T> getClassReference() { return classReference; }
     public Status getReferenceStatus()  { return referenceStatus; }
+    public String getReferenceString()
+    {
+        if (reference == null && classReference == null)
+            return "null";
+        return reference == null ? classReference.getName() : toString(reference);
+    }
+    public String getMessage()          { return message; }
     public boolean isCorrect()          { return correct; }
 
     public static <T> String toString(T object)
@@ -52,5 +57,9 @@ public class Profile<T>
                 str += ',' + array[i].toString();
         }
         return str;
+    }
+
+    public static String getObjectIdentifierString(Object obj) {
+        return obj.getClass().getName() + "@" + Integer.toHexString(obj.hashCode());
     }
 }

@@ -4,6 +4,8 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
 public class ProfilingResultsForm
@@ -41,14 +43,26 @@ public class ProfilingResultsForm
         DefaultTableModel model = (DefaultTableModel) tableProfile.getModel();
         model.setRowCount(0);
 
-        String[] record = new String[5];
+        String[] record = new String[4];
         for (Profile profile : profileList)
         {
             Metric metric = profile.getMetric();
             record[0] = profile.getMessage();
             record[1] = Long.toString(profile.getMetric().nanoTime);
-            record[2] = profile.getReferenceString();
-            record[3] = metric.isThrowing() ? metric.throwable.toString() : Profile.toString(metric.returns);
+
+            if (profile.getReferenceStatus() == Status.REFERENCE ||
+                profile.getReferenceStatus() == Status.NOT_REFERENCE)
+            {
+                record[2] = Profile.getObjectIdentifierString(profile.getReference());
+                record[3] = metric.isThrowing() ?
+                        metric.throwable.toString() :
+                        Profile.getObjectIdentifierString(metric.returns);
+            }
+            else
+            {
+                record[2] = profile.getReferenceString();
+                record[3] = metric.isThrowing() ? metric.throwable.toString() : Profile.toString(metric.returns);
+            }
             model.addRow(record);
         }
     }
@@ -80,6 +94,18 @@ public class ProfilingResultsForm
                 if (profile.isCorrect())  c.setBackground(isSelected ? Style.NEUTRAL_FOCUS : Style.NEUTRAL);
                 else                      c.setBackground(isSelected ? Style.WRONG_COLOR_FOCUS : Style.WRONG_COLOR);
                 return c;
+            }
+        });
+
+        tableProfile.addMouseListener(new MouseAdapter() {
+            @Override // handle double click event
+            public void mouseClicked(MouseEvent me) {
+                if (me.getClickCount() == 2)
+                {
+                    JTable table = (JTable) me.getSource();
+                    int row = table.getSelectedRow(); // select a row
+                    new ProfileFrame<>(unitTest.getTestProfile().get(row));
+                }
             }
         });
     }
