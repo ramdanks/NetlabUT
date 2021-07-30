@@ -31,7 +31,6 @@ public abstract class UnitTest
         scenario();
     }
 
-
     protected <T extends Throwable> void assumeThrows(Class<T> expected, Executable executable) { assumeThrows(expected, executable, null); }
     protected <T extends Throwable> void assumeThrows(Class<T> expected, Executable executable, String message)
     {
@@ -114,7 +113,7 @@ public abstract class UnitTest
             case ARRAY_EQUAL     : correct = Logical.isArrayEquals((T[]) references, (T[]) m.returns); break;
             case ARRAY_NOT_EQUAL : correct = Logical.isArrayNotEquals((T[]) references, (T[]) m.returns); break;
             case REFERENCE       : correct = Logical.same(m.returns, references); break;
-            case NOT_REFERENCE   : correct = Logical.notSame(m.returns, references); break;
+            case NOT_REFERENCE   : correct = Logical.notSame(m.returns, references);
         };
         Profile<T> p = new Profile<>(m, references, comparison, correct, message);
         increment(p.isCorrect());

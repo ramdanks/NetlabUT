@@ -39,6 +39,14 @@ public class VariableDetail<T>
     }
     public void setContent(T object)
     {
+        if (object == null)
+        {
+            buttonClassDetail.setVisible(false);
+            labelType.setText("Object");
+            labelIdentifier.setText("null");
+            return;
+        }
+
         this.mClass = (Class<T>) object.getClass();
         labelIdentifier.setText(Profile.getObjectIdentifierString(object));
         if (object instanceof Throwable)
