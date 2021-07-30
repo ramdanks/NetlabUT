@@ -17,6 +17,7 @@ public class ClassDetail extends JFrame
     private JList listClasses;
     private JList listFields;
     private JList listMethods;
+    private JScrollPane paneFields;
 
     public ClassDetail(Class<?> tClass)
     {
@@ -55,14 +56,17 @@ public class ClassDetail extends JFrame
             modelInterface.addElement(interfaces[i].getName());
 
         final Class<?>[] classes = tClass.getDeclaredClasses();
+        listClasses.setVisibleRowCount(classes.length);
         for (int i = 0; i < classes.length; i++)
             modelClasses.addElement(classes[i].getName());
 
         final Field[] fields = tClass.getDeclaredFields();
+        listFields.setVisibleRowCount(fields.length);
         for (int i = 0; i < fields.length; i++)
             modelFields.addElement(fields[i]);
 
         final Method[] methods = tClass.getDeclaredMethods();
+        listMethods.setVisibleRowCount(methods.length);
         for (int i = 0; i < methods.length; i++)
             modelMethods.addElement(methods[i]);
     }

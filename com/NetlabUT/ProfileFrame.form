@@ -15,7 +15,7 @@
           <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <text value="Correct:"/>
+          <text value="Result:"/>
         </properties>
       </component>
       <component id="20dc1" class="javax.swing.JLabel" binding="labelCorrect">
@@ -31,7 +31,7 @@
           <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <text value="Status:"/>
+          <text value="Assumption:"/>
         </properties>
       </component>
       <component id="f70e" class="javax.swing.JLabel" binding="labelStatus">
@@ -47,7 +47,7 @@
           <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <text value="Time:"/>
+          <text value="Actual Time:"/>
         </properties>
       </component>
       <component id="1a6e4" class="javax.swing.JLabel" binding="labelTime">
@@ -78,7 +78,7 @@
             <properties/>
             <border type="none"/>
             <children>
-              <nested-form id="d109c" form-file="com/NetlabUT/ObjectDetail.form" binding="panelReference">
+              <nested-form id="d109c" form-file="com/NetlabUT/VariableDetail.form" binding="panelReference">
                 <constraints>
                   <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                 </constraints>
@@ -93,7 +93,7 @@
             <properties/>
             <border type="none"/>
             <children>
-              <nested-form id="a761f" form-file="com/NetlabUT/ObjectDetail.form" binding="panelActual">
+              <nested-form id="a761f" form-file="com/NetlabUT/VariableDetail.form" binding="panelActual">
                 <constraints>
                   <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                 </constraints>

@@ -120,33 +120,39 @@
                 <children>
                   <component id="7dece" class="javax.swing.JList" binding="listClasses">
                     <constraints/>
-                    <properties/>
+                    <properties>
+                      <visibleRowCount value="1"/>
+                    </properties>
                   </component>
                 </children>
               </scrollpane>
-              <scrollpane id="fbdae">
+              <scrollpane id="fbdae" binding="paneFields">
                 <constraints>
-                  <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                  <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties/>
                 <border type="none" title="Declared Fields" title-justification="2"/>
                 <children>
                   <component id="3dd79" class="javax.swing.JList" binding="listFields">
                     <constraints/>
-                    <properties/>
+                    <properties>
+                      <visibleRowCount value="1"/>
+                    </properties>
                   </component>
                 </children>
               </scrollpane>
               <scrollpane id="40d86">
                 <constraints>
-                  <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+                  <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties/>
                 <border type="none" title="Declared Methods" title-justification="2"/>
                 <children>
                   <component id="ad3bd" class="javax.swing.JList" binding="listMethods">
                     <constraints/>
-                    <properties/>
+                    <properties>
+                      <visibleRowCount value="1"/>
+                    </properties>
                   </component>
                 </children>
               </scrollpane>

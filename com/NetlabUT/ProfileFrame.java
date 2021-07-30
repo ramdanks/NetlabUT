@@ -1,9 +1,6 @@
 package com.NetlabUT;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.ArrayList;
 
 public class ProfileFrame<T> extends JFrame
 {
@@ -11,8 +8,8 @@ public class ProfileFrame<T> extends JFrame
     private JLabel labelCorrect;
     private JLabel labelStatus;
     private JLabel labelTime;
-    private ObjectDetail panelActual;
-    private ObjectDetail panelReference;
+    private VariableDetail panelActual;
+    private VariableDetail panelReference;
     private JTabbedPane tabbedPane1;
     private JTextArea textMessage;
 
@@ -29,8 +26,18 @@ public class ProfileFrame<T> extends JFrame
         labelTime.setText(String.format("%d ns", metric.nanoTime));
         textMessage.setText(profile.getMessage());
 
-        panelActual.setObject(metric.returns);
-        panelReference.setObject(profile.getReference());
+        Status status = profile.getReferenceStatus();
+        if (status == Status.THROWS || status == Status.THROWS_TYPE)
+        {
+            if (metric.isThrowing()) panelActual.setContent(metric.throwable);
+            else panelActual.setContent(metric.returns);
+            panelReference.setContent(profile.getClassReference());
+        }
+        else
+        {
+            panelActual.setContent(metric.isThrowing() ? metric.throwable : metric.returns);
+            panelReference.setContent(profile.getReference());
+        }
 
         setSize(getMinimumSize());
         setMinimumSize(getMinimumSize());

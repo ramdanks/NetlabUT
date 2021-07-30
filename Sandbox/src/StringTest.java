@@ -19,11 +19,12 @@ public class StringTest extends UnitTest
         assumeFalse(() -> s.contains("ked"), "string contains");
         assumeTrue(() -> s.contains("Kevin"), "string contains");
         assumeThrows(() -> s.charAt(8));
-        assumeThrows(StringIndexOutOfBoundsException.class, () -> s.charAt(21));
+        assumeThrows(IndexOutOfBoundsException.class, () -> s.charAt(21));
         assumeNotEquals("Kevins", s);
 
         String s2 = "\t  ";
         assumeFalse(() -> s2.isEmpty(), "string emptyness");
         assumeTrue(() -> s2.isBlank(), "string blankness");
+        assumeEquals('e', () -> s2.charAt(21));
     }
 }
