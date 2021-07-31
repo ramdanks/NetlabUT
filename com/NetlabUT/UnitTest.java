@@ -105,7 +105,7 @@ public abstract class UnitTest
     private <T> void record(T references, Executable actual, String message, Status comparison)
     {
         Metric<Object> m = actual == null ? new Metric<>() : Benchmark.run(actual);
-        boolean correct = compare(references, m.returns, comparison);
+        boolean correct = m.isThrowing() ? false : compare(references, m.returns, comparison);
         Profile p = new Profile(m, references, comparison, correct, message);
         increment(p.isCorrect());
         mTestProfile.add(p);
