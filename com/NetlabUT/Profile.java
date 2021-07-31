@@ -60,6 +60,7 @@ public class Profile<T>
     }
 
     public static String getObjectIdentifierString(Object obj) {
+        if (obj == null) return "null";
         return obj.getClass().getName() + "@" + Integer.toHexString(obj.hashCode());
     }
 }

@@ -29,7 +29,7 @@ public class ArrayTest extends UnitTest
         assumeTrue(() -> list.contains(123), "array contain");
 
         assumeArrayEquals(sample, () -> list.toArray(), "array equality");
-        assumeArrayNotEquals( sample2, () -> list.toArray() );
+        assumeArrayNotEquals(sample2, () -> list.toArray() );
 
         assumeSame(list, list);
     }

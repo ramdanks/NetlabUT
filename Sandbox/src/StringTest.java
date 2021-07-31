@@ -26,5 +26,7 @@ public class StringTest extends UnitTest
         assumeFalse(() -> s2.isEmpty(), "string emptyness");
         assumeTrue(() -> s2.isBlank(), "string blankness");
         assumeEquals('e', () -> s2.charAt(21));
+
+        StringTest st = new StringTest();
     }
 }
