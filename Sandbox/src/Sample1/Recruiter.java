@@ -12,7 +12,6 @@ public class Recruiter
 
     public int add(int a, int b) { return a + b; }
 
-    public void throwing() throws Exception { throw new Exception(); }
-    public static void staticThrowing() throws Exception { throw new Exception(); }
+    public void throwing() throws MyException { throw new MyException(); }
 }
 

@@ -1,8 +1,6 @@
 package com.NetlabUT;
 
 import java.util.ArrayList;
-import java.util.function.BiFunction;
-import java.util.function.Supplier;
 
 public abstract class UnitTest
 {
@@ -47,48 +45,48 @@ public abstract class UnitTest
         record(new Profile(m, (Class<T>) Throwable.class, Status.THROWS, correct, message));
     }
 
-    protected void assumeNull(Object actual)                                                          { assumeNull(actual, null); }
-    protected void assumeNull(Executable actual)                                                      { assumeNull(actual, null); }
-    protected void assumeNotNull(Object actual)                                                       { assumeNotNull(actual, null); }
-    protected void assumeNotNull(Executable actual)                                                   { assumeNotNull(actual, null); }
-    protected void assumeSame(Object expected, Object actual)                                         { assumeSame(expected, actual, null); }
-    protected void assumeSame(Object expected, Executable actual)                                     { assumeSame(expected, actual, null); }
-    protected void assumeNotSame(Object expected, Object actual)                                      { assumeNotSame(expected, actual, null); }
-    protected void assumeNotSame(Object expected, Executable actual)                                  { assumeNotSame(expected, actual, null); }
-    protected void assumeTrue(Boolean actual)                                                         { assumeTrue(actual, null); }
-    protected void assumeTrue(Executable actual)                                                      { assumeTrue(actual, null); }
-    protected void assumeFalse(Boolean actual)                                                        { assumeFalse(actual, null); }
-    protected void assumeFalse(Executable actual)                                                     { assumeFalse(actual, null); }
-    protected void assumeEquals(Object expected, Object actual)                                       { assumeEquals(expected, actual, null); }
-    protected void assumeEquals(Object expected, Executable actual)                                   { assumeEquals(expected, actual, null); }
-    protected void assumeNotEquals(Object expected, Object actual)                                    { assumeNotEquals(expected, actual, null); }
-    protected void assumeNotEquals(Object expected, Executable actual)                                { assumeNotEquals(expected, actual, null); }
-    protected void assumeArrayEquals(Object[] expected, Object[] actual)                              { assumeArrayEquals(expected, actual, null); }
-    protected void assumeArrayEquals(Object[] expected, Executable actual)                            { assumeArrayEquals(expected, actual, null); }
-    protected void assumeArrayNotEquals(Object[] expected, Object[] actual)                           { assumeArrayNotEquals(expected, actual, null); }
-    protected void assumeArrayNotEquals(Object[] expected, Executable actual)                         { assumeArrayNotEquals(expected, actual, null); }
+    protected void assumeNull(Object actual)                                                          { assumeNull(null, actual); }
+    protected void assumeNull(Executable actual)                                                      { assumeNull(null, actual); }
+    protected void assumeNotNull(Object actual)                                                       { assumeNotNull(null, actual); }
+    protected void assumeNotNull(Executable actual)                                                   { assumeNotNull(null, actual); }
+    protected void assumeSame(Object expected, Object actual)                                         { assumeSame(null, expected, actual); }
+    protected void assumeSame(Object expected, Executable actual)                                     { assumeSame(null, expected, actual); }
+    protected void assumeNotSame(Object expected, Object actual)                                      { assumeNotSame(null, expected, actual); }
+    protected void assumeNotSame(Object expected, Executable actual)                                  { assumeNotSame(null, expected, actual); }
+    protected void assumeTrue(Boolean actual)                                                         { assumeTrue(null, actual); }
+    protected void assumeTrue(Executable actual)                                                      { assumeTrue(null, actual); }
+    protected void assumeFalse(Boolean actual)                                                        { assumeFalse(null, actual); }
+    protected void assumeFalse(Executable actual)                                                     { assumeFalse(null, actual); }
+    protected void assumeEquals(Object expected, Object actual)                                       { assumeEquals(null, expected, actual); }
+    protected void assumeEquals(Object expected, Executable actual)                                   { assumeEquals(null, expected, actual); }
+    protected void assumeNotEquals(Object expected, Object actual)                                    { assumeNotEquals(null, expected, actual); }
+    protected void assumeNotEquals(Object expected, Executable actual)                                { assumeNotEquals(null, expected, actual); }
+    protected void assumeArrayEquals(Object[] expected, Object[] actual)                              { assumeArrayEquals(null, expected, actual); }
+    protected void assumeArrayEquals(Object[] expected, Executable actual)                            { assumeArrayEquals(null, expected, actual); }
+    protected void assumeArrayNotEquals(Object[] expected, Object[] actual)                           { assumeArrayNotEquals(null, expected, actual); }
+    protected void assumeArrayNotEquals(Object[] expected, Executable actual)                         { assumeArrayNotEquals(null, expected, actual); }
 
-    protected void assumeNull(Object actual, String message)                                          { record(null, () -> actual, message, Status.REFERENCE); }
-    protected void assumeNull(Executable actual, String message)                                      { record(null, actual, message, Status.REFERENCE); }
-    protected void assumeNotNull(Object actual, String message)                                       { record(null, () -> actual, message, Status.NOT_REFERENCE); }
-    protected void assumeNotNull(Executable actual, String message)                                   { record(null, actual, message, Status.NOT_REFERENCE); }
-    protected void assumeSame(Object expected, Object actual, String message)                         { record(expected, () -> actual, message, Status.REFERENCE); }
-    protected void assumeSame(Object expected, Executable actual, String message)                     { record(expected, actual, message, Status.REFERENCE); }
-    protected void assumeNotSame(Object expected, Object actual, String message)                      { record(expected, () -> actual, message, Status.NOT_REFERENCE); }
-    protected void assumeNotSame(Object expected, Executable actual, String message)                  { record(expected, actual, message, Status.NOT_REFERENCE); }
-    protected void assumeTrue(Boolean actual, String message)                                         { record(true, () -> actual, message, Status.EQUAL); }
-    protected void assumeTrue(Executable actual, String message)                                      { record(true, actual, message, Status.EQUAL); }
-    protected void assumeFalse(Boolean actual, String message)                                        { record(false, () -> actual, message, Status.EQUAL); }
-    protected void assumeFalse(Executable actual, String message)                                     { record(false, actual, message, Status.EQUAL); }
-    protected void assumeEquals(Object expected, Object actual, String message)                       { record(expected, () -> actual, message, Status.EQUAL); }
-    protected void assumeEquals(Object expected, Executable actual, String message)                   { record(expected, actual, message, Status.EQUAL); }
-    protected void assumeNotEquals(Object expected, Object actual, String message)                    { record(expected, () -> actual, message, Status.NOT_EQUAL); }
-    protected void assumeNotEquals(Object expected, Executable actual, String message)                { record(expected, actual, message, Status.NOT_EQUAL); }
+    protected void assumeNull(String message, Object actual)                                          { record(message, Status.REFERENCE, null, actual); }
+    protected void assumeNull(String message, Executable actual)                                      { record(message, Status.REFERENCE, null, actual); }
+    protected void assumeNotNull(String message, Object actual)                                       { record(message, Status.NOT_REFERENCE, null, actual); }
+    protected void assumeNotNull(String message, Executable actual)                                   { record(message, Status.NOT_REFERENCE, null, actual); }
+    protected void assumeSame(String message, Object expected, Object actual)                         { record(message, Status.REFERENCE, expected, actual); }
+    protected void assumeSame(String message, Object expected, Executable actual)                     { record(message, Status.REFERENCE, expected, actual); }
+    protected void assumeNotSame(String message, Object expected, Object actual)                      { record(message, Status.NOT_REFERENCE, expected, actual); }
+    protected void assumeNotSame(String message, Object expected, Executable actual)                  { record(message, Status.NOT_REFERENCE, expected, actual); }
+    protected void assumeTrue(String message, Boolean actual)                                         { record(message, Status.EQUAL, true, actual); }
+    protected void assumeTrue(String message, Executable actual)                                      { record(message, Status.EQUAL, true, actual); }
+    protected void assumeFalse(String message, Boolean actual)                                        { record(message, Status.EQUAL, false, actual); }
+    protected void assumeFalse(String message, Executable actual)                                     { record(message, Status.EQUAL, false, actual); }
+    protected void assumeEquals(String message, Object expected, Object actual)                       { record(message, Status.EQUAL, expected, actual); }
+    protected void assumeEquals(String message, Object expected, Executable actual)                   { record(message, Status.EQUAL, expected, actual); }
+    protected void assumeNotEquals(String message, Object expected, Object actual)                    { record(message, Status.NOT_EQUAL, expected, actual); }
+    protected void assumeNotEquals(String message, Object expected, Executable actual)                { record(message, Status.NOT_EQUAL, expected, actual); }
 
-    protected void assumeArrayEquals(Object[] expected, Object[] actual, String message)              { record(expected, () -> actual, message, Status.ARRAY_EQUAL); }
-    protected void assumeArrayEquals(Object[] expected, Executable actual, String message)            { record(expected, actual, message, Status.ARRAY_EQUAL); }
-    protected void assumeArrayNotEquals(Object[] expected, Object[] actual, String message)           { record(expected, () -> actual, message, Status.ARRAY_NOT_EQUAL); }
-    protected void assumeArrayNotEquals(Object[] expected, Executable actual, String message)         { record(expected, actual, message, Status.ARRAY_NOT_EQUAL); }
+    protected void assumeArrayEquals(String message, Object[] expected, Object[] actual)              { record(message, Status.ARRAY_EQUAL, expected, actual); }
+    protected void assumeArrayEquals(String message, Object[] expected, Executable actual)            { record(message, Status.ARRAY_EQUAL, expected, actual); }
+    protected void assumeArrayNotEquals(String message, Object[] expected, Object[] actual)           { record(message, Status.ARRAY_NOT_EQUAL, expected, actual); }
+    protected void assumeArrayNotEquals(String message, Object[] expected, Executable actual)         { record(message, Status.ARRAY_NOT_EQUAL, expected, actual); }
 
     /** record a profile test */
     protected void record(Profile profile)
@@ -104,7 +102,7 @@ public abstract class UnitTest
      * @param comparison type of comparison expected from references and actual
      * @param <T> type of object that evaluated
      */
-    private <T> void record(T references, Executable actual, String message, Status comparison)
+    private <T> void record(String message, Status comparison, T references, Executable actual)
     {
         Metric<Object> m = actual == null ? new Metric<>() : Benchmark.run(actual);
         boolean correct = m.isThrowing() ? false : compare(references, m.returns, comparison);
@@ -119,7 +117,7 @@ public abstract class UnitTest
      * @param comparison type of comparison expected from references and actual
      * @param <T> type of object that evaluated
      */
-    private <T> void record(T references, T actual, String message, Status comparison)
+    private <T> void record(String message, Status comparison, T references, T actual)
     {
         boolean correct = compare(references, actual, comparison);
         record(new Profile(new Metric<>(), references, comparison, correct, message));

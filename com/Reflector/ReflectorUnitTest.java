@@ -7,6 +7,9 @@ import java.lang.reflect.Method;
 
 public abstract class ReflectorUnitTest extends UnitTest
 {
+    protected ReflectorUnitTest() {}
+    protected ReflectorUnitTest(String testName) { super(testName); }
+
     protected void assumeThrows(Method method, Object obj, Object... args)
     {
         Metric<Object> metric = Benchmark.run((Executable) () -> method.invoke(obj, args));
