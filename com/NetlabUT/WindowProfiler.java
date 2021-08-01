@@ -5,6 +5,10 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.Date;
 
+/** Class to display profile test from {@link com.NetlabUT.UnitTest} into a GUI
+ * @author Ramadhan Kalih Sewu
+ * @version 1.0
+ */
 public class WindowProfiler extends JFrame
 {
     private JPanel mainPanel;

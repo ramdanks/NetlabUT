@@ -11,7 +11,7 @@ final class Sandbox
     {
         packageName = JOptionPane.showInputDialog("Please specify package:");
 
-        UnitTest[] unitList = { new StringTest(), new ArrayTest() };
+        UnitTest[] unitList = {};
         new WindowProfiler("Modul 1 - JDK, BlueJ, dan Git", unitList);
     }
 }

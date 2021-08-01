@@ -1,5 +1,9 @@
 package com.NetlabUT;
 
+/** Class as a comparator, contain basic logic to show equality or state of variable
+ * @author Ramadhan Kalih Sewu
+ * @version 1.0
+ */
 public class Logical
 {
     public static boolean equals(Object a, Object b)    { return a != null && a.equals(b); }

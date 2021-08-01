@@ -1,9 +1,11 @@
 package com.Reflector;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 
-/** Class type wrapper to suppress throwable */
+/** Class type wrapper to suppress throwable
+ * @author Ramadhan Kalih Sewu
+ * @version 1.0
+ */
 public class ClassR
 {
     private Class<?> mClass;
@@ -15,12 +17,12 @@ public class ClassR
             if (packageName == null || packageName.isEmpty())
                 mClass = Class.forName(className);
             mClass = Class.forName(packageName + '.' + className); }
-        catch (Throwable t) {}
+        catch (Throwable ignored) {}
     }
     public ClassR(String className)
     {
         try { mClass = Class.forName(className); }
-        catch (Throwable t) {}
+        catch (Throwable ignored) {}
     }
 
     public Class<?> getContainingClass() { return mClass; }
@@ -29,28 +31,28 @@ public class ClassR
     public Object newInstance()
     {
         try { return mClass.getConstructor().newInstance(); }
-        catch (Throwable t) {}
+        catch (Throwable ignored) {}
         return null;
     }
 
     public Object newInstance(Constructor<?> constructor, Object... args)
     {
         try { return constructor.newInstance(args); }
-        catch (Throwable t) {}
+        catch (Throwable ignored) {}
         return null;
     }
 
     public Constructor<?> getConstructor(Class<?>... paramTypes)
     {
         try { return mClass.getConstructor(paramTypes); }
-        catch (Throwable t) {}
+        catch (Throwable ignored) {}
         return null;
     }
 
     public Method getMethod(String funcName, Class<?>... paramTypes)
     {
         try { return mClass.getMethod(funcName, paramTypes); }
-        catch (Throwable t) {}
+        catch (Throwable ignored) {}
         return null;
     }
 

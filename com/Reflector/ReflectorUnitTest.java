@@ -5,7 +5,12 @@ import com.NetlabUT.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-/** extended class from {@link UnitTest}, add support for executing {@link java.lang.reflect.Method} */
+/** extended class from {@link UnitTest}, add support to {@link java.lang.reflect.Method}.
+ * It helps translate a valid {@link Throwable} caused by underlying {@code Method}
+ * instead from {@link java.lang.reflect.Method#invoke(Object, Object...)}
+ * @author Ramadhan Kalih Sewu
+ * @version 1.0
+ */
 public abstract class ReflectorUnitTest extends UnitTest
 {
     protected ReflectorUnitTest() {}

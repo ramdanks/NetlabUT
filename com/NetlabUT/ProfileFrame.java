@@ -2,7 +2,12 @@ package com.NetlabUT;
 
 import javax.swing.*;
 
-public class ProfileFrame<T> extends JFrame
+/** a frame to show a detail of {@link com.NetlabUT.Profile}
+ * @author Ramadhan Kalih Sewu
+ * @version 1.0
+ * @param <T> type of profile
+ */
+final class ProfileFrame<T> extends JFrame
 {
     private JPanel mainPanel;
     private JLabel labelCorrect;
@@ -13,11 +18,8 @@ public class ProfileFrame<T> extends JFrame
     private JTabbedPane tabbedPane1;
     private JTextArea textMessage;
 
-    private Profile<T> profile;
-
     public ProfileFrame(Profile<T> profile)
     {
-        this.profile = profile;
         setContentPane(mainPanel);
         Metric<T> metric = profile.getMetric();
 

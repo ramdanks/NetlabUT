@@ -1,5 +1,9 @@
 package com.NetlabUT;
 
+/** class to show a state of a assumption or comparison
+ * @author Ramadhan Kalih Sewu
+ * @version 1.0
+ */
 public class Profile<T>
 {
     private Metric<T> metric;

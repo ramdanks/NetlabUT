@@ -2,6 +2,11 @@ package com.NetlabUT;
 
 import java.util.ArrayList;
 
+/** provides a test through comparing 2 object using {@code assumeXXX} method. it's a non-blocking test
+ * that will record the profile of the assumption (reference, actual, message, correctness, etc.)
+ * @author Ramadhan Kalih Sewu
+ * @version 1.0
+ */
 public abstract class UnitTest
 {
     private int mTestCount;

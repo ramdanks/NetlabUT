@@ -2,6 +2,10 @@ package com.NetlabUT;
 
 import java.util.Date;
 
+/** Class to display profile test from {@link com.NetlabUT.UnitTest} into a CLI
+ * @author Ramadhan Kalih Sewu
+ * @version 1.0
+ */
 public class ConsoleProfiler
 {
     public ConsoleProfiler(String title, UnitTest[] unitList)

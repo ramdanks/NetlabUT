@@ -2,6 +2,10 @@ package com.NetlabUT;
 
 import java.awt.*;
 
+/** standardized color used by {@link com.NetlabUT.WindowProfiler}
+ * @author Ramadhan Kalih Sewu
+ * @version 1.0
+ */
 final class Style
 {
     public static final Color CORRECT_COLOR = new Color(220, 255, 220);

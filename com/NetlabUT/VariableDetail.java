@@ -7,7 +7,12 @@ import java.awt.event.ActionListener;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-public class VariableDetail<T>
+/** show a detail of a variable {@link java.lang.Class} or {@link java.lang.Object}
+ * @author Ramadhan Kalih Sewu
+ * @version 1.0
+ * @param <T> type of Object
+ */
+final class VariableDetail<T>
 {
     private JTextArea taToString;
     private JLabel labelIdentifier;

@@ -1,5 +1,9 @@
 package com.NetlabUT;
 
+/** used as parameters to tell how the result of comparison should happen
+ * @author Ramadhan Kalih Sewu
+ * @version 1.0
+ */
 public enum Status
 {
     EQUAL, NOT_EQUAL,

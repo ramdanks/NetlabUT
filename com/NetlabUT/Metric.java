@@ -1,5 +1,10 @@
 package com.NetlabUT;
 
+/** class to measure a metric of a method or {@link com.NetlabUT.Executable}
+ * @author Ramadhan Kalih Sewu
+ * @version 1.0
+ * @param <T> return value of a method that is measured
+ */
 public class Metric<T>
 {
     public T returns = null;

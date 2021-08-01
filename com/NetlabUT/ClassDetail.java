@@ -5,7 +5,11 @@ import java.awt.event.ActionEvent;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-public class ClassDetail extends JFrame
+/** a frame that shows a detail of a class including inheritance, declaration, implemented interfaces
+ * @author Ramadhan Kalih Sewu
+ * @version 1.0
+ */
+final class ClassDetail extends JFrame
 {
     private JLabel labelType;
     private JLabel labelName;

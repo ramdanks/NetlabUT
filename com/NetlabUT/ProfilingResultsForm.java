@@ -8,7 +8,11 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
-public class ProfilingResultsForm
+/** show a brief {@link com.NetlabUT.Profile} in form of table for {@link com.NetlabUT.UnitTest}
+ * @author Ramadhan Kalih Sewu
+ * @version 1.0
+ */
+final class ProfilingResultsForm
 {
     private static final String[] COLUMN_PROFILE = { "Message", "Time (ns)", "Expected", "Actual" };
 
