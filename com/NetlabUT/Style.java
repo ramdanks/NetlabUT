@@ -2,7 +2,7 @@ package com.NetlabUT;
 
 import java.awt.*;
 
-class Style
+final class Style
 {
     public static final Color CORRECT_COLOR = new Color(220, 255, 220);
     public static final Color CORRECT_COLOR_FOCUS = new Color(180, 255, 180);

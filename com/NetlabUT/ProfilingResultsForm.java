@@ -55,13 +55,15 @@ public class ProfilingResultsForm
             {
                 record[2] = Profile.getObjectIdentifierString(profile.getReference());
                 record[3] = metric.isThrowing() ?
-                        metric.throwable.toString() :
+                        Profile.getObjectIdentifierString(metric.throwable) :
                         Profile.getObjectIdentifierString(metric.returns);
             }
             else
             {
                 record[2] = profile.getReferenceString();
-                record[3] = metric.isThrowing() ? metric.throwable.toString() : Profile.toString(metric.returns);
+                record[3] = metric.isThrowing() ?
+                        Profile.getObjectIdentifierString(metric.throwable) :
+                        Profile.toString(metric.returns);
             }
             model.addRow(record);
         }

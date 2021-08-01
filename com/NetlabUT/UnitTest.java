@@ -36,9 +36,7 @@ public abstract class UnitTest
     {
         Metric<Object> m = Benchmark.run(executable);
         boolean correct = Logical.throwing(expected, m.throwable);
-        Profile p = new Profile(m, expected, Status.THROWS_TYPE, correct, message);
-        increment(p.isCorrect());
-        mTestProfile.add(p);
+        record(new Profile(m, expected, Status.THROWS_TYPE, correct, message));
     }
 
     protected <T extends Throwable> void assumeThrows(Executable executable) { assumeThrows(executable, null); }
@@ -46,9 +44,7 @@ public abstract class UnitTest
     {
         Metric<Object> m = Benchmark.run(executable);
         boolean correct = Logical.throwing(m.throwable);
-        Profile p = new Profile(m, (Class<T>) Throwable.class, Status.THROWS, correct, message);
-        increment(p.isCorrect());
-        mTestProfile.add(p);
+        record(new Profile(m, (Class<T>) Throwable.class, Status.THROWS, correct, message));
     }
 
     protected void assumeNull(Object actual)                                                          { assumeNull(actual, null); }
@@ -94,6 +90,12 @@ public abstract class UnitTest
     protected void assumeArrayNotEquals(Object[] expected, Object[] actual, String message)           { record(expected, () -> actual, message, Status.ARRAY_NOT_EQUAL); }
     protected void assumeArrayNotEquals(Object[] expected, Executable actual, String message)         { record(expected, actual, message, Status.ARRAY_NOT_EQUAL); }
 
+    /** record a profile test */
+    protected void record(Profile profile)
+    {
+        increment(profile.isCorrect());
+        mTestProfile.add(profile);
+    }
     /** run benchmark and check the assumption using comparator,
      * comparator will take 2 args from {@code references} and return value from {@code actual}
      * @param references argument passed to comparator
@@ -106,10 +108,9 @@ public abstract class UnitTest
     {
         Metric<Object> m = actual == null ? new Metric<>() : Benchmark.run(actual);
         boolean correct = m.isThrowing() ? false : compare(references, m.returns, comparison);
-        Profile p = new Profile(m, references, comparison, correct, message);
-        increment(p.isCorrect());
-        mTestProfile.add(p);
+        record(new Profile(m, references, comparison, correct, message));
     }
+
     /** check the assumption using comparator,
      * comparator will take 2 args from {@code references} and return value from {@code actual}
      * @param references argument passed to comparator
@@ -121,9 +122,7 @@ public abstract class UnitTest
     private <T> void record(T references, T actual, String message, Status comparison)
     {
         boolean correct = compare(references, actual, comparison);
-        Profile p = new Profile(new Metric<>(), references, comparison, correct, message);
-        increment(p.isCorrect());
-        mTestProfile.add(p);
+        record(new Profile(new Metric<>(), references, comparison, correct, message));
     }
 
     /** compare equality of the given args
@@ -132,7 +131,7 @@ public abstract class UnitTest
      * @param comparison type of comparison expected from references and actual
      * @param <T> type of object that evaluated
      */
-    private <T> boolean compare(T references, T actual, Status comparison)
+    protected static <T> boolean compare(T references, T actual, Status comparison)
     {
         boolean correct = false;
         switch (comparison)

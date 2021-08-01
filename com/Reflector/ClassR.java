@@ -1,36 +1,54 @@
 package com.Reflector;
-
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 
+/** Class type wrapper to suppress throwable */
 public class ClassR
 {
     private Class<?> mClass;
+
     public ClassR(Class<?> aClass) { mClass = aClass; }
-
-    /** create an instance of a class */
-    public Object newInstance(Object... args) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException
+    public ClassR (String packageName, String className)
     {
-        if (args.length == 0)
-            return mClass.getConstructor().newInstance();
-        return mClass.getConstructor(args.getClass()).newInstance(args);
+        try { mClass = Class.forName(packageName + '.' + className); }
+        catch (Throwable t) {}
+    }
+    public ClassR(String className)
+    {
+        try { mClass = Class.forName(className); }
+        catch (Throwable t) {}
     }
 
-    /** call to static function */
-    public Object invoke(String funcName, Object... args) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException
+    public Class<?> getContainingClass() { return mClass; }
+
+    /** create an instance of a class using default constructor */
+    public Object newInstance()
     {
-        if (args.length == 0)
-            return mClass.getMethod(funcName).invoke(null);
-        return mClass.getMethod(funcName, args.getClass()).invoke(args);
+        try { return mClass.getConstructor().newInstance(); }
+        catch (Throwable t) {}
+        return null;
     }
 
-    /** call to a member function */
-    public Object invoke(Object object, String funcName, Object... args) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException
+    public Object newInstance(Constructor<?> constructor, Object... args)
     {
-        if (args.length == 0)
-            return mClass.getMethod(funcName).invoke(object);
-        return mClass.getMethod(funcName, args.getClass()).invoke(object, args);
+        try { return constructor.newInstance(args); }
+        catch (Throwable t) {}
+        return null;
+    }
+
+    public Constructor<?> getConstructor(Class<?>... paramTypes)
+    {
+        try { return mClass.getConstructor(paramTypes); }
+        catch (Throwable t) {}
+        return null;
+    }
+
+    public Method getMethod(String funcName, Class<?>... paramTypes)
+    {
+        try { return mClass.getMethod(funcName, paramTypes); }
+        catch (Throwable t) {}
+        return null;
     }
 
 }
