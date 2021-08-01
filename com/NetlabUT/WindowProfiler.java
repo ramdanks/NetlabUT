@@ -20,6 +20,8 @@ public class WindowProfiler extends JFrame
 
     public WindowProfiler(String title, UnitTest[] unitList)
     {
+        assert unitList != null;
+
         setTitle("Unit Test Grading");
         setVisible(true);
 

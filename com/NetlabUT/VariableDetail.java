@@ -37,6 +37,7 @@ public class VariableDetail<T>
         labelIdentifier.setText(tClass.getName());
         labelType.setText("Class");
     }
+
     public void setContent(T object)
     {
         if (object == null)
