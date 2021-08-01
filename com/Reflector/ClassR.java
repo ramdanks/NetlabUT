@@ -11,7 +11,10 @@ public class ClassR
     public ClassR(Class<?> aClass) { mClass = aClass; }
     public ClassR (String packageName, String className)
     {
-        try { mClass = Class.forName(packageName + '.' + className); }
+        try {
+            if (packageName == null || packageName.isEmpty())
+                mClass = Class.forName(className);
+            mClass = Class.forName(packageName + '.' + className); }
         catch (Throwable t) {}
     }
     public ClassR(String className)
