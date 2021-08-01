@@ -70,16 +70,11 @@ public class WindowProfiler extends JFrame
     private void onRunSelectedTest(ActionEvent evt)
     {
         int index = cbUnitTest.getSelectedIndex();
+        if (index == -1) return;
         runUnitTest(index);
         refreshUnitTest(index);
         refreshTestCount();
         labelDate.setText(new Date().toString());
-    }
-
-    private void setTabColor(int index, Color foreground, Color background)
-    {
-        tabUnitTest.setForegroundAt(index, foreground);
-        tabUnitTest.setBackgroundAt(index, background);
     }
 
     private void onRunAllTest(ActionEvent evt)
@@ -91,6 +86,12 @@ public class WindowProfiler extends JFrame
         }
         refreshTestCount();
         labelDate.setText(new Date().toString());
+    }
+
+    private void setTabColor(int index, Color foreground, Color background)
+    {
+        tabUnitTest.setForegroundAt(index, foreground);
+        tabUnitTest.setBackgroundAt(index, background);
     }
 
     private void refreshTestCount()
