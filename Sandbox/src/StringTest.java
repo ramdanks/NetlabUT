@@ -10,12 +10,17 @@ final class StringTest extends ReflectorUnitTest
     protected void scenario()
     {
         ClassR String = new ClassR("java.lang.String");
+        Class<?> cString = String.getContainingClass();
 
         Constructor ctor0 = String.getConstructor();
         Constructor ctor1 = String.getConstructor(char[].class);
 
         Method charAt = String.getMethod("charAt", int.class);
+        Method getBytes = String.getMethod("getBytes");
         Object str = String.newInstance(ctor1, new char[] {'H', 'e', 'l', 'l', 'o'});
+
+        String h = "Hello";
+        byte[] arrByte = h.getBytes();
 
         assumeNull(null, null);
         assumeNotNull(charAt);
@@ -31,5 +36,7 @@ final class StringTest extends ReflectorUnitTest
 
         assumeArrayEquals(arr1, arr1);
         assumeArrayNotEquals(arr1, arr2);
+
+        assumeArrayEquals(arr1, charAt, str, 0);
     }
 }

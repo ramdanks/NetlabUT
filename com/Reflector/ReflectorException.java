@@ -9,8 +9,8 @@ import java.lang.reflect.Method;
  */
 public class ReflectorException extends Throwable
 {
-    private Method method;
-    private Throwable throwable;
+    private final Method method;
+    private final Throwable throwable;
 
     public ReflectorException(Method method, Throwable throwable)
     {
@@ -23,7 +23,7 @@ public class ReflectorException extends Throwable
     {
         if (method == null)
             return "Attempting to invoke a null method";
-        if (method != null && throwable instanceof NullPointerException)
+        else if (throwable instanceof NullPointerException)
             return "Attempting to invoke instance method with null object";
         return throwable.toString();
     }

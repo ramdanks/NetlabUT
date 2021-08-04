@@ -13,13 +13,13 @@ public abstract class UnitTest
     private int mSuccessCount;
 
     private String mTestName = null;
-    private ArrayList<Profile> mTestProfile = new ArrayList<>();
+    private ArrayList<Profile<Object>> mTestProfile = new ArrayList<>();
     
     protected UnitTest() { mTestName = this.getClass().getName(); }
     protected UnitTest(String testName) { mTestName = testName; }
 
     public String getTestName() { return mTestName; }
-    public ArrayList<Profile> getTestProfile() { return mTestProfile; }
+    public ArrayList<Profile<Object>> getTestProfile() { return mTestProfile; }
     public int getTestCount() { return mTestCount; }
     public int getSuccessCount() { return mSuccessCount; }
 
@@ -269,7 +269,7 @@ public abstract class UnitTest
     {
         boolean correct = compare(references, actual, comparison);
         Metric<Object> m = new Metric<Object>(actual, 0, null);
-        record(new Profile(m, references, comparison, correct, message));
+        record(new Profile<Object>(m, references, comparison, correct, message));
     }
 
     /** compare equality of the given args

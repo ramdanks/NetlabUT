@@ -45,7 +45,7 @@ final class ProfilingResultsForm
         labelPercentage.setText(String.format("%.2f %%", percentage));
         labelPoints.setText(String.format("%d out of %d", success, count));
 
-        final ArrayList<Profile> profileList = unitTest.getTestProfile();
+        final ArrayList<Profile<Object>> profileList = unitTest.getTestProfile();
 
         DefaultTableModel model = (DefaultTableModel) tableProfile.getModel();
         model.setRowCount(0);
