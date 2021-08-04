@@ -4,6 +4,8 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -20,6 +22,7 @@ final class ProfilingResultsForm
     private JLabel labelPercentage;
     private JLabel labelPoints;
     private JPanel mainPanel;
+    private JCheckBox checkboxMessage;
     private UnitTest unitTest = null;
 
     public ProfilingResultsForm(UnitTest unitTest)
@@ -74,11 +77,34 @@ final class ProfilingResultsForm
         }
     }
 
+
+
     private void initTable()
     {
         tableProfile.setModel(new DefaultTableModel(null, COLUMN_PROFILE) {
             @Override /* all cells are not editable */
             public boolean isCellEditable(int row, int column) { return false; }
+        });
+
+        tableProfile.getColumnModel().getColumn(0).setMinWidth(100);
+        tableProfile.getColumnModel().getColumn(0).setMaxWidth(100);
+
+        checkboxMessage.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (checkboxMessage.isSelected())
+                {
+                    tableProfile.getColumnModel().getColumn(1).setMinWidth(0);
+                    tableProfile.getColumnModel().getColumn(1).setMaxWidth(0);
+                    tableProfile.getColumnModel().getColumn(1).setWidth(0);
+                }
+                else
+                {
+                    tableProfile.getColumnModel().getColumn(1).setMinWidth(100);
+                    tableProfile.getColumnModel().getColumn(1).setMaxWidth(Integer.MAX_VALUE);
+                    tableProfile.getColumnModel().getColumn(1).setWidth(100);
+                }
+            }
         });
 
         tableProfile.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
