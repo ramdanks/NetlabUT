@@ -14,7 +14,7 @@ import java.util.ArrayList;
  */
 final class ProfilingResultsForm
 {
-    private static final String[] COLUMN_PROFILE = { "Message", "Time (ns)", "Expected", "Actual" };
+    private static final String[] COLUMN_PROFILE = { "Assumption", "Message", "Time (ns)", "Reference", "Actual" };
 
     private JTable tableProfile;
     private JLabel labelPercentage;
@@ -47,25 +47,26 @@ final class ProfilingResultsForm
         DefaultTableModel model = (DefaultTableModel) tableProfile.getModel();
         model.setRowCount(0);
 
-        String[] record = new String[4];
+        String[] record = new String[5];
         for (Profile profile : profileList)
         {
             Metric metric = profile.getMetric();
-            record[0] = profile.getMessage();
-            record[1] = Long.toString(profile.getMetric().nanoTime);
+            record[0] = Status.toString(profile.getReferenceStatus());
+            record[1] = profile.getMessage();
+            record[2] = Long.toString(profile.getMetric().nanoTime);
 
             if (profile.getReferenceStatus() == Status.REFERENCE ||
                 profile.getReferenceStatus() == Status.NOT_REFERENCE)
             {
-                record[2] = Profile.getObjectIdentifierString(profile.getReference());
-                record[3] = metric.isThrowing() ?
+                record[3] = Profile.getObjectIdentifierString(profile.getReference());
+                record[4] = metric.isThrowing() ?
                         Profile.getObjectIdentifierString(metric.throwable) :
                         Profile.getObjectIdentifierString(metric.returns);
             }
             else
             {
-                record[2] = profile.getReferenceString();
-                record[3] = metric.isThrowing() ?
+                record[3] = profile.getReferenceString();
+                record[4] = metric.isThrowing() ?
                         Profile.getObjectIdentifierString(metric.throwable) :
                         Profile.toString(metric.returns);
             }
@@ -85,20 +86,10 @@ final class ProfilingResultsForm
             public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column)
             {
                 final Profile profile = ProfilingResultsForm.this.unitTest.getTestProfile().get(row);
-                switch (profile.getReferenceStatus())
-                {
-                    case EQUAL:            setToolTipText("@Actual should EQUAL to @Expected"); break;
-                    case NOT_EQUAL:        setToolTipText("@Actual should NOT EQUAL to @Expected"); break;
-                    case REFERENCE:        setToolTipText("@Actual should REFERENCE @Expected"); break;
-                    case NOT_REFERENCE:    setToolTipText("@Actual should NOT REFERENCE @Expected"); break;
-                    case ARRAY_EQUAL:      setToolTipText("@Actual should ITERATIVELY EQUAL to @Expected"); break;
-                    case ARRAY_NOT_EQUAL:  setToolTipText("@Actual should NOT ITERATIVELY EQUAL to @Expected"); break;
-                    case THROWS:           setToolTipText("@Actual should THROWS any"); break;
-                    case THROWS_TYPE:      setToolTipText("@Actual should THROWS an @Expected"); break;
-                }
                 final Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-                if (profile.isCorrect())  c.setBackground(isSelected ? Style.NEUTRAL_FOCUS : Style.NEUTRAL);
-                else                      c.setBackground(isSelected ? Style.WRONG_COLOR_FOCUS : Style.WRONG_COLOR);
+                if (column == 0)               c.setBackground(Style.getAssumptionColor(profile.getReferenceStatus()));
+                else if (profile.isCorrect())  c.setBackground(isSelected ? Style.NEUTRAL_FOCUS : Style.NEUTRAL);
+                else                           c.setBackground(isSelected ? Style.WRONG_COLOR_FOCUS : Style.WRONG_COLOR);
                 return c;
             }
         });
@@ -115,4 +106,18 @@ final class ProfilingResultsForm
             }
         });
     }
+
+    /*
+        switch (profile.getReferenceStatus())
+        {
+            case Status.EQUAL:            setToolTipText("Actual should EQUAL to Reference"); break;
+            case Status.NOT_EQUAL:        setToolTipText("Actual should NOT EQUAL to Reference"); break;
+            case Status.REFERENCE:        setToolTipText("Actual should REFERENCE Reference"); break;
+            case Status.NOT_REFERENCE:    setToolTipText("Actual should NOT REFERENCE Reference"); break;
+            case Status.ARRAY_EQUAL:      setToolTipText("Actual should ITERATIVELY EQUAL to Reference"); break;
+            case Status.ARRAY_NOT_EQUAL:  setToolTipText("Actual should NOT ITERATIVELY EQUAL to Reference"); break;
+            case Status.THROWS:           setToolTipText("Actual should THROWS any"); break;
+            case Status.THROWS_TYPE:      setToolTipText("Actual should THROWS an Reference"); break;
+        }
+     */
 }

@@ -8,10 +8,31 @@ import java.awt.*;
  */
 final class Style
 {
+    private static Color[] COLOR_ASSUMPTION = null;
     public static final Color CORRECT_COLOR = new Color(220, 255, 220);
     public static final Color CORRECT_COLOR_FOCUS = new Color(180, 255, 180);
     public static final Color WRONG_COLOR = new Color(255, 220, 220);
     public static final Color WRONG_COLOR_FOCUS = new Color(255, 180, 180);
     public static final Color NEUTRAL_FOCUS = new Color(230, 230, 230);
     public static final Color NEUTRAL = new Color(255, 255, 255);
+
+    public static final Color getAssumptionColor(int status)
+    {
+        if (COLOR_ASSUMPTION == null)
+            initAssumptionColor();
+        return COLOR_ASSUMPTION[status];
+    }
+
+    private static void initAssumptionColor()
+    {
+        COLOR_ASSUMPTION = new Color[8];
+        COLOR_ASSUMPTION[Status.REFERENCE]       = new Color(220, 255, 220);
+        COLOR_ASSUMPTION[Status.NOT_REFERENCE]   = new Color(160, 255, 160);
+        COLOR_ASSUMPTION[Status.EQUAL]           = new Color(255, 250, 200);
+        COLOR_ASSUMPTION[Status.NOT_EQUAL]       = new Color(255, 240, 150);
+        COLOR_ASSUMPTION[Status.ARRAY_EQUAL]     = new Color(167, 245, 252);
+        COLOR_ASSUMPTION[Status.ARRAY_NOT_EQUAL] = new Color(132, 253, 241);
+        COLOR_ASSUMPTION[Status.THROWS]          = new Color(255, 208, 208);
+        COLOR_ASSUMPTION[Status.THROWS_TYPE]     = new Color(255, 158, 158);
+    }
 }

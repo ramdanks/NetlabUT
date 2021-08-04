@@ -250,7 +250,7 @@ public abstract class UnitTest
      * @param comparison type of comparison expected from references and actual
      * @param <T> type of object that evaluated
      */
-    private <T> void record(String message, Status comparison, T references, Executable actual)
+    private <T> void record(String message, int comparison, T references, Executable actual)
     {
         Metric<Object> m = actual == null ? new Metric<>() : Benchmark.run(actual);
         boolean correct = m.isThrowing() ? false : compare(references, m.returns, comparison);
@@ -265,7 +265,7 @@ public abstract class UnitTest
      * @param comparison type of comparison expected from references and actual
      * @param <T> type of object that evaluated
      */
-    private <T> void record(String message, Status comparison, T references, T actual)
+    private <T> void record(String message, int comparison, T references, T actual)
     {
         boolean correct = compare(references, actual, comparison);
         record(new Profile(new Metric<>(), references, comparison, correct, message));
@@ -277,19 +277,18 @@ public abstract class UnitTest
      * @param comparison type of comparison expected. This will determine comparator
      * @param <T> type of object that evaluated
      */
-    protected static <T> boolean compare(T references, T actual, Status comparison)
+    protected static <T> boolean compare(T references, T actual, int comparison)
     {
-        boolean correct = false;
         switch (comparison)
         {
-            case EQUAL           : correct = Logical.equals(actual, references); break;
-            case NOT_EQUAL       : correct = Logical.notEquals(actual, references); break;
-            case ARRAY_EQUAL     : correct = Logical.isArrayEquals((T[]) references, (T[]) actual); break;
-            case ARRAY_NOT_EQUAL : correct = Logical.isArrayNotEquals((T[]) references, (T[]) actual); break;
-            case REFERENCE       : correct = Logical.same(actual, references); break;
-            case NOT_REFERENCE   : correct = Logical.notSame(actual, references);
+            case Status.EQUAL           : return Logical.equals(actual, references);
+            case Status.NOT_EQUAL       : return Logical.notEquals(actual, references);
+            case Status.ARRAY_EQUAL     : return Logical.isArrayEquals((T[]) references, (T[]) actual);
+            case Status.ARRAY_NOT_EQUAL : return Logical.isArrayNotEquals((T[]) references, (T[]) actual);
+            case Status.REFERENCE       : return Logical.same(actual, references);
+            case Status.NOT_REFERENCE   : return Logical.notSame(actual, references);
         };
-        return correct;
+        return false;
     }
 
     /** increment test count and success count */

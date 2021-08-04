@@ -10,10 +10,10 @@ public class Profile<T>
     private T reference;
     private Class<T> classReference ;
     private String message;
-    private Status referenceStatus;
+    private int referenceStatus;
     private boolean correct;
 
-    public Profile(Metric<T> metric, T reference, Status referenceStatus, boolean correct, String message)
+    public Profile(Metric<T> metric, T reference, int referenceStatus, boolean correct, String message)
     {
         this.metric = metric;
         this.reference = reference;
@@ -22,7 +22,7 @@ public class Profile<T>
         this.message = message;
         this.correct = correct;
     }
-    public Profile(Metric<T> metric, Class<T> reference, Status referenceStatus, boolean correct, String message)
+    public Profile(Metric<T> metric, Class<T> reference, int referenceStatus, boolean correct, String message)
     {
         this.metric = metric;
         this.reference = null;
@@ -35,7 +35,7 @@ public class Profile<T>
     public Metric<T> getMetric()        { return metric; }
     public T getReference()             { return reference; }
     public Class<T> getClassReference() { return classReference; }
-    public Status getReferenceStatus()  { return referenceStatus; }
+    public int getReferenceStatus()     { return referenceStatus; }
     public String getReferenceString()
     {
         if (reference == null && classReference == null)

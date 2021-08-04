@@ -24,11 +24,11 @@ final class ProfileFrame<T> extends JFrame
         Metric<T> metric = profile.getMetric();
 
         labelCorrect.setText(profile.isCorrect() ? "Correct" : "Wrong");
-        labelStatus.setText(profile.getReferenceStatus().toString());
+        labelStatus.setText("");
         labelTime.setText(String.format("%d ns", metric.nanoTime));
         textMessage.setText(profile.getMessage());
 
-        Status status = profile.getReferenceStatus();
+        int status = profile.getReferenceStatus();
         if (status == Status.THROWS || status == Status.THROWS_TYPE)
         {
             if (metric.isThrowing()) panelActual.setContent(metric.throwable);

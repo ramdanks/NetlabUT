@@ -176,7 +176,7 @@ public abstract class ReflectorUnitTest extends UnitTest
      * @param args an argument passed to {@code method}
      * @param <T> type of object that evaluated
      */
-    private <T> void record(String message, Status comparison, T reference, Method method, Object obj, Object... args)
+    private <T> void record(String message, int comparison, T reference, Method method, Object obj, Object... args)
     {
         Metric<Object> metric = Benchmark.run((Executable) () -> method.invoke(obj, args));
         if (metric.isThrowing())
