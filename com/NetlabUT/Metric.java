@@ -8,8 +8,16 @@ package com.NetlabUT;
 public class Metric<T>
 {
     public T returns = null;
-    public Throwable throwable = null;
     public long nanoTime = 0;
+    public Throwable throwable = null;
+
+    public Metric() {}
+    public Metric(T returns, long nanoTime, Throwable throwable)
+    {
+        this.returns = returns;
+        this.nanoTime = nanoTime;
+        this.throwable = throwable;
+    }
 
     public boolean isOk() { return throwable == null; }
     public boolean isThrowing() { return throwable != null; }

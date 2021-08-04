@@ -252,7 +252,7 @@ public abstract class UnitTest
      */
     private <T> void record(String message, int comparison, T references, Executable actual)
     {
-        Metric<Object> m = actual == null ? new Metric<>() : Benchmark.run(actual);
+        Metric<Object> m = actual == null ? new Metric<Object>() : Benchmark.run(actual);
         boolean correct = m.isThrowing() ? false : compare(references, m.returns, comparison);
         record(new Profile(m, references, comparison, correct, message));
     }
@@ -268,7 +268,8 @@ public abstract class UnitTest
     private <T> void record(String message, int comparison, T references, T actual)
     {
         boolean correct = compare(references, actual, comparison);
-        record(new Profile(new Metric<>(), references, comparison, correct, message));
+        Metric<Object> m = new Metric<Object>(actual, 0, null);
+        record(new Profile(m, references, comparison, correct, message));
     }
 
     /** compare equality of the given args
