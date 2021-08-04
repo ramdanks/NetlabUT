@@ -1,10 +1,15 @@
-package com.Reflector;
+package com.NetlabUT;
 
 public class MismatchTypeException extends Throwable
 {
     Class<?> a;
     Class<?> b;
 
+    public MismatchTypeException(Object a, Object b)
+    {
+        this.a = a == null ? null : a.getClass();
+        this.b = b == null ? null : b.getClass();
+    }
     public MismatchTypeException(Class<?> a, Class<?> b)
     {
         this.a = a;

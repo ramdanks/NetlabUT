@@ -253,8 +253,11 @@ public abstract class UnitTest
     private <T> void record(String message, int comparison, T references, Executable actual)
     {
         Metric<Object> m = actual == null ? new Metric<Object>() : Benchmark.run(actual);
-        boolean correct = m.isThrowing() ? false : compare(references, m.returns, comparison);
-        record(new Profile(m, references, comparison, correct, message));
+        if (!m.isThrowing() && comparison == Status.ARRAY_EQUAL || comparison == Status.ARRAY_NOT_EQUAL)
+            if (arrayTypeMismatch(references, m.returns))
+                m.throwable = new MismatchTypeException(references, m.returns);
+        boolean correct = !m.isThrowing() && compare(references, m.returns, comparison);
+        record(new Profile<>(m, references, comparison, correct, message));
     }
 
     /** check the assumption using comparator,
@@ -267,8 +270,8 @@ public abstract class UnitTest
      */
     private <T> void record(String message, int comparison, T references, T actual)
     {
-        boolean correct = compare(references, actual, comparison);
         Metric<Object> m = new Metric<Object>(actual, 0, null);
+        boolean correct = compare(references, actual, comparison);
         record(new Profile<Object>(m, references, comparison, correct, message));
     }
 
@@ -290,6 +293,19 @@ public abstract class UnitTest
             case Status.NOT_REFERENCE   : return Logical.notSame(actual, references);
         };
         return false;
+    }
+
+    private <T> boolean arrayTypeMismatch(T a, T b)
+    {
+        // array should not be null object
+        if (a == null || b == null)
+            return true;
+        // both class should be the same
+        if (a.getClass() != b.getClass())
+            return true;
+        // if we come at this point (meaning we know both are the same class)
+        // check if one of them is array type
+        return !a.getClass().isArray();
     }
 
     /** increment test count and success count */

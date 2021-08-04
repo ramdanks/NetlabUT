@@ -30,9 +30,9 @@ final class Style
         COLOR_ASSUMPTION[Status.NOT_REFERENCE]   = new Color(160, 255, 160);
         COLOR_ASSUMPTION[Status.EQUAL]           = new Color(255, 250, 200);
         COLOR_ASSUMPTION[Status.NOT_EQUAL]       = new Color(255, 240, 150);
-        COLOR_ASSUMPTION[Status.ARRAY_EQUAL]     = new Color(167, 245, 252);
-        COLOR_ASSUMPTION[Status.ARRAY_NOT_EQUAL] = new Color(132, 253, 241);
-        COLOR_ASSUMPTION[Status.THROWS]          = new Color(255, 208, 208);
-        COLOR_ASSUMPTION[Status.THROWS_TYPE]     = new Color(255, 158, 158);
+        COLOR_ASSUMPTION[Status.ARRAY_EQUAL]     = new Color(195, 249, 255);
+        COLOR_ASSUMPTION[Status.ARRAY_NOT_EQUAL] = new Color(147, 255, 255);
+        COLOR_ASSUMPTION[Status.THROWS]          = new Color(253, 211, 211);
+        COLOR_ASSUMPTION[Status.THROWS_TYPE]     = new Color(255, 167, 167);
     }
 }

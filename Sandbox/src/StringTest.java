@@ -38,5 +38,6 @@ final class StringTest extends ReflectorUnitTest
         assumeArrayNotEquals(arr1, arr2);
 
         assumeArrayEquals(arr1, charAt, str, 0);
+        assumeArrayEquals(arr1, () -> charAt.invoke(str, 0));
     }
 }
