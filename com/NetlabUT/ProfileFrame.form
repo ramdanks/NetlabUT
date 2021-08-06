@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="com.NetlabUT.ProfileFrame">
-  <grid id="27dc6" binding="mainPanel" layout-manager="GridLayoutManager" row-count="7" column-count="7" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+  <grid id="27dc6" binding="mainPanel" layout-manager="GridLayoutManager" row-count="12" column-count="8" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="0" left="0" bottom="0" right="0"/>
     <constraints>
-      <xy x="20" y="20" width="500" height="3000"/>
+      <xy x="20" y="20" width="636" height="405"/>
     </constraints>
     <properties>
       <minimumSize width="400" height="350"/>
@@ -20,7 +20,7 @@
       </component>
       <component id="20dc1" class="javax.swing.JLabel" binding="labelCorrect">
         <constraints>
-          <grid row="1" column="2" row-span="1" col-span="3" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+          <grid row="1" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
           <text value="Label"/>
@@ -36,7 +36,7 @@
       </component>
       <component id="f70e" class="javax.swing.JLabel" binding="labelStatus">
         <constraints>
-          <grid row="2" column="2" row-span="1" col-span="3" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+          <grid row="2" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
           <text value="Label"/>
@@ -47,94 +47,38 @@
           <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <text value="Actual Time:"/>
+          <text value="Profile Time:"/>
         </properties>
       </component>
       <component id="1a6e4" class="javax.swing.JLabel" binding="labelTime">
         <constraints>
-          <grid row="3" column="2" row-span="1" col-span="3" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+          <grid row="3" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
           <text value="Label"/>
         </properties>
       </component>
-      <tabbedpane id="236f6" binding="tabbedPane1" default-binding="true">
-        <constraints>
-          <grid row="5" column="1" row-span="1" col-span="5" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false">
-            <preferred-size width="200" height="200"/>
-          </grid>
-        </constraints>
-        <properties>
-          <focusCycleRoot value="false"/>
-          <tabLayoutPolicy value="1"/>
-        </properties>
-        <border type="none"/>
-        <children>
-          <grid id="eb13a" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
-            <margin top="0" left="0" bottom="0" right="0"/>
-            <constraints>
-              <tabbedpane title="Reference"/>
-            </constraints>
-            <properties/>
-            <border type="none"/>
-            <children>
-              <nested-form id="d109c" form-file="com/NetlabUT/VariableDetail.form" binding="panelReference">
-                <constraints>
-                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
-                </constraints>
-              </nested-form>
-            </children>
-          </grid>
-          <grid id="5c726" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
-            <margin top="0" left="0" bottom="0" right="0"/>
-            <constraints>
-              <tabbedpane title="Actual"/>
-            </constraints>
-            <properties/>
-            <border type="none"/>
-            <children>
-              <nested-form id="a761f" form-file="com/NetlabUT/VariableDetail.form" binding="panelActual">
-                <constraints>
-                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
-                </constraints>
-              </nested-form>
-            </children>
-          </grid>
-        </children>
-      </tabbedpane>
-      <hspacer id="4b522">
-        <constraints>
-          <grid row="1" column="6" row-span="5" col-span="1" vsize-policy="1" hsize-policy="0" anchor="0" fill="1" indent="0" use-parent-layout="false">
-            <minimum-size width="10" height="-1"/>
-          </grid>
-        </constraints>
-      </hspacer>
       <vspacer id="41854">
         <constraints>
-          <grid row="0" column="0" row-span="1" col-span="7" vsize-policy="0" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false">
+          <grid row="0" column="0" row-span="1" col-span="3" vsize-policy="0" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false">
             <minimum-size width="-1" height="10"/>
           </grid>
         </constraints>
       </vspacer>
       <hspacer id="ef4ac">
         <constraints>
-          <grid row="1" column="0" row-span="5" col-span="1" vsize-policy="1" hsize-policy="0" anchor="0" fill="1" indent="0" use-parent-layout="false">
+          <grid row="1" column="0" row-span="6" col-span="1" vsize-policy="1" hsize-policy="0" anchor="0" fill="1" indent="0" use-parent-layout="false">
             <minimum-size width="10" height="-1"/>
           </grid>
         </constraints>
       </hspacer>
       <vspacer id="f2e">
         <constraints>
-          <grid row="6" column="0" row-span="1" col-span="7" vsize-policy="0" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false">
+          <grid row="11" column="0" row-span="1" col-span="3" vsize-policy="0" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false">
             <minimum-size width="-1" height="10"/>
           </grid>
         </constraints>
       </vspacer>
-      <hspacer id="ccc4d">
-        <constraints>
-          <grid row="1" column="5" row-span="3" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-        </constraints>
-      </hspacer>
       <scrollpane id="cd5c8">
         <constraints>
           <grid row="4" column="1" row-span="1" col-span="5" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false">
@@ -152,11 +96,99 @@
             <properties>
               <editable value="false"/>
               <lineWrap value="true"/>
+              <text value=""/>
               <wrapStyleWord value="true"/>
             </properties>
           </component>
         </children>
       </scrollpane>
+      <component id="92553" class="javax.swing.JButton" binding="toStringButton" default-binding="true">
+        <constraints>
+          <grid row="6" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="To String"/>
+        </properties>
+      </component>
+      <component id="6bbfe" class="javax.swing.JButton" binding="toStringButton1" default-binding="true">
+        <constraints>
+          <grid row="9" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="To String"/>
+        </properties>
+      </component>
+      <scrollpane id="582c8">
+        <constraints>
+          <grid row="6" column="1" row-span="2" col-span="3" vsize-policy="0" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <horizontalScrollBarPolicy value="32"/>
+          <inheritsPopupMenu value="false"/>
+          <verticalScrollBarPolicy value="21"/>
+        </properties>
+        <border type="none" title="Reference"/>
+        <children>
+          <component id="bff8c" class="javax.swing.JTextPane" binding="textReference">
+            <constraints/>
+            <properties>
+              <editable value="false"/>
+            </properties>
+          </component>
+        </children>
+      </scrollpane>
+      <scrollpane id="a85f5">
+        <constraints>
+          <grid row="9" column="1" row-span="2" col-span="3" vsize-policy="0" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <horizontalScrollBarPolicy value="32"/>
+          <verticalScrollBarPolicy value="21"/>
+        </properties>
+        <border type="none" title="Actual"/>
+        <children>
+          <component id="a0139" class="javax.swing.JTextPane" binding="textActual">
+            <constraints/>
+            <properties>
+              <editable value="false"/>
+            </properties>
+          </component>
+        </children>
+      </scrollpane>
+      <hspacer id="4b522">
+        <constraints>
+          <grid row="0" column="6" row-span="12" col-span="2" vsize-policy="1" hsize-policy="0" anchor="0" fill="1" indent="0" use-parent-layout="false">
+            <minimum-size width="10" height="-1"/>
+          </grid>
+        </constraints>
+      </hspacer>
+      <hspacer id="9bc8d">
+        <constraints>
+          <grid row="1" column="3" row-span="3" col-span="3" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+      </hspacer>
+      <component id="c9651" class="javax.swing.JButton" binding="classDetailButton" default-binding="true">
+        <constraints>
+          <grid row="7" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="Class Detail"/>
+        </properties>
+      </component>
+      <component id="840c4" class="javax.swing.JButton" binding="classDetailButton1" default-binding="true">
+        <constraints>
+          <grid row="10" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="Class Detail"/>
+        </properties>
+      </component>
+      <component id="dccef" class="javax.swing.JSeparator">
+        <constraints>
+          <grid row="8" column="1" row-span="1" col-span="5" vsize-policy="0" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties/>
+      </component>
     </children>
   </grid>
 </form>

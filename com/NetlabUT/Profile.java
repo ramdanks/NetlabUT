@@ -40,7 +40,7 @@ public class Profile<T>
     {
         if (reference == null && classReference == null)
             return "null";
-        return reference == null ? classReference.getName() : toString(reference);
+        return reference == null ? classReference.getName() : getObjectIdentifierString(reference);
     }
     public String getMessage()          { return message; }
     public boolean isCorrect()          { return correct; }
