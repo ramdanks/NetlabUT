@@ -4,11 +4,11 @@ package com.NetlabUT;
  * @author Ramadhan Kalih Sewu
  * @version 1.0
  */
-public class Profile<T>
+public class Profile<T extends Object>
 {
     private Metric<T> metric;
     private T reference;
-    private Class<T> classReference ;
+    private Class<?> classReference;
     private String message;
     private int referenceStatus;
     private boolean correct;
@@ -22,7 +22,7 @@ public class Profile<T>
         this.message = message;
         this.correct = correct;
     }
-    public Profile(Metric<T> metric, Class<T> reference, int referenceStatus, boolean correct, String message)
+    public Profile(Metric<T> metric, Class<?> reference, int referenceStatus, boolean correct, String message)
     {
         this.metric = metric;
         this.reference = null;
@@ -34,7 +34,7 @@ public class Profile<T>
 
     public Metric<T> getMetric()        { return metric; }
     public T getReference()             { return reference; }
-    public Class<T> getClassReference() { return classReference; }
+    public Class<?> getClassReference() { return classReference; }
     public int getReferenceStatus()     { return referenceStatus; }
     public String getReferenceString()
     {

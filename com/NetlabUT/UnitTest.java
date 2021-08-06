@@ -42,7 +42,7 @@ public abstract class UnitTest
     {
         Metric<Object> m = Benchmark.run(executable);
         boolean correct = Logical.throwing(expected, m.throwable);
-        record(new Profile(m, expected, Status.THROWS_TYPE, correct, message));
+        record(new Profile<Object>(m, expected, Status.THROWS_TYPE, correct, message));
     }
     /** expect executable to throws any instance of {@link java.lang.Throwable} */
     protected <T extends Throwable> void assumeThrows(Executable executable)
@@ -52,7 +52,7 @@ public abstract class UnitTest
     {
         Metric<Object> m = Benchmark.run(executable);
         boolean correct = Logical.throwing(m.throwable);
-        record(new Profile(m, (Class<T>) Throwable.class, Status.THROWS, correct, message));
+        record(new Profile<Object>(m, Throwable.class, Status.THROWS, correct, message));
     }
 
     /** expect {@code actual} to be {@code null} */

@@ -28,12 +28,12 @@ public abstract class ReflectorUnitTest extends UnitTest
             {
                 metric.throwable = ((InvocationTargetException) metric.throwable).getTargetException();
                 boolean correct = Logical.throwing(metric.throwable);
-                record(new Profile<>(metric, Throwable.class, Status.THROWS, correct, null));
+                record(new Profile<Object>(metric, Throwable.class, Status.THROWS, correct, null));
                 return;
             }
             metric.throwable = new ReflectorException(method, metric.throwable);
         }
-        record(new Profile<>(metric, Throwable.class, Status.THROWS, false, null));
+        record(new Profile<Object>(metric, Throwable.class, Status.THROWS, false, null));
     }
 
     /** calling a {@link java.lang.reflect.Method}. When invoked, expect to throw a type of {@code expected}.
@@ -48,12 +48,12 @@ public abstract class ReflectorUnitTest extends UnitTest
             {
                 metric.throwable = ((InvocationTargetException) metric.throwable).getTargetException();
                 boolean correct = Logical.throwing(expected, metric.throwable);
-                record(new Profile<>(metric, expected, Status.THROWS_TYPE, correct, null));
+                record(new Profile<Object>(metric, expected, Status.THROWS_TYPE, correct, null));
                 return;
             }
             metric.throwable = new ReflectorException(method, metric.throwable);
         }
-        record(new Profile<>(metric, expected, Status.THROWS_TYPE, false, null));
+        record(new Profile<Object>(metric, expected, Status.THROWS_TYPE, false, null));
     }
 
     /** When invoked, expect to throws a type of {@code expected}. It only counts from
