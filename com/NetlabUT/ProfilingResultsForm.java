@@ -57,22 +57,10 @@ final class ProfilingResultsForm
             record[0] = Status.toString(profile.getReferenceStatus());
             record[1] = profile.getMessage();
             record[2] = Long.toString(profile.getMetric().nanoTime);
-
-            if (profile.getReferenceStatus() == Status.REFERENCE ||
-                profile.getReferenceStatus() == Status.NOT_REFERENCE)
-            {
-                record[3] = Profile.getObjectIdentifierString(profile.getReference());
-                record[4] = metric.isThrowing() ?
-                        Profile.getObjectIdentifierString(metric.throwable) :
-                        Profile.getObjectIdentifierString(metric.returns);
-            }
-            else
-            {
-                record[3] = profile.getReferenceString();
-                record[4] = metric.isThrowing() ?
-                        Profile.getObjectIdentifierString(metric.throwable) :
-                        Profile.toString(metric.returns);
-            }
+            record[3] = profile.getReferenceString();
+            record[4] = metric.isThrowing() ?
+                    Profile.getObjectIdentifierString(metric.throwable) :
+                    Profile.getObjectIdentifierString(metric.returns);
             model.addRow(record);
         }
     }
