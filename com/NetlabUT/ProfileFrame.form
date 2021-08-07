@@ -102,20 +102,20 @@
           </component>
         </children>
       </scrollpane>
-      <component id="92553" class="javax.swing.JButton" binding="toStringButton" default-binding="true">
+      <component id="92553" class="javax.swing.JButton" binding="buttonObjectReference">
         <constraints>
           <grid row="6" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <text value="To String"/>
+          <text value="Object Detail"/>
         </properties>
       </component>
-      <component id="6bbfe" class="javax.swing.JButton" binding="toStringButton1" default-binding="true">
+      <component id="6bbfe" class="javax.swing.JButton" binding="buttonObjectActual">
         <constraints>
           <grid row="9" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <text value="To String"/>
+          <text value="Object Detail"/>
         </properties>
       </component>
       <scrollpane id="582c8">
