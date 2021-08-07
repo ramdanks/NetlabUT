@@ -53,14 +53,11 @@ final class ProfilingResultsForm
         String[] record = new String[5];
         for (Profile profile : profileList)
         {
-            Metric metric = profile.getMetric();
             record[0] = Status.toString(profile.getReferenceStatus());
             record[1] = profile.getMessage();
-            record[2] = Long.toString(profile.getMetric().nanoTime);
+            record[2] = Long.toString(profile.getProfileTime());
             record[3] = profile.getReferenceString();
-            record[4] = metric.isThrowing() ?
-                    Profile.getObjectIdentifierString(metric.throwable) :
-                    Profile.getObjectIdentifierString(metric.returns);
+            record[4] = Profile.getObjectIdentifierString(profile.getActual());
             model.addRow(record);
         }
     }

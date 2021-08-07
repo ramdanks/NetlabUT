@@ -12,6 +12,12 @@ public class Metric<T>
     public Throwable throwable = null;
 
     public Metric() {}
+    public Metric(Metric<T> metric)
+    {
+        this.returns = metric.returns;
+        this.nanoTime = metric.nanoTime;
+        this.throwable = metric.throwable;
+    }
     public Metric(T returns, long nanoTime, Throwable throwable)
     {
         this.returns = returns;

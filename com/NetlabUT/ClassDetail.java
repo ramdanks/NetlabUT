@@ -16,24 +16,25 @@ final class ClassDetail extends JFrame
     private JLabel labelPackage;
     private JTabbedPane tabbedPane1;
     private JPanel mainPanel;
-    private JList listInheritance;
-    private JList listInterface;
-    private JList listClasses;
-    private JList listFields;
-    private JList listMethods;
+    private JList<String> listInheritance;
+    private JList<String> listInterface;
+    private JList<String> listClasses;
+    private JList<String> listFields;
+    private JList<String> listMethods;
     private JScrollPane paneFields;
 
+    /** expect not null class */
     public ClassDetail(Class<?> tClass)
     {
         setContentPane(mainPanel);
         setMinimumSize(getMinimumSize());
         setSize(getMinimumSize());
 
-        listInheritance.setModel(new DefaultListModel());
-        listInterface.setModel(new DefaultListModel());
-        listClasses.setModel(new DefaultListModel());
-        listFields.setModel(new DefaultListModel());
-        listMethods.setModel(new DefaultListModel());
+        listInheritance.setModel(new DefaultListModel<String>());
+        listInterface.setModel(new DefaultListModel<String>());
+        listClasses.setModel(new DefaultListModel<String>());
+        listFields.setModel(new DefaultListModel<String>());
+        listMethods.setModel(new DefaultListModel<String>());
 
         setClass(tClass);
         setVisible(true);
@@ -42,15 +43,15 @@ final class ClassDetail extends JFrame
     public JPanel getMainPanel() { return mainPanel; }
     public void setClass(Class<?> tClass)
     {
-        DefaultListModel modelInterface = (DefaultListModel) listInterface.getModel();
-        DefaultListModel modelInheritance = (DefaultListModel) listInheritance.getModel();
-        DefaultListModel modelClasses = (DefaultListModel) listClasses.getModel();
-        DefaultListModel modelFields = (DefaultListModel) listFields.getModel();
-        DefaultListModel modelMethods = (DefaultListModel) listMethods.getModel();
-
         labelType.setText(tClass.isInterface() ? "Interface" : "Class");
         labelName.setText(tClass.getName());
         labelPackage.setText(tClass.getPackageName());
+
+        DefaultListModel<String> modelInterface   = (DefaultListModel<String>) listInterface.getModel();
+        DefaultListModel<String> modelInheritance = (DefaultListModel<String>) listInheritance.getModel();
+        DefaultListModel<String> modelClasses     = (DefaultListModel<String>) listClasses.getModel();
+        DefaultListModel<String> modelFields      = (DefaultListModel<String>) listFields.getModel();
+        DefaultListModel<String> modelMethods     = (DefaultListModel<String>) listMethods.getModel();
 
         for (Class c = tClass.getSuperclass(); c != null; c = c.getSuperclass())
             modelInheritance.addElement(c.getName());
@@ -67,12 +68,12 @@ final class ClassDetail extends JFrame
         final Field[] fields = tClass.getDeclaredFields();
         listFields.setVisibleRowCount(fields.length);
         for (int i = 0; i < fields.length; i++)
-            modelFields.addElement(fields[i]);
+            modelFields.addElement(fields[i].toString());
 
         final Method[] methods = tClass.getDeclaredMethods();
         listMethods.setVisibleRowCount(methods.length);
         for (int i = 0; i < methods.length; i++)
-            modelMethods.addElement(methods[i]);
+            modelMethods.addElement(methods[i].toString());
     }
 
 }

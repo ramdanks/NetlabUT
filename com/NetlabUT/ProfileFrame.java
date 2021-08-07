@@ -1,6 +1,7 @@
 package com.NetlabUT;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
 
 /** a frame to show a detail of {@link com.NetlabUT.Profile}
  * @author Ramadhan Kalih Sewu
@@ -15,27 +16,29 @@ final class ProfileFrame<T> extends JFrame
     private JLabel labelTime;
     private JTextArea textMessage;
     private JTextPane textReference;
-    private JButton classDetailButton;
-    private JButton classDetailButton1;
+    private JButton buttonClassReference;
+    private JButton buttonClassActual;
     private JButton toStringButton;
     private JButton toStringButton1;
     private JTextPane textActual;
 
+    private Profile<T> profile;
+
     public ProfileFrame(Profile<T> profile)
     {
+        this.profile = profile;
+
+        setTitle("Profile Frame");
         setContentPane(mainPanel);
-        Metric<T> metric = profile.getMetric();
         int status = profile.getReferenceStatus();
 
         labelCorrect.setText(profile.isCorrect() ? "Correct" : "Wrong");
         labelStatus.setText(Status.toString(status));
-        labelTime.setText(String.format("%d ns", metric.nanoTime));
+        labelTime.setText(String.format("%d ns", profile.getProfileTime()));
         textMessage.setText(profile.getMessage());
 
         String strReference = profile.getReferenceString();
-        String strActual = metric.isThrowing() ?
-                Profile.getObjectIdentifierString(metric.throwable) :
-                Profile.getObjectIdentifierString(metric.returns);
+        String strActual = Profile.getObjectIdentifierString(profile.getActual());
 
         textReference.setText(strReference);
         textActual.setText(strActual);
@@ -43,5 +46,22 @@ final class ProfileFrame<T> extends JFrame
         setSize(getMinimumSize());
         setMinimumSize(getMinimumSize());
         setVisible(true);
+
+        if (profile.getClassReference() == null)
+        {
+            buttonClassReference.setVisible(false);
+        }
+        if (profile.getReference() == null)
+        {
+            toStringButton.setVisible(false);
+        }
+        if (profile.getActual() == null)
+        {
+            toStringButton1.setVisible(false);
+            buttonClassActual.setVisible(false);
+        }
+
+        buttonClassReference.addActionListener((e) -> new ClassDetail(this.profile.getClassReference()));
+        buttonClassActual.addActionListener((e) -> new ClassDetail(this.profile.getClassActual()));
     }
 }
