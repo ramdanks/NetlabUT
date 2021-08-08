@@ -6,7 +6,7 @@ import javax.swing.text.DefaultFormatter;
 
 public class ArrayDetail extends JFrame
 {
-    private final Object[] array;
+    private final Object[] mArray;
 
     private JPanel mainPanel;
     private JTextArea textStringView;
@@ -16,20 +16,20 @@ public class ArrayDetail extends JFrame
 
     public ArrayDetail(Object object)
     {
-        this.array = (Object[]) object;
+        this.mArray = (Object[]) object;
 
-        labelType.setText(array.getClass().getComponentType().getName());
-        labelLength.setText(String.valueOf(array.length));
+        labelType.setText(mArray.getClass().getComponentType().getName());
+        labelLength.setText(String.valueOf(mArray.length));
 
-        if (array.length <= 0)
+        if (mArray.length <= 0)
         {
             spinner.setEnabled(false);
             return;
         }
 
         final int start_index = 0;
-        textStringView.setText(array[start_index].toString());
-        SpinnerModel model = new SpinnerNumberModel(start_index, 0, array.length - 1, 1);
+        textStringView.setText(mArray[start_index].toString());
+        SpinnerModel model = new SpinnerNumberModel(start_index, 0, mArray.length - 1, 1);
         spinner.setModel(model);
 
         JComponent comp = spinner.getEditor();
@@ -48,6 +48,6 @@ public class ArrayDetail extends JFrame
     private void onSpinnerChange(ChangeEvent e)
     {
         Integer value = (Integer) spinner.getValue();
-        textStringView.setText(array[value].toString());
+        textStringView.setText(mArray[value].toString());
     }
 }

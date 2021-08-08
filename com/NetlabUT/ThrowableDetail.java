@@ -5,27 +5,27 @@ import javax.swing.event.ListSelectionEvent;
 
 public class ThrowableDetail extends JFrame
 {
+    private Throwable mThrowable;
+
     private JTextPane textMessage;
     private JList<String> listStackTrace;
     private JLabel textType;
     private JPanel mainPanel;
-
-    private Throwable throwable;
 
     public ThrowableDetail(Object object)
     {
         if (object instanceof Throwable == false)
             return;
 
-        this.throwable = (Throwable) object;
+        this.mThrowable = (Throwable) object;
 
-        textType.setText(throwable.getClass().getName());
-        textMessage.setText(throwable.getMessage());
+        textType.setText(mThrowable.getClass().getName());
+        textMessage.setText(mThrowable.getMessage());
 
         DefaultListModel<String> model = new DefaultListModel<>();
         listStackTrace.setModel(model);
 
-        StackTraceElement[] stackTrace = throwable.getStackTrace();
+        StackTraceElement[] stackTrace = mThrowable.getStackTrace();
         for (StackTraceElement element : stackTrace)
             model.addElement(element.toString());
 
@@ -42,7 +42,7 @@ public class ThrowableDetail extends JFrame
     {
         int idx = listStackTrace.getSelectedIndex();
         if (idx == -1) return;
-        StackTraceElement trace = throwable.getStackTrace()[idx];
+        StackTraceElement trace = mThrowable.getStackTrace()[idx];
         System.err.println(trace.toString());
     }
 }

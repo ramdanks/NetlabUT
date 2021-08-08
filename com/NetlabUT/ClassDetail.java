@@ -9,8 +9,10 @@ import java.lang.reflect.Method;
  * @author Ramadhan Kalih Sewu
  * @version 1.0
  */
-final class ClassDetail extends JFrame
+public class ClassDetail extends JFrame
 {
+    private final Class<?> mClass;
+
     private JLabel labelType;
     private JLabel labelName;
     private JLabel labelPackage;
@@ -24,6 +26,8 @@ final class ClassDetail extends JFrame
     /** expect not null class */
     public ClassDetail(Class<?> tClass)
     {
+        this.mClass = tClass;
+
         setTitle("Class Detail - " + tClass.getName());
         setContentPane(mainPanel);
         setMinimumSize(getMinimumSize());
