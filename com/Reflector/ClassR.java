@@ -1,5 +1,6 @@
 package com.Reflector;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 /** Class type wrapper to suppress throwable
@@ -54,6 +55,36 @@ public class ClassR
         try { return mClass.getMethod(funcName, paramTypes); }
         catch (Throwable ignored) {}
         return null;
+    }
+
+    public Field getField(String name)
+    {
+        try { return mClass.getField(name); }
+        catch (Throwable ignored) {}
+        return null;
+    }
+
+    public Field getDeclaredField(String name)
+    {
+        try { return mClass.getDeclaredField(name); }
+        catch (Throwable ignored) {}
+        return null;
+    }
+
+    public boolean setField(Field field, Object object, Object value)
+    {
+        try { field.set(object, value); }
+        catch (Throwable ignored) { return false; }
+        return true;
+    }
+
+    public boolean setFieldForce(Field field, Object object, Object value)
+    {
+        try {
+            field.setAccessible(true);
+            field.set(object, value);
+        } catch (Throwable ignored) { return false; }
+        return true;
     }
 
 }
