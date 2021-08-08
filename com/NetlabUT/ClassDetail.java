@@ -14,18 +14,17 @@ final class ClassDetail extends JFrame
     private JLabel labelType;
     private JLabel labelName;
     private JLabel labelPackage;
-    private JTabbedPane tabbedPane1;
     private JPanel mainPanel;
     private JList<String> listInheritance;
     private JList<String> listInterface;
     private JList<String> listClasses;
     private JList<String> listFields;
     private JList<String> listMethods;
-    private JScrollPane paneFields;
 
     /** expect not null class */
     public ClassDetail(Class<?> tClass)
     {
+        setTitle("Class Detail - " + tClass.getName());
         setContentPane(mainPanel);
         setMinimumSize(getMinimumSize());
         setSize(getMinimumSize());
@@ -53,10 +52,13 @@ final class ClassDetail extends JFrame
         DefaultListModel<String> modelFields      = (DefaultListModel<String>) listFields.getModel();
         DefaultListModel<String> modelMethods     = (DefaultListModel<String>) listMethods.getModel();
 
-        for (Class c = tClass.getSuperclass(); c != null; c = c.getSuperclass())
+        int inheritanceLength = 0;
+        for (Class c = tClass.getSuperclass(); c != null; c = c.getSuperclass(), inheritanceLength++)
             modelInheritance.addElement(c.getName());
+        listInheritance.setVisibleRowCount(inheritanceLength);
 
         final Class<?>[] interfaces = tClass.getInterfaces();
+        listInterface.setVisibleRowCount(interfaces.length);
         for (int i = 0; i < interfaces.length; i++)
             modelInterface.addElement(interfaces[i].getName());
 
