@@ -186,7 +186,7 @@ public abstract class ReflectorUnitTest extends UnitTest
                     ((InvocationTargetException) metric.throwable).getTargetException() :
                     new ReflectorException(method, metric.throwable);
         }
-        else if (metric.returns != null && metric.returns.getClass() != reference.getClass())
+        else if (metric.returns != null && reference != null && metric.returns.getClass() != reference.getClass())
         {
             metric.throwable = new MismatchTypeException(reference.getClass(), metric.returns.getClass());
         }
