@@ -1,1 +1,8 @@
-.class
+# outside ide folder
+.vscode/**
+
+# intellij
+out/**
+
+# compiled program
+*.class
