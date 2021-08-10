@@ -17,10 +17,12 @@ public class ClassR
     public ClassR(Class<?> aClass) { mClass = aClass; }
     public ClassR (String packageName, String className)
     {
-        try {
-            if (packageName == null || packageName.isEmpty())
-                mClass = Class.forName(className);
-            mClass = Class.forName(packageName + '.' + className); }
+        try
+        {
+            mClass = packageName == null || packageName.isEmpty() ?
+                Class.forName(className) :
+                Class.forName(packageName + '.' + className);
+        }
         catch (Throwable t) { mThrowableList.add(t); }
     }
     public ClassR(String className)
@@ -58,6 +60,13 @@ public class ClassR
     public Method getMethod(String funcName, Class<?>... paramTypes)
     {
         try { return mClass.getMethod(funcName, paramTypes); }
+        catch (Throwable t) { mThrowableList.add(t); }
+        return null;
+    }
+
+    public Method getDeclaredMethod(String funcName, Class<?>... paramTypes)
+    {
+        try { return mClass.getDeclaredMethod(funcName, paramTypes); }
         catch (Throwable t) { mThrowableList.add(t); }
         return null;
     }
