@@ -110,10 +110,15 @@ public class LocationTest extends ReflectorUnitTest
             // arg object dapat berupa null atau object dengan tipe yang sama.
             // tetapi sangat disarankan untuk diset menjadi null agar dapat dipastikan
             // bahwa fungsi ini benar-benar 'static' dan kode lebih mudah dibaca.
-            assumeTrue(isIndonesia, null, "indonesia");
-            assumeTrue(isIndonesia, null, "IndoNesIa");
-            assumeTrue(isIndonesia, null, "INDONESIA");
-            assumeFalse(isIndonesia, null, "Japan");
+            Object obj = null;
+            // meminta object yang dapat mengakses lokasi tersebut (apabila non static).
+            // Ini juga memaksa akses terhadap method apabila memiliki modifier private.
+            try { obj = getForceAccess(Location, isIndonesia, null); }
+            catch (Throwable ignored) {}
+            assumeTrue(isIndonesia, obj, "indonesia");
+            assumeTrue(isIndonesia, obj, "IndoNesIa");
+            assumeTrue(isIndonesia, obj, "INDONESIA");
+            assumeFalse(isIndonesia, obj, "Japan");
         }
     }
     

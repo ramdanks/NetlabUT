@@ -18,5 +18,5 @@ public class Location
     public String getCity() { return city; }
     public String getProvince() { return province; }
 
-    public static boolean isIndonesia(String country) { return country != null && country.equalsIgnoreCase("indonesia"); }
+    private boolean isIndonesia(String country) { return country != null && country.equalsIgnoreCase("indonesia"); }
 }

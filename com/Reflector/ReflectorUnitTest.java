@@ -1,9 +1,12 @@
 package com.Reflector;
 
 import com.NetlabUT.*;
+import sun.reflect.ReflectionFactory;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 
 /** extended class from {@link UnitTest}, add support to {@link java.lang.reflect.Method}.
  * It helps translate a valid {@link Throwable} caused by underlying {@code Method}
@@ -15,6 +18,35 @@ public abstract class ReflectorUnitTest extends UnitTest
 {
     protected ReflectorUnitTest() {}
     protected ReflectorUnitTest(String testName) { super(testName); }
+
+    /** will try to find an object that has access to the method.
+     * If your {@code obj} doesn't have access to the {@method}, calling this will make your {@code method}
+     * accessible for the future even if it's private.
+     * @param classR Class that contain the {@code method}
+     * @param method Method that needs an access
+     * @param obj Object that tries to invoke the {@code method}
+     * @return an Object that has access or {@code obj} if fail
+     * @implNote Throwable will occur if fail to create new object in order to get acess to instance method.
+     * Throwable triggered by: {@link Constructor#newInstance(Object...)} and {@link Class#getDeclaredConstructor(Class[])}
+     */
+    protected Object getForceAccess(ClassR classR, Method method, Object obj)
+            throws InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException
+    {
+        // set accessible for private modifier
+        if (!method.canAccess(obj))
+            method.setAccessible(true);
+        // if static method, we need an object
+        if (obj == null && !Modifier.isStatic(method.getModifiers()))
+        {
+            final Class<?> myClass = classR.getContainingClass();
+            if (myClass == null) return obj;
+            final ReflectionFactory reflection = ReflectionFactory.getReflectionFactory();
+            final Constructor<?> constructor = reflection.newConstructorForSerialization(
+                    myClass, Object.class.getDeclaredConstructor(new Class[0]));
+            obj = constructor.newInstance(new Object[0]);
+        }
+        return obj;
+    }
 
     /** calling a {@link java.lang.reflect.Method}. When invoked, expect to throw any instance of
      * {@link java.lang.Throwable}. It only counts from {@link java.lang.reflect.InvocationTargetException}
