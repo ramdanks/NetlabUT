@@ -20,6 +20,7 @@ public abstract class ReflectorUnitTest extends UnitTest
     protected ReflectorUnitTest(String testName) { super(testName); }
 
     /** will try to find an object that has access to the method.
+     * if method is {@code null} it will immediately return {@code obj}.
      * If your {@code obj} doesn't have access to the {@method}, calling this will make your {@code method}
      * accessible for the future even if it's private.
      * @param classR Class that contain the {@code method}
@@ -32,9 +33,7 @@ public abstract class ReflectorUnitTest extends UnitTest
     protected Object getForceAccess(ClassR classR, Method method, Object obj)
             throws InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException
     {
-        // set accessible for private modifier
-        if (!method.canAccess(obj))
-            method.setAccessible(true);
+        if (method == null) return obj;
         // if static method, we need an object
         if (obj == null && !Modifier.isStatic(method.getModifiers()))
         {
@@ -45,6 +44,13 @@ public abstract class ReflectorUnitTest extends UnitTest
                     myClass, Object.class.getDeclaredConstructor(new Class[0]));
             obj = constructor.newInstance(new Object[0]);
         }
+        // ask if obj can have access to method
+        boolean objectCanAccess = false;
+        try { objectCanAccess = method.canAccess(obj); }
+        catch (IllegalArgumentException ignored) {}
+        // force set accessible if obj doesn't have access to method
+        if (!objectCanAccess)
+            method.setAccessible(true);
         return obj;
     }
 
