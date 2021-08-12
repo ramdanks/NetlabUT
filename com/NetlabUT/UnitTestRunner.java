@@ -7,7 +7,7 @@ import javax.swing.*;
  * @author Ramadhan Kalih Sewu
  * @version 1.1
  */
-public class UnitTestRunner extends JDialog implements Runnable, ProfileReport<Object>
+final class UnitTestRunner extends JDialog implements Runnable, ProfileReport<Object>
 {
     private UnitTest unitTest;
     private long count;

@@ -5,25 +5,27 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseAdapter;
 import java.util.ArrayList;
+import java.util.function.Function;
 
 /** show a brief {@link com.NetlabUT.Profile} in form of table for {@link com.NetlabUT.UnitTest}
  * @author Ramadhan Kalih Sewu
- * @version 1.0
+ * @version 1.1
  */
 final class ProfilingResultsForm
 {
     private static final String[] COLUMN_PROFILE = { "Assumption", "Message", "Time (ns)", "Reference", "Actual" };
+
+    private UnitTest unitTest;
 
     private JTable tableProfile;
     private JLabel labelPercentage;
     private JLabel labelPoints;
     private JPanel mainPanel;
     private JCheckBox checkboxMessage;
-    private UnitTest unitTest = null;
+    private JCheckBox checkboxToString;
 
     public ProfilingResultsForm(UnitTest unitTest)
     {
@@ -62,8 +64,6 @@ final class ProfilingResultsForm
         }
     }
 
-
-
     private void initTable()
     {
         tableProfile.setModel(new DefaultTableModel(null, COLUMN_PROFILE) {
@@ -74,23 +74,8 @@ final class ProfilingResultsForm
         tableProfile.getColumnModel().getColumn(0).setMinWidth(100);
         tableProfile.getColumnModel().getColumn(0).setMaxWidth(100);
 
-        checkboxMessage.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (checkboxMessage.isSelected())
-                {
-                    tableProfile.getColumnModel().getColumn(1).setMinWidth(0);
-                    tableProfile.getColumnModel().getColumn(1).setMaxWidth(0);
-                    tableProfile.getColumnModel().getColumn(1).setWidth(0);
-                }
-                else
-                {
-                    tableProfile.getColumnModel().getColumn(1).setMinWidth(100);
-                    tableProfile.getColumnModel().getColumn(1).setMaxWidth(Integer.MAX_VALUE);
-                    tableProfile.getColumnModel().getColumn(1).setWidth(100);
-                }
-            }
-        });
+        checkboxMessage.addActionListener(this::onHideMessage);
+        checkboxToString.addActionListener(this::onObjectToString);
 
         tableProfile.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
             @Override
@@ -118,17 +103,36 @@ final class ProfilingResultsForm
         });
     }
 
-    /*
-        switch (profile.getReferenceStatus())
+    private void onObjectToString(ActionEvent e)
+    {
+        final ArrayList<Profile<Object>> profileList = unitTest.getTestProfile();
+        DefaultTableModel model = (DefaultTableModel) tableProfile.getModel();
+
+        Function<Object, String> cellString = checkboxToString.isSelected() ?
+                Object::toString :
+                Profile::getObjectIdentifierString;
+
+        for (int row = 0; row < profileList.size(); ++row)
         {
-            case Status.EQUAL:            setToolTipText("Actual should EQUAL to Reference"); break;
-            case Status.NOT_EQUAL:        setToolTipText("Actual should NOT EQUAL to Reference"); break;
-            case Status.REFERENCE:        setToolTipText("Actual should REFERENCE Reference"); break;
-            case Status.NOT_REFERENCE:    setToolTipText("Actual should NOT REFERENCE Reference"); break;
-            case Status.ARRAY_EQUAL:      setToolTipText("Actual should ITERATIVELY EQUAL to Reference"); break;
-            case Status.ARRAY_NOT_EQUAL:  setToolTipText("Actual should NOT ITERATIVELY EQUAL to Reference"); break;
-            case Status.THROWS:           setToolTipText("Actual should THROWS any"); break;
-            case Status.THROWS_TYPE:      setToolTipText("Actual should THROWS an Reference"); break;
+            Profile<Object> profile = profileList.get(row);
+            Object reference = profile.getReference();
+            Object actual = profile.getActual();
+            if (reference != null) model.setValueAt(cellString.apply(reference), row, 3);
+            if (actual != null) model.setValueAt(cellString.apply(actual), row, 4);
         }
-     */
+    }
+
+    private void onHideMessage(ActionEvent e)
+    {
+        int minWidth = 0;
+        int maxWidth = 0;
+        if (!checkboxMessage.isSelected())
+        {
+            minWidth = 100;
+            maxWidth = Integer.MAX_VALUE;
+        }
+        tableProfile.getColumnModel().getColumn(1).setMinWidth(minWidth);
+        tableProfile.getColumnModel().getColumn(1).setMaxWidth(maxWidth);
+        tableProfile.getColumnModel().getColumn(1).setWidth(minWidth);
+    }
 }
