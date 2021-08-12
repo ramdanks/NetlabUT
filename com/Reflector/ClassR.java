@@ -7,7 +7,7 @@ import java.util.HashMap;
 
 /** Class type wrapper to suppress throwable
  * @author Ramadhan Kalih Sewu
- * @version 1.0
+ * @version 1.1
  */
 public class ClassR
 {
