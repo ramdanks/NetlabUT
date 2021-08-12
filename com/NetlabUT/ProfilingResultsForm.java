@@ -112,14 +112,20 @@ final class ProfilingResultsForm
                 Object::toString :
                 Profile::getObjectIdentifierString;
 
-        for (int row = 0; row < profileList.size(); ++row)
-        {
-            Profile<Object> profile = profileList.get(row);
-            Object reference = profile.getReference();
-            Object actual = profile.getActual();
-            if (reference != null) model.setValueAt(cellString.apply(reference), row, 3);
-            if (actual != null) model.setValueAt(cellString.apply(actual), row, 4);
-        }
+        new SwingWorker<Void, Void>() {
+            @Override
+            protected Void doInBackground() {
+                for (int row = 0; row < profileList.size(); ++row)
+                {
+                    Profile<Object> profile = profileList.get(row);
+                    Object reference = profile.getReference();
+                    Object actual = profile.getActual();
+                    if (reference != null) model.setValueAt(cellString.apply(reference), row, 3);
+                    if (actual != null) model.setValueAt(cellString.apply(actual), row, 4);
+                }
+                return null;
+            }
+        }.execute();
     }
 
     private void onHideMessage(ActionEvent e)
