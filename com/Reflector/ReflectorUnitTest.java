@@ -12,7 +12,7 @@ import java.lang.reflect.Modifier;
  * It helps translate a valid {@link Throwable} caused by underlying {@code Method}
  * instead from {@link java.lang.reflect.Method#invoke(Object, Object...)}
  * @author Ramadhan Kalih Sewu
- * @version 1.0
+ * @version 1.1
  */
 public abstract class ReflectorUnitTest extends UnitTest
 {

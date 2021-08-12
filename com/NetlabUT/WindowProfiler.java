@@ -7,7 +7,7 @@ import java.util.Date;
 
 /** Class to display profile test from {@link com.NetlabUT.UnitTest} into a GUI
  * @author Ramadhan Kalih Sewu
- * @version 1.0
+ * @version 1.1
  */
 public class WindowProfiler extends JFrame
 {
@@ -40,13 +40,11 @@ public class WindowProfiler extends JFrame
         formProfileResults = new ProfilingResultsForm[unitList.length];
         for (int i = 0; i < unitList.length; i++)
         {
-            if (unitList[i].getTestCount() == 0)
-                unitList[i].run();
-
             formProfileResults[i] = new ProfilingResultsForm(unitList[i]);
             tabUnitTest.addTab(unitList[i].getTestName(), formProfileResults[i].getContentPanel());
             cbUnitTest.addItem(unitList[i].getTestName());
 
+            runUnitTest(i);
             refreshUnitTest(i);
         }
         refreshTestCount();
@@ -55,11 +53,15 @@ public class WindowProfiler extends JFrame
         btnSelectedTest.addActionListener(this::onRunSelectedTest);
     }
 
-    private void runUnitTest(int index) { formProfileResults[index].getUnitTest().run(); }
+    private void runUnitTest(int index)
+    {
+        UnitTest ut = formProfileResults[index].getUnitTest();
+        new UnitTestRunner(this, ut).setVisible(true);
+    }
     private void refreshUnitTest(int index)
     {
         UnitTest unitTest = formProfileResults[index].getUnitTest();
-        // refresh profile results panael
+        // refresh profile results panel
         formProfileResults[index].refresh();
         // set tooltip
         int failCount = unitTest.getTestCount() - unitTest.getSuccessCount();
