@@ -5,12 +5,15 @@ import java.util.ArrayList;
 /** provides a test through comparing 2 object using {@code assumeXXX} method. it's a non-blocking test
  * that will record the profile of the assumption (reference, actual, message, correctness, etc.)
  * @author Ramadhan Kalih Sewu
- * @version 1.0
+ * @version 1.1
  */
 public abstract class UnitTest
 {
     private int mTestCount;
     private int mSuccessCount;
+
+    private ProfileReport mReportListener;
+    private ProfileFinalize mFinalizeListener;
 
     private String mTestName = null;
     private ArrayList<Profile<Object>> mTestProfile = new ArrayList<>();
@@ -22,6 +25,8 @@ public abstract class UnitTest
     public ArrayList<Profile<Object>> getTestProfile() { return mTestProfile; }
     public int getTestCount() { return mTestCount; }
     public int getSuccessCount() { return mSuccessCount; }
+    public void addProfileReportListener(ProfileReport listener) { mReportListener = listener; }
+    protected void addProfileFinalizeListener(ProfileFinalize listener) { mFinalizeListener = listener; }
 
     /** entry point for calculating unit test, call assume function to record testing */
     protected abstract void scenario();
@@ -238,8 +243,16 @@ public abstract class UnitTest
     /** record a profile test */
     protected void record(Profile profile)
     {
-        increment(profile.isCorrect());
+        boolean correct = profile.isCorrect();
+        // ask finalize listener to correct the output of unit test
+        if (mFinalizeListener != null)
+            correct = mFinalizeListener.predicate(profile);
+        // record unit test profile
+        increment(correct);
         mTestProfile.add(profile);
+        // send report to listener after profile is recorded
+        if (mReportListener != null)
+            mReportListener.report(profile);
     }
 
     /** run benchmark and check the assumption using comparator,
