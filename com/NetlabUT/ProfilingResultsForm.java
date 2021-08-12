@@ -130,15 +130,16 @@ final class ProfilingResultsForm
 
     private void onHideMessage(ActionEvent e)
     {
-        int minWidth = 0;
-        int maxWidth = 0;
-        if (!checkboxMessage.isSelected())
+        int minWidth = 100;
+        int maxWidth = Integer.MAX_VALUE;
+        if (checkboxMessage.isSelected())
         {
-            minWidth = 100;
-            maxWidth = Integer.MAX_VALUE;
+            minWidth = 0;
+            maxWidth = 0;
         }
         tableProfile.getColumnModel().getColumn(1).setMinWidth(minWidth);
         tableProfile.getColumnModel().getColumn(1).setMaxWidth(maxWidth);
         tableProfile.getColumnModel().getColumn(1).setWidth(minWidth);
+        tableProfile.getColumnModel().getColumn(1).setMinWidth(minWidth);
     }
 }
