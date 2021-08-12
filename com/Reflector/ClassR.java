@@ -68,6 +68,15 @@ public class ClassR
         return null;
     }
 
+    /** find a constructor using {@link Class#getDeclaredConstructor(Class[])}
+     * @return Constructor that is requested or null if not found or experience Throwable */
+    public Constructor<?> getDeclaredConstructor(Class<?>... paramTypes)
+    {
+        try { return mClass.getDeclaredConstructor(paramTypes); }
+        catch (Throwable t) { mThrowableList.add(t); }
+        return null;
+    }
+
     /** find a method using {@link Class#getMethod(String, Class[])}
      * @return Method that is requested or null if not found or experience Throwable */
     public Method getMethod(String funcName, Class<?>... paramTypes)
