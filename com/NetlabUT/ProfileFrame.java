@@ -41,8 +41,8 @@ final class ProfileFrame<T> extends JFrame
         labelTime.setText(String.format("%d ns", profile.getProfileTime()));
         textMessage.setText(profile.getMessage());
 
-        String strReference = profile.getReferenceString();
-        String strActual = Profile.getObjectIdentifierString(profile.getActual());
+        String strReference = profile.getReferenceString(StringFormatter::idString);
+        String strActual = profile.getActualString(StringFormatter::idString);
 
         textReference.setText(strReference);
         textActual.setText(strActual);

@@ -38,7 +38,7 @@ public class ArrayDetail extends JFrame
         formatter.setCommitsOnValidEdit(true);
         spinner.addChangeListener(this::onSpinnerChange);
 
-        setTitle(Profile.getObjectIdentifierString(object));
+        setTitle("Array - " + StringFormatter.idString(object));
         setContentPane(mainPanel);
         setMinimumSize(mainPanel.getMinimumSize());
         setSize(mainPanel.getMinimumSize());

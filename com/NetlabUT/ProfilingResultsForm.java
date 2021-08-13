@@ -52,14 +52,17 @@ final class ProfilingResultsForm
         DefaultTableModel model = (DefaultTableModel) tableProfile.getModel();
         model.setRowCount(0);
 
+        Function<Object, String> objTranslator = checkboxToString.isSelected() ?
+                StringFormatter::toString : StringFormatter::idString;
+
         String[] record = new String[5];
-        for (Profile profile : profileList)
+        for (Profile<Object> profile : profileList)
         {
             record[0] = Status.toString(profile.getReferenceStatus());
             record[1] = profile.getMessage();
             record[2] = Long.toString(profile.getProfileTime());
-            record[3] = profile.getReferenceString();
-            record[4] = Profile.getObjectIdentifierString(profile.getActual());
+            record[3] = profile.getReferenceString(objTranslator);
+            record[4] = profile.getActualString(objTranslator);
             model.addRow(record);
         }
     }
@@ -81,7 +84,7 @@ final class ProfilingResultsForm
             @Override
             public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column)
             {
-                final Profile profile = ProfilingResultsForm.this.unitTest.getTestProfile().get(row);
+                final Profile<Object> profile = ProfilingResultsForm.this.unitTest.getTestProfile().get(row);
                 final Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
                 if (column == 0)               c.setBackground(Style.getAssumptionColor(profile.getReferenceStatus()));
                 else if (profile.isCorrect())  c.setBackground(isSelected ? Style.NEUTRAL_FOCUS : Style.NEUTRAL);
@@ -108,9 +111,8 @@ final class ProfilingResultsForm
         final ArrayList<Profile<Object>> profileList = unitTest.getTestProfile();
         DefaultTableModel model = (DefaultTableModel) tableProfile.getModel();
 
-        Function<Object, String> cellString = checkboxToString.isSelected() ?
-                Object::toString :
-                Profile::getObjectIdentifierString;
+        Function<Object, String> objTranslator = checkboxToString.isSelected() ?
+                StringFormatter::toString : StringFormatter::idString;
 
         new SwingWorker<Void, Void>() {
             @Override
@@ -120,8 +122,8 @@ final class ProfilingResultsForm
                     Profile<Object> profile = profileList.get(row);
                     Object reference = profile.getReference();
                     Object actual = profile.getActual();
-                    if (reference != null) model.setValueAt(cellString.apply(reference), row, 3);
-                    if (actual != null) model.setValueAt(cellString.apply(actual), row, 4);
+                    if (reference != null) model.setValueAt(objTranslator.apply(reference), row, 3);
+                    if (actual != null) model.setValueAt(objTranslator.apply(actual), row, 4);
                 }
                 return null;
             }

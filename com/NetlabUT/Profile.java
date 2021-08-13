@@ -1,5 +1,7 @@
 package com.NetlabUT;
 
+import java.util.function.Function;
+
 /** class to show a state of a assumption or comparison
  * @author Ramadhan Kalih Sewu
  * @version 1.0
@@ -31,14 +33,14 @@ public class Profile<T> extends Metric<T>
         this.correct = correct;
     }
 
-    public T getReference()
-    {
-        return reference;
-    }
-    public Class<?> getClassReference()
-    {
-        return reference == null ? classReference : reference.getClass();
-    }
+    public boolean isReferenceNull()    { return reference == null || classReference == null; }
+    public boolean isActualNull()       { return returns == null || throwable == null; }
+    public int getReferenceStatus()     { return referenceStatus; }
+    public long getProfileTime()        { return nanoTime; }
+    public String getMessage()          { return message; }
+    public boolean isCorrect()          { return correct; }
+    public T getReference()             { return reference; }
+    public Class<?> getClassReference() { return reference == null ? classReference : reference.getClass(); }
     public Object getActual()
     {
         if (super.returns != null)
@@ -54,49 +56,21 @@ public class Profile<T> extends Metric<T>
             return actual.getClass();
         return null;
     }
-    public int getReferenceStatus()
+
+    public String getReferenceString(Function<Object, String> translator)
     {
-        return referenceStatus;
-    }
-    public long getProfileTime()
-    {
-        return nanoTime;
-    }
-    public String getReferenceString()
-    {
-        if (reference == null && classReference == null)
-            return "null";
-        return reference == null ? classReference.getName() : getObjectIdentifierString(reference);
-    }
-    public String getMessage()
-    {
-        return message;
-    }
-    public boolean isCorrect()
-    {
-        return correct;
+        if (reference != null)
+            return translator.apply(reference);
+        if (classReference != null)
+            return classReference.getName();
+        return "null";
     }
 
-    public static String toString(Object object)
+    public String getActualString(Function<Object, String> translator)
     {
-        if (object == null)
-            return "null";
-        if (!object.getClass().isArray())
-            return object.toString();
-
-        Object[] array = (Object[]) object;
-        StringBuilder str = new StringBuilder();
-        if (array.length > 0)
-        {
-            str.append(array[0].toString());
-            for (int i = 1; i < array.length; i++)
-                str.append(',').append(array[i].toString());
-        }
-        return str.toString();
-    }
-
-    public static String getObjectIdentifierString(Object obj) {
-        if (obj == null) return "null";
-        return obj.getClass().getName() + "@" + Integer.toHexString(obj.hashCode());
+        Object obj = getActual();
+        if (obj != null)
+            return translator.apply(obj);
+        return "null";
     }
 }

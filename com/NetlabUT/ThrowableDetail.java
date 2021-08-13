@@ -31,7 +31,7 @@ public class ThrowableDetail extends JFrame
 
         listStackTrace.addListSelectionListener(this::onStackTraceListSelected);
 
-        setTitle(Profile.getObjectIdentifierString(object));
+        setTitle("Throwable - " + StringFormatter.idString(object));
         setContentPane(mainPanel);
         setMinimumSize(mainPanel.getMinimumSize());
         setSize(mainPanel.getMinimumSize());

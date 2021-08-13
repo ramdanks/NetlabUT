@@ -60,18 +60,13 @@ public class LocationTest extends ReflectorUnitTest
         // poin untuk deklarasi field, method, dan ctor sesuai dengan (nama, parameter)
         {
             assumeNotNull(city);
-            try { Thread.sleep(1000); } catch (Throwable ignored) {}
             assumeNotNull(province);
-            try { Thread.sleep(1000); } catch (Throwable ignored) {}
             assumeNotNull(country);
-            try { Thread.sleep(1000); } catch (Throwable ignored) {}
             assumeNotNull(ctor0);
-            try { Thread.sleep(1000); } catch (Throwable ignored) {}
             assumeNotNull(ctor1);
-            try { Thread.sleep(1000); } catch (Throwable ignored) {}
             assumeNotNull(getCity);
-            try { Thread.sleep(1000); } catch (Throwable ignored) {}
             assumeNotNull(getProvince);
+            assumeNotNull(isIndonesia);
         }
         
         // poin untuk return type method yang sesuai

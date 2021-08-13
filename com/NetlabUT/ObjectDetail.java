@@ -17,7 +17,7 @@ public class ObjectDetail extends JFrame
         labelClass.setText(object.getClass().getName());
         textString.setText(object.toString());
 
-        setTitle(Profile.getObjectIdentifierString(object));
+        setTitle("Object - " + StringFormatter.idString(object));
         setContentPane(mainPanel);
         setMinimumSize(mainPanel.getMinimumSize());
         setSize(mainPanel.getMinimumSize());
