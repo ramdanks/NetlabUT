@@ -4,6 +4,7 @@ import javax.swing.JOptionPane;
 
 import com.NetlabUT.UnitTest;
 import com.NetlabUT.WindowProfiler;
+import com.GitFetcher.Fetcher;
 
 public class Source
 {
@@ -17,4 +18,5 @@ public class Source
         UnitTest[] unitTestList = { new LocationTest() };
         new WindowProfiler("Modul 1", unitTestList);
     }
+
 }
