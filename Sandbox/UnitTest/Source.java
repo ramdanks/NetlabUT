@@ -4,7 +4,6 @@ import javax.swing.JOptionPane;
 
 import com.NetlabUT.UnitTest;
 import com.NetlabUT.WindowProfiler;
-import com.GitFetcher.Fetcher;
 
 public class Source
 {

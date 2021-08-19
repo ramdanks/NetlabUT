@@ -1,22 +1,25 @@
 package com.GitFetcher;
 
+import com.NetlabUT.Profile;
+
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.text.BadLocationException;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
 import java.util.Set;
+import java.util.function.Function;
 
 public class Fetcher extends JFrame
 {
@@ -39,11 +42,10 @@ public class Fetcher extends JFrame
     private JTextField textField1;
     private JButton saveTableButton;
 
-    private static final int AT_TIME     = 0;
-    private static final int BEFORE_TIME = 1;
-    private static final int AFTER_TIME  = 2;
+    private static final int BEFORE_TIME = 0;
+    private static final int AFTER_TIME  = 1;
 
-    private static String[] COLUMN_TITLE = { "URL", "Clone Path" };
+    private static final String[] COLUMN_TITLE      = {"URL", "Clone Path"};
 
     public static void main(String[] args) { new Fetcher(); }
 
@@ -106,24 +108,91 @@ public class Fetcher extends JFrame
             JOptionPane.showMessageDialog(null, "You should have at least 1 repository in the Table!");
             return;
         }
+
         DefaultTableModel model = (DefaultTableModel) table1.getModel();
         tabbedPane1.setSelectedIndex(1);
-        for (int i = 0; i < cnt; ++i)
-        {
-            String link = (String) model.getValueAt(i, 0);
-            String clonePath = (String) model.getValueAt(i, 1);
-            if (link == null) continue;
-            if (clonePath == null)
+        fetchLatestCommitButton.setEnabled(false);
+
+        new SwingWorker<Void, Void>() {
+            @Override
+            protected Void doInBackground()
             {
-                String[] cmd = {"git", "clone", link};
-                getCommitRoutine(cmd);
+                StyledDocument doc = textLog.getStyledDocument();
+                SimpleAttributeSet attrGood = new SimpleAttributeSet();
+                SimpleAttributeSet attrBad = new SimpleAttributeSet();
+                StyleConstants.setForeground(attrGood, new Color(220, 220, 200));
+                StyleConstants.setForeground(attrBad, new Color(255, 120, 120));
+
+                int year       = Integer.parseInt((String) cbYear.getSelectedItem());
+                int month      = cbMonth.getSelectedIndex() + 1;
+                int day        = Integer.parseInt((String) cbDay.getSelectedItem());
+                int hour       = Integer.parseInt((String) cbHour.getSelectedItem());
+                int minute     = Integer.parseInt((String) cbMinute.getSelectedItem());
+                int second     = 0;
+                int nanosecond = 0;
+                ZoneId zoneId  = ZoneId.of((String) cbRegion.getSelectedItem());
+
+                boolean fromBefore = false;
+                if (cbCondition.getSelectedIndex() == BEFORE_TIME)
+                    fromBefore = true;
+
+                String timestamp = GitCommand.getTimestampFrom(fromBefore, year, month, day, hour, minute, second, nanosecond, zoneId);
+                String[] cmdGitHashLatestCommit = GitCommand.getCmdGitHashLatestCommit(timestamp);
+
+                for (int i = 0; i < cnt; ++i)
+                {
+                    String repoLink  = (String) model.getValueAt(i, 0);
+                    String clonePath = (String) model.getValueAt(i, 1);
+                    if (repoLink == null || clonePath == null) continue;
+                    String[] cmdGitClone = GitCommand.cmdGitClone(repoLink, clonePath);
+                    try
+                    {
+                        String s = null;
+
+                        BufferedReader reader = commandLineExecutor(cmdGitClone, null);
+                        while ((s = reader.readLine()) != null)
+                        {
+                            doc.insertString(doc.getLength(), s, attrGood);
+                            doc.insertString(doc.getLength(), "\n", attrGood);
+                        }
+
+                        reader = commandLineExecutor(cmdGitHashLatestCommit, clonePath);
+                        s = reader.readLine();
+                        if (s == null)
+                        {
+                            doc.insertString(doc.getLength(), "Found 0 Commit", attrGood);
+                            doc.insertString(doc.getLength(), "\n", attrGood);
+                            continue;
+                        }
+
+                        String[] cmdGitCheckout = GitCommand.getCmdGitCheckoutCommit(s);
+                        reader = commandLineExecutor(cmdGitCheckout, clonePath);
+                        while ((s = reader.readLine()) != null)
+                        {
+                            doc.insertString(doc.getLength(), s, attrGood);
+                            doc.insertString(doc.getLength(), "\n", attrGood);
+                        }
+                    }
+                    catch (Throwable t)
+                    {
+                        System.err.println(t);
+                    }
+                }
+                fetchLatestCommitButton.setEnabled(true);
+                return null;
             }
-            else
-            {
-                String[] cmd = {"git", "clone", link, clonePath};
-                getCommitRoutine(cmd);
-            }
-        }
+        }.execute();
+    }
+
+    private BufferedReader commandLineExecutor(String[] args, String workingDirectory) throws IOException
+    {
+        ProcessBuilder builder = new ProcessBuilder(args);
+        builder.redirectErrorStream(true);
+        if (workingDirectory != null)
+            builder.directory(new File(workingDirectory));
+        Process process = builder.start();
+        final InputStream is = process.getInputStream();
+        return new BufferedReader(new InputStreamReader(is));
     }
 
     private void onAddButton(ActionEvent evt)
@@ -140,31 +209,6 @@ public class Fetcher extends JFrame
             model.removeRow(indices[i]-i);
         if (table1.getSelectedRow() == -1)
             removeButton.setEnabled(false);
-    }
-
-    private void getCommitRoutine(String[] command)
-    {
-        StyledDocument doc = textLog.getStyledDocument();
-        SimpleAttributeSet attr = new SimpleAttributeSet();
-        StyleConstants.setForeground(attr, Color.WHITE);
-        try
-        {
-            ProcessBuilder builder = new ProcessBuilder(command);
-            builder.redirectErrorStream(true);
-            Process process = builder.start();
-            final InputStream is = process.getInputStream();
-            BufferedReader isreader = new BufferedReader(new InputStreamReader(is));
-            String s = null;
-            while ((s = isreader.readLine()) != null)
-            {
-                doc.insertString(doc.getLength(), s, attr);
-                doc.insertString(doc.getLength(), "\n", attr);
-            }
-        }
-        catch (Throwable t)
-        {
-            JOptionPane.showMessageDialog(null, t.toString());
-        }
     }
 
     private void onMonthOrYearSelected(ActionEvent e)
@@ -223,7 +267,6 @@ public class Fetcher extends JFrame
     private void fillComboBoxCondition()
     {
         // make sure in order because we read the combo box index
-        cbCondition.addItem("At Time");
         cbCondition.addItem("Before Time");
         cbCondition.addItem("After Time");
     }
