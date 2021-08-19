@@ -8,12 +8,20 @@ import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 import java.awt.*;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DropTarget;
+import java.awt.dnd.DropTargetDropEvent;
 import java.awt.event.ActionEvent;
 import java.io.*;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.TemporalAdjusters;
 import java.util.Set;
+import java.util.List;
+import com.Standard.FileType;
+
+import org.json.simple.*;
 
 public class Fetcher extends JFrame
 {
@@ -39,7 +47,12 @@ public class Fetcher extends JFrame
     private static final int BEFORE_TIME = 0;
     private static final int AFTER_TIME  = 1;
 
-    private static final String[] COLUMN_TITLE      = {"URL", "Clone Path"};
+    private static final String[] COLUMN_TITLE            = {"Repo URL", "Clone Path"};
+    private static final String JSON_KEY_CONTENT          = "content";
+    private static final String JSON_KEY_REPO_URL         = "repo_url";
+    private static final String JSON_KEY_CLONE_PATH       = "clone_path";
+    private static final String JSON_KEY_FILE_TYPE_TABLE  = "table";
+    private static final String JSON_KEY_FILE_TYPE_DATE   = "date";
 
     public static void main(String[] args) { new Fetcher(); }
 
@@ -50,6 +63,54 @@ public class Fetcher extends JFrame
         setContentPane(mainPanel);
         setTitle("Git Fetcher - Get Latest Commit by Time");
         setVisible(true);
+        setDropTarget(new DropTarget() {
+            public synchronized void drop(DropTargetDropEvent evt) {
+                try
+                {
+                    evt.acceptDrop(DnDConstants.ACTION_COPY);
+                    List<File> droppedFiles = (List<File>) evt.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
+                    DefaultTableModel model = (DefaultTableModel) table1.getModel();
+                    for (File file : droppedFiles)
+                    {
+                        JSONObject obj = (JSONObject) JSONValue.parse(new FileReader(file));
+                        String type = (String) obj.get(FileType.JSON_KEY_FILE_TYPE.toString());
+                        if (type != null && type.equals(JSON_KEY_FILE_TYPE_TABLE))
+                        {
+                            final Object[] actionOption = {"Overwrite", "Append"};
+                            final int modal = JOptionPane.showOptionDialog(
+                                    Fetcher.this,
+                                    "Actions to the current Table:",
+                                    "Import Table",
+                                    JOptionPane.OK_CANCEL_OPTION,
+                                    JOptionPane.WARNING_MESSAGE,
+                                    null,
+                                    actionOption,
+                                    actionOption[0]
+                            );
+                            // unexpected modal (ex: close the dialog)
+                            if (modal == -1) return;
+                            // option overwrite (might be based on index of object[] passed in)
+                            if (modal == 0) model.setRowCount(0);
+                            JSONArray jsonArray = (JSONArray)obj.get(JSON_KEY_CONTENT);
+                            Object[] row = new Object[2];
+                            for (int i = 0; i < jsonArray.size(); ++i)
+                            {
+                                JSONObject jsonObject = (JSONObject) jsonArray.get(i);
+                                row[0] = jsonObject.get(JSON_KEY_REPO_URL);
+                                row[1] = jsonObject.get(JSON_KEY_CLONE_PATH);
+                                model.addRow(row);
+                            }
+                        }
+                        else if (type != null && type.equals(JSON_KEY_FILE_TYPE_DATE))
+                        {
+                            System.out.println("Date");
+                        }
+                    }
+                } catch (Throwable t) {
+                    t.printStackTrace();
+                }
+            }
+        });
 
         fillComboBoxYear(2000, 2050);
         fillComboBoxMonth(1, 12);
@@ -91,12 +152,14 @@ public class Fetcher extends JFrame
             }
         });
 
+        saveTableButton.addActionListener(this::onSaveTableButton);
         addButton.addActionListener(this::onAddButton);
         removeButton.addActionListener(this::onRemoveButton);
         fetchLatestCommitButton.addActionListener(this::onFetchLatestCommitButton);
     }
 
-    private void onFetchLatestCommitButton(ActionEvent evt) {
+    private void onFetchLatestCommitButton(ActionEvent evt)
+    {
         int cnt = table1.getRowCount();
         if (cnt == 0)
         {
@@ -188,6 +251,37 @@ public class Fetcher extends JFrame
         Process process = builder.start();
         final InputStream is = process.getInputStream();
         return new BufferedReader(new InputStreamReader(is));
+    }
+
+    private void onSaveTableButton(ActionEvent evt)
+    {
+        final JFileChooser fc = new JFileChooser();
+        int modal = fc.showSaveDialog(this);
+        if (modal != JFileChooser.APPROVE_OPTION) return;
+        try
+        {
+            JSONObject jsonFile = new JSONObject();
+            jsonFile.put(FileType.JSON_KEY_FILE_TYPE, JSON_KEY_FILE_TYPE_TABLE);
+            JSONArray jsonTableArray  = new JSONArray();
+            int cnt = table1.getRowCount();
+            for (int i = 0; i < cnt; ++i)
+            {
+                JSONObject jsonTableObject = new JSONObject();
+                Object url  = table1.getValueAt(i, 0);
+                Object path = table1.getValueAt(i, 1);
+                jsonTableObject.put(JSON_KEY_REPO_URL, url);
+                jsonTableObject.put(JSON_KEY_CLONE_PATH, path);
+                jsonTableArray.add(jsonTableObject);
+            }
+            jsonFile.put(JSON_KEY_CONTENT, jsonTableArray);
+            FileWriter writer = new FileWriter(fc.getSelectedFile());
+            writer.write(jsonFile.toJSONString());
+            writer.close();
+        }
+        catch (Throwable t)
+        {
+            JOptionPane.showMessageDialog(this, t.getMessage(), "Exception", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     private void onAddButton(ActionEvent evt)
