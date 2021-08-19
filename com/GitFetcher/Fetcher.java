@@ -1,12 +1,9 @@
 package com.GitFetcher;
 
-import com.NetlabUT.Profile;
-
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.text.BadLocationException;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
@@ -15,11 +12,8 @@ import java.awt.event.ActionEvent;
 import java.io.*;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
 import java.util.Set;
-import java.util.function.Function;
 
 public class Fetcher extends JFrame
 {
@@ -77,17 +71,18 @@ public class Fetcher extends JFrame
         DefaultTableModel model = (DefaultTableModel) table1.getModel();
         model.setRowCount(10);
 
-        try {
-            Runtime run = Runtime.getRuntime();
-            Process pr = run.exec("git --version");
-            pr.waitFor();
-            BufferedReader buf = new BufferedReader(new InputStreamReader(pr.getInputStream()));
-            String line = "";
-            while ((line=buf.readLine()) != null) {
-                textVersion.setText(line);
-            }
-        } catch (Throwable t) {
-            System.err.println(t);
+        try
+        {
+            BufferedReader reader = commandLineExecutor(GitCommand.CMD_GIT_VERSION, null);
+            String line = reader.readLine();
+            textVersion.setText(line);
+            if (line == null)
+                throw new Throwable("Can't found Git in your system!");
+        }
+        catch (Throwable t)
+        {
+            JOptionPane.showMessageDialog(null, t.getMessage(), "Exception", JOptionPane.ERROR_MESSAGE);
+            System.exit(-1);;
         }
 
         table1.getSelectionModel().addListSelectionListener(new ListSelectionListener(){

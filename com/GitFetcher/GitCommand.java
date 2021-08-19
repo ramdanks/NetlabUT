@@ -6,6 +6,7 @@ import java.time.format.DateTimeFormatter;
 
 final class GitCommand
 {
+    public static final String[] CMD_GIT_VERSION               = {"git", "--version"};
     private static final String[] CMD_GIT_HASH_LATEST_COMMIT   = {"git", "log", "-1", "--pretty=format:%H", ""};
     private static final String[] CMD_GIT_CHECKOUT_COMMIT      = {"git", "checkout", ""};
     private static final String[] CMD_GIT_CLONE                = {"git", "clone", "", ""};
