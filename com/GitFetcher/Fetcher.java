@@ -13,12 +13,15 @@ import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.event.ActionEvent;
+import java.awt.event.WindowEvent;
 import java.io.*;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.TemporalAdjusters;
 import java.util.Set;
 import java.util.List;
+
+import com.NetlabUT.Executable;
 import com.Standard.FileType;
 
 import org.json.simple.*;
@@ -35,20 +38,25 @@ public class Fetcher extends JFrame
     private JComboBox<String> cbYear;
     private JComboBox<String> cbMonth;
     private JComboBox<String> cbDay;
-    private JComboBox<String> cbRegion;
+    private JComboBox<String> cbZone;
     private JComboBox<String> cbHour;
     private JComboBox<String> cbMinute;
     private JButton fetchLatestCommitButton;
     private JComboBox<String> cbCondition;
     private JTabbedPane tabbedPane1;
     private JTextField textField1;
-    private JButton saveTableButton;
 
     private static final int BEFORE_TIME = 0;
     private static final int AFTER_TIME  = 1;
 
     private static final String[] COLUMN_TITLE            = {"Repo URL", "Clone Path"};
     private static final String JSON_KEY_CONTENT          = "content";
+    private static final String JSON_KEY_DATE_YEAR        = "year";
+    private static final String JSON_KEY_DATE_MONTH       = "month";
+    private static final String JSON_KEY_DATE_DAY         = "day";
+    private static final String JSON_KEY_TIME_HOUR        = "hour";
+    private static final String JSON_KEY_TIME_MINUTE      = "min";
+    private static final String JSON_KEY_TIME_ZONE        = "zone";
     private static final String JSON_KEY_REPO_URL         = "repo_url";
     private static final String JSON_KEY_CLONE_PATH       = "clone_path";
     private static final String JSON_KEY_FILE_TYPE_TABLE  = "table";
@@ -60,6 +68,7 @@ public class Fetcher extends JFrame
     {
         setMinimumSize(mainPanel.getMinimumSize());
         setSize(mainPanel.getMinimumSize());
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
         setContentPane(mainPanel);
         setTitle("Git Fetcher - Get Latest Commit by Time");
         setVisible(true);
@@ -69,48 +78,36 @@ public class Fetcher extends JFrame
                 {
                     evt.acceptDrop(DnDConstants.ACTION_COPY);
                     List<File> droppedFiles = (List<File>) evt.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
-                    DefaultTableModel model = (DefaultTableModel) table1.getModel();
                     for (File file : droppedFiles)
                     {
                         JSONObject obj = (JSONObject) JSONValue.parse(new FileReader(file));
-                        String type = (String) obj.get(FileType.JSON_KEY_FILE_TYPE.toString());
-                        if (type != null && type.equals(JSON_KEY_FILE_TYPE_TABLE))
-                        {
-                            final Object[] actionOption = {"Overwrite", "Append"};
-                            final int modal = JOptionPane.showOptionDialog(
-                                    Fetcher.this,
-                                    "Actions to the current Table:",
-                                    "Import Table",
-                                    JOptionPane.OK_CANCEL_OPTION,
-                                    JOptionPane.WARNING_MESSAGE,
-                                    null,
-                                    actionOption,
-                                    actionOption[0]
-                            );
-                            // unexpected modal (ex: close the dialog)
-                            if (modal == -1) return;
-                            // option overwrite (might be based on index of object[] passed in)
-                            if (modal == 0) model.setRowCount(0);
-                            JSONArray jsonArray = (JSONArray)obj.get(JSON_KEY_CONTENT);
-                            Object[] row = new Object[2];
-                            for (int i = 0; i < jsonArray.size(); ++i)
-                            {
-                                JSONObject jsonObject = (JSONObject) jsonArray.get(i);
-                                row[0] = jsonObject.get(JSON_KEY_REPO_URL);
-                                row[1] = jsonObject.get(JSON_KEY_CLONE_PATH);
-                                model.addRow(row);
-                            }
-                        }
-                        else if (type != null && type.equals(JSON_KEY_FILE_TYPE_DATE))
-                        {
-                            System.out.println("Date");
-                        }
+                        parseDateTimeJSON(obj);
+                        parseTableJSON(obj);
                     }
                 } catch (Throwable t) {
                     t.printStackTrace();
                 }
             }
         });
+
+        JMenuBar mb = new JMenuBar();
+        JMenu menuFile = new JMenu("File");
+        JMenu menuImport = new JMenu("Import");
+        menuImport.add("Table").addActionListener(this::onImportTable);
+        menuImport.add("DateTime").addActionListener(this::onImportDateTime);
+        JMenu menuExport = new JMenu("Export");
+        menuExport.add("Table").addActionListener(this::onExportTable);
+        menuExport.add("DateTime").addActionListener(this::onExportDateTime);
+        menuFile.add(menuImport);
+        menuFile.add(menuExport);
+        menuFile.addSeparator();
+        menuFile.add("Exit").addActionListener(this::onExit);
+        mb.add(menuFile);
+
+        JMenu menuHelp = new JMenu("Help");
+        menuHelp.add("About").addActionListener(this::onAbout);
+        mb.add(menuHelp);
+        setJMenuBar(mb);
 
         fillComboBoxYear(2000, 2050);
         fillComboBoxMonth(1, 12);
@@ -152,10 +149,24 @@ public class Fetcher extends JFrame
             }
         });
 
-        saveTableButton.addActionListener(this::onSaveTableButton);
         addButton.addActionListener(this::onAddButton);
         removeButton.addActionListener(this::onRemoveButton);
         fetchLatestCommitButton.addActionListener(this::onFetchLatestCommitButton);
+    }
+
+    private Object AutoCatchWithDialog(Executable executable)
+    {
+        try { return executable.execute(); }
+        catch (Throwable throwable)
+        {
+            JOptionPane.showMessageDialog(
+                this,
+                throwable.getMessage(),
+                "Exception",
+                JOptionPane.ERROR_MESSAGE
+            );
+        }
+        return null;
     }
 
     private void onFetchLatestCommitButton(ActionEvent evt)
@@ -188,7 +199,7 @@ public class Fetcher extends JFrame
                 int minute     = Integer.parseInt((String) cbMinute.getSelectedItem());
                 int second     = 0;
                 int nanosecond = 0;
-                ZoneId zoneId  = ZoneId.of((String) cbRegion.getSelectedItem());
+                ZoneId zoneId  = ZoneId.of((String) cbZone.getSelectedItem());
 
                 boolean fromBefore = false;
                 if (cbCondition.getSelectedIndex() == BEFORE_TIME)
@@ -253,34 +264,140 @@ public class Fetcher extends JFrame
         return new BufferedReader(new InputStreamReader(is));
     }
 
-    private void onSaveTableButton(ActionEvent evt)
+    private void onExit(ActionEvent evt)
     {
-        final JFileChooser fc = new JFileChooser();
-        int modal = fc.showSaveDialog(this);
-        if (modal != JFileChooser.APPROVE_OPTION) return;
-        try
+        dispatchEvent(new WindowEvent(Fetcher.this, WindowEvent.WINDOW_CLOSING));
+    }
+
+    private void onAbout(ActionEvent evt)
+    {
+
+    }
+
+    private void onImportDateTime(ActionEvent evt)
+    {
+        AutoCatchWithDialog(() ->
         {
-            JSONObject jsonFile = new JSONObject();
-            jsonFile.put(FileType.JSON_KEY_FILE_TYPE, JSON_KEY_FILE_TYPE_TABLE);
-            JSONArray jsonTableArray  = new JSONArray();
-            int cnt = table1.getRowCount();
-            for (int i = 0; i < cnt; ++i)
+            final JFileChooser fc = new JFileChooser();
+            int modal = fc.showOpenDialog(this);
+            if (modal == JFileChooser.APPROVE_OPTION)
             {
-                JSONObject jsonTableObject = new JSONObject();
-                Object url  = table1.getValueAt(i, 0);
-                Object path = table1.getValueAt(i, 1);
-                jsonTableObject.put(JSON_KEY_REPO_URL, url);
-                jsonTableObject.put(JSON_KEY_CLONE_PATH, path);
-                jsonTableArray.add(jsonTableObject);
+                JSONObject obj = (JSONObject) JSONValue.parse(new FileReader(fc.getSelectedFile()));
+                parseDateTimeJSON(obj);
             }
-            jsonFile.put(JSON_KEY_CONTENT, jsonTableArray);
-            FileWriter writer = new FileWriter(fc.getSelectedFile());
-            writer.write(jsonFile.toJSONString());
-            writer.close();
-        }
-        catch (Throwable t)
+            return null;
+        });
+    }
+
+    private void onExportDateTime(ActionEvent evt)
+    {
+        AutoCatchWithDialog(() ->
         {
-            JOptionPane.showMessageDialog(this, t.getMessage(), "Exception", JOptionPane.ERROR_MESSAGE);
+            final JFileChooser fc = new JFileChooser();
+            int modal = fc.showSaveDialog(this);
+            if (modal == JFileChooser.APPROVE_OPTION)
+            {
+                JSONObject object = new JSONObject();
+                object.put(FileType.JSON_KEY_FILE_TYPE, JSON_KEY_FILE_TYPE_DATE);
+                object.put(JSON_KEY_DATE_YEAR, cbYear.getSelectedItem());
+                object.put(JSON_KEY_DATE_MONTH, cbMonth.getSelectedItem());
+                object.put(JSON_KEY_DATE_DAY, cbDay.getSelectedItem());
+                object.put(JSON_KEY_TIME_HOUR, cbHour.getSelectedItem());
+                object.put(JSON_KEY_TIME_MINUTE, cbMinute.getSelectedItem());
+                object.put(JSON_KEY_TIME_ZONE, cbZone.getSelectedItem());
+                FileWriter writer = new FileWriter(fc.getSelectedFile());
+                writer.write(object.toJSONString());
+                writer.close();
+            }
+            return null;
+        });
+    }
+
+    private void onImportTable(ActionEvent evt)
+    {
+        AutoCatchWithDialog(() ->
+        {
+            final JFileChooser fc = new JFileChooser();
+            int modal = fc.showOpenDialog(this);
+            if (modal == JFileChooser.APPROVE_OPTION)
+            {
+                JSONObject obj = (JSONObject) JSONValue.parse(new FileReader(fc.getSelectedFile()));
+                parseTableJSON(obj);
+            }
+            return null;
+        });
+    }
+
+    private void onExportTable(ActionEvent evt)
+    {
+        AutoCatchWithDialog(() ->
+        {
+            final JFileChooser fc = new JFileChooser();
+            int modal = fc.showSaveDialog(this);
+            if (modal == JFileChooser.APPROVE_OPTION)
+            {
+                JSONObject jsonFile = new JSONObject();
+                jsonFile.put(FileType.JSON_KEY_FILE_TYPE, JSON_KEY_FILE_TYPE_TABLE);
+                JSONArray jsonTableArray = new JSONArray();
+                int cnt = table1.getRowCount();
+                for (int i = 0; i < cnt; ++i)
+                {
+                    JSONObject jsonTableObject = new JSONObject();
+                    Object url = table1.getValueAt(i, 0);
+                    Object path = table1.getValueAt(i, 1);
+                    jsonTableObject.put(JSON_KEY_REPO_URL, url);
+                    jsonTableObject.put(JSON_KEY_CLONE_PATH, path);
+                    jsonTableArray.add(jsonTableObject);
+                }
+                jsonFile.put(JSON_KEY_CONTENT, jsonTableArray);
+                FileWriter writer = new FileWriter(fc.getSelectedFile());
+                writer.write(jsonFile.toJSONString());
+                writer.close();
+            }
+            return null;
+        });
+    }
+
+    private void parseDateTimeJSON(JSONObject obj)
+    {
+        if (obj == null || !obj.get(FileType.JSON_KEY_FILE_TYPE).equals(JSON_KEY_FILE_TYPE_DATE))
+            return;
+        cbYear.setSelectedItem(obj.get(JSON_KEY_DATE_YEAR));
+        cbMonth.setSelectedItem(obj.get(JSON_KEY_DATE_MONTH));
+        cbDay.setSelectedItem(obj.get(JSON_KEY_DATE_DAY));
+        cbHour.setSelectedItem(obj.get(JSON_KEY_TIME_HOUR));
+        cbMinute.setSelectedItem(obj.get(JSON_KEY_TIME_MINUTE));
+        cbZone.setSelectedItem(obj.get(JSON_KEY_TIME_ZONE));
+    }
+
+    private void parseTableJSON(JSONObject obj)
+    {
+        if (obj == null || !obj.get(FileType.JSON_KEY_FILE_TYPE).equals(JSON_KEY_FILE_TYPE_TABLE))
+            return;
+        final DefaultTableModel model = (DefaultTableModel) table1.getModel();
+        final Object[] actionOption = {"Overwrite", "Append"};
+        final int modal = JOptionPane.showOptionDialog(
+                Fetcher.this,
+                "Actions to the current Table:",
+                "Import Table",
+                JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.WARNING_MESSAGE,
+                null,
+                actionOption,
+                actionOption[0]
+        );
+        // unexpected modal (ex: close the dialog)
+        if (modal == -1) return;
+        // option overwrite (might be based on index of object[] passed in)
+        if (modal == 0) model.setRowCount(0);
+        JSONArray jsonArray = (JSONArray)obj.get(JSON_KEY_CONTENT);
+        Object[] row = new Object[2];
+        for (int i = 0; i < jsonArray.size(); ++i)
+        {
+            JSONObject jsonObject = (JSONObject) jsonArray.get(i);
+            row[0] = jsonObject.get(JSON_KEY_REPO_URL);
+            row[1] = jsonObject.get(JSON_KEY_CLONE_PATH);
+            model.addRow(row);
         }
     }
 
@@ -349,8 +466,8 @@ public class Fetcher extends JFrame
         final ZoneId zoneId = ZoneId.systemDefault();
         final Set<String> availableZoneIds = ZoneId.getAvailableZoneIds();
         for (String s : availableZoneIds)
-            cbRegion.addItem(s);
-        cbRegion.setSelectedItem(zoneId.toString());
+            cbZone.addItem(s);
+        cbZone.setSelectedItem(zoneId.toString());
     }
 
     private void fillComboBoxCondition()
