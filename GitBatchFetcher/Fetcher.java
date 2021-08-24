@@ -25,6 +25,11 @@ import java.util.List;
 
 import org.json.simple.*;
 
+/** GUI App to wrap git fetch to specific date using OS commands.
+ * It also supports batch operation (fetch multiple repo at the same time).
+ * @author Ramadhan Kalih Sewu
+ * @version 1.0
+ */
 public class Fetcher extends JFrame
 {
     private JPanel mainPanel;
@@ -32,7 +37,6 @@ public class Fetcher extends JFrame
     private JTable table1;
     private JTextPane textLog;
     private JButton addButton;
-    private JTextArea textRepoInput;
     private JButton removeButton;
     private JComboBox<String> cbYear;
     private JComboBox<String> cbMonth;
@@ -43,7 +47,7 @@ public class Fetcher extends JFrame
     private JButton fetchLatestCommitButton;
     private JComboBox<String> cbCondition;
     private JTabbedPane tabbedPane1;
-    private JTextField textField1;
+    private JButton clearTableButton;
 
     private static final int BEFORE_TIME = 0;
     private static final int AFTER_TIME  = 1;
@@ -70,7 +74,7 @@ public class Fetcher extends JFrame
         setSize(mainPanel.getMinimumSize());
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setContentPane(mainPanel);
-        setTitle("Git Fetcher - Get Latest Commit by Time");
+        setTitle("Git Batch Fetcher");
         setVisible(true);
         setDropTarget(new DropTarget() {
             public synchronized void drop(DropTargetDropEvent evt) {
@@ -158,6 +162,7 @@ public class Fetcher extends JFrame
 
         addButton.addActionListener(this::onAddButton);
         removeButton.addActionListener(this::onRemoveButton);
+        clearTableButton.addActionListener(this::onClearButton);
         fetchLatestCommitButton.addActionListener(this::onFetchLatestCommitButton);
     }
 
@@ -355,7 +360,14 @@ public class Fetcher extends JFrame
 
     private void onAbout(ActionEvent evt)
     {
-
+        JOptionPane.showMessageDialog(
+                this,
+                "Developed by: Ramadhan Kalih Sewu\n" +
+                "Using OS commands to utilize git functionality\n" +
+                "Tested using Git version 2.25.1 on Ubuntu (Debian)",
+                "About",
+                JOptionPane.INFORMATION_MESSAGE
+        );
     }
 
     private void onImportDateTime(ActionEvent evt)
@@ -473,7 +485,7 @@ public class Fetcher extends JFrame
         // unexpected modal (ex: close the dialog)
         if (modal == -1) return;
         // option overwrite (might be based on index of object[] passed in)
-        if (modal == 0) model.setRowCount(0);
+        if (modal == 0) onClearButton(null);
         JSONArray jsonArray = (JSONArray)obj.get(JSON_KEY_CONTENT);
         Object[] row = new Object[2];
         for (int i = 0; i < jsonArray.size(); ++i)
@@ -499,6 +511,15 @@ public class Fetcher extends JFrame
             model.removeRow(indices[i]-i);
         if (table1.getSelectedRow() == -1)
             removeButton.setEnabled(false);
+    }
+
+    private void onClearButton(ActionEvent evt)
+    {
+        DefaultTableModel model = (DefaultTableModel) table1.getModel();
+        // tried using model.setRowCount(0) but it may throw exception
+        while (model.getRowCount() != 0)
+            model.removeRow(0);
+        removeButton.setEnabled(false);
     }
 
     private void removeBlankTableRows()
@@ -568,8 +589,8 @@ public class Fetcher extends JFrame
     private void fillComboBoxCondition()
     {
         // make sure in order because we read the combo box index
-        cbCondition.addItem("Before Time");
-        cbCondition.addItem("After Time");
+        cbCondition.addItem("Before Date & Time");
+        cbCondition.addItem("After Date & Time");
     }
 
     private void deleteDirRecursive(Path directory) throws IOException
