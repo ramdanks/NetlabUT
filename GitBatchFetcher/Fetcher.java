@@ -20,6 +20,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.TemporalAdjusters;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.List;
 
@@ -35,7 +36,6 @@ public class Fetcher extends JFrame
     private JPanel mainPanel;
     private JTextArea textVersion;
     private JTable table1;
-    private JTextPane textLog;
     private JButton addButton;
     private JButton removeButton;
     private JComboBox<String> cbYear;
@@ -46,7 +46,6 @@ public class Fetcher extends JFrame
     private JComboBox<String> cbMinute;
     private JButton fetchLatestCommitButton;
     private JComboBox<String> cbCondition;
-    private JTabbedPane tabbedPane1;
     private JButton clearTableButton;
 
     private static final int BEFORE_TIME = 0;
@@ -121,8 +120,6 @@ public class Fetcher extends JFrame
         fillComboBoxTimezone();
         fillComboBoxCondition();
 
-        textLog.setBackground(new Color(40,40,40));
-
         cbMonth.addActionListener(this::onMonthOrYearSelected);
         cbYear.addActionListener(this::onMonthOrYearSelected);
 
@@ -191,15 +188,7 @@ public class Fetcher extends JFrame
             protected Void doInBackground()
             {
                 Executable exec = () -> {
-
                     DefaultTableModel model = (DefaultTableModel) table1.getModel();
-
-                    StyledDocument doc = textLog.getStyledDocument();
-                    SimpleAttributeSet attrGood = new SimpleAttributeSet();
-                    SimpleAttributeSet attrBad = new SimpleAttributeSet();
-                    StyleConstants.setForeground(attrGood, new Color(220, 220, 200));
-                    StyleConstants.setForeground(attrBad, new Color(255, 120, 120));
-
                     // check if table contain a blankspace
                     boolean removeRowsWithAnyBlankColumn = false;
                     for (int i = 0; i < model.getRowCount(); ++i)
@@ -260,78 +249,30 @@ public class Fetcher extends JFrame
                         }
                     }
 
-                    // prepare args to git command
-                    int year       = Integer.parseInt((String) cbYear.getSelectedItem());
-                    int month      = cbMonth.getSelectedIndex() + 1;
-                    int day        = Integer.parseInt((String) cbDay.getSelectedItem());
-                    int hour       = Integer.parseInt((String) cbHour.getSelectedItem());
-                    int minute     = Integer.parseInt((String) cbMinute.getSelectedItem());
-                    int second     = 0;
-                    int nanosecond = 0;
-                    ZoneId zoneId  = ZoneId.of((String) cbZone.getSelectedItem());
-
-                    boolean fromBefore = false;
-                    if (cbCondition.getSelectedIndex() == BEFORE_TIME)
-                        fromBefore = true;
-
-                    String timestamp = GitCommand.getTimestampFrom(fromBefore, year, month, day, hour, minute, second, nanosecond, zoneId);
-                    String[] cmdGitHashLatestCommit = GitCommand.getCmdGitHashLatestCommit(timestamp);
-
-                    // focus tab on console log because we want to process fetching
-                    tabbedPane1.setSelectedIndex(1);
-                    for (int i = 0; i < model.getRowCount(); ++i)
+                    // prepare data for executor
+                    final int rowCount = model.getRowCount();
+                    Pair<String, String>[] clonePairs = new Pair[rowCount];
+                    for (int i = 0; i < rowCount; ++i)
                     {
                         String repoLink  = (String) model.getValueAt(i, 0);
                         String clonePath = (String) model.getValueAt(i, 1);
-
-                        String[] cmdGitClone = GitCommand.cmdGitClone(repoLink, clonePath);
-                        boolean cloningHappens = false;
-                        try
-                        {
-                            // string buffer for reading buffered reader from IO
-                            String s = null;
-                            // do git clone
-                            BufferedReader reader = commandLineExecutor(cmdGitClone, null);
-                            while ((s = reader.readLine()) != null)
-                            {
-                                // right now there's no way we would know if the message is error
-                                // for now, let's check the keyword "fatal" returned by "git" command
-                                if (s.contains("fatal"))
-                                    throw new Throwable(s);
-                                doc.insertString(doc.getLength(), s, attrGood);
-                                doc.insertString(doc.getLength(), "\n", attrGood);
-                            }
-                            // set to true after cloning completed successfully
-                            cloningHappens = true;
-                            // get commit hash (git log) from specified date and time
-                            reader = commandLineExecutor(cmdGitHashLatestCommit, clonePath);
-                            String hash = reader.readLine();
-                            // if there's no such commit, log and remove the clone dir
-                            if (hash == null)
-                                throw new Throwable("Found 0 Commit!");
-                            // checkout to the specified commit
-                            String[] cmdGitCheckout = GitCommand.getCmdGitCheckoutCommit(hash);
-                            reader = commandLineExecutor(cmdGitCheckout, clonePath);
-                            while ((s = reader.readLine()) != null)
-                            {
-                                doc.insertString(doc.getLength(), s, attrGood);
-                                doc.insertString(doc.getLength(), "\n", attrGood);
-                            }
-                            // cross check
-                            reader = commandLineExecutor(GitCommand.getCmdGitHashLatestCommit(), clonePath);
-                            s = reader.readLine();
-                            if (!hash.equals(s))
-                                throw new Throwable("Fail to checkout commit: " + hash);
-                        }
-                        catch (Throwable t)
-                        {
-                            doc.insertString(doc.getLength(), t.getMessage(), attrBad);
-                            doc.insertString(doc.getLength(), "\n", attrBad);
-                            // remove cloning directory on unsuccessful attempt
-                            if (cloningHappens)
-                                deleteDirRecursive(Paths.get(clonePath));
-                        }
+                        clonePairs[i] = new Pair<String, String>(repoLink, clonePath);
                     }
+
+                    // passed to executor to run git fetch
+                    new ExecutorFrame(
+                            Fetcher.this,
+                            clonePairs,
+                            cbCondition.getSelectedIndex() == BEFORE_TIME,
+                            Integer.parseInt((String) cbYear.getSelectedItem()),
+                            cbMonth.getSelectedIndex() + 1,
+                            Integer.parseInt((String) Objects.requireNonNull(cbDay.getSelectedItem())),
+                            Integer.parseInt((String) cbHour.getSelectedItem()),
+                            Integer.parseInt((String) cbMinute.getSelectedItem()),
+                            0,
+                            0,
+                            ZoneId.of((String) cbZone.getSelectedItem())
+                    );
                     return null;
                 };
                 try { exec.execute(); }
