@@ -1,13 +1,14 @@
 package com.Reflector;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
+import sun.reflect.ReflectionFactory;
+
+import java.lang.reflect.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-/** Class type wrapper to suppress throwable
+/** Class type wrapper to interface with {@link java.lang.reflect}. Almost every method declared in this class
+ * is suppressing {@link java.lang.Throwable}. it will return {@code null} on fail attempt.
  * @author Ramadhan Kalih Sewu
- * @version 1.1
+ * @version 1.2
  */
 public class ClassR
 {
@@ -38,7 +39,8 @@ public class ClassR
     /** get Class that is contained in this */
     public Class<?> getContainingClass() { return mClass; }
 
-    /** get every throwable that happens when using a method from {@link ClassR} */
+    /** get every throwable that was suppressed by this class except for
+     * {@link ClassR#getForceAccess(Method, Object)} */
     public ArrayList<Throwable> getThrowableList() { return mThrowableList; }
 
     /** create an instance of a class using default constructor */
@@ -144,4 +146,42 @@ public class ClassR
         return true;
     }
 
+    /** This will try to find an object that has access to call {@code method}.
+     * If {@code method} is instance method (not static) and the given {@code obj} is null,
+     * it will try to create an instance of a class that declares the {@code method}.
+     * After that, it will check the given {@code obj} or the instance that was previously constructed
+     * does have access to {@code method}. If it doesn't, it will make your {@code method} accessible
+     * using {@link java.lang.reflect.Method#setAccessible(boolean)}.
+     * @param method Method that needs an access
+     * @param obj Object that tries to invoke the {@code method}. (can be null)
+     * @return an Object that may have access to {@code method}. It may return the given {@code obj}
+     * or return a new instantiation of the declaring class from {@code method}.
+     * @throws InvocationTargetException may happen when try to create an instance, triggered by: {@link Constructor#newInstance(Object...)}
+     * @throws InstantiationException may happen when try to create an instance, triggered by: {@link Constructor#newInstance(Object...)}
+     * @throws IllegalAccessException may happen when try to create an instance, triggered by: {@link Constructor#newInstance(Object...)}
+     * @throws NoSuchMethodException if the given {@code method} is null or
+     * may happen when try to create an instance, triggered by: {@link Class#getDeclaredConstructor(Class[])}
+     */
+    public static Object getForceAccess(Method method, Object obj)
+            throws InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException
+    {
+        if (method == null) throw new NoSuchMethodException("the given Method can not be null");
+        // if static method, we need an object
+        if (obj == null && !Modifier.isStatic(method.getModifiers()))
+        {
+            final Class<?> clazz = method.getDeclaringClass();
+            final ReflectionFactory reflection = ReflectionFactory.getReflectionFactory();
+            final Constructor<?> constructor = reflection.newConstructorForSerialization(
+                    clazz, Object.class.getDeclaredConstructor(new Class[0]));
+            obj = constructor.newInstance(new Object[0]);
+        }
+        // ask if obj can have access to method
+        boolean objectCanAccess = false;
+        try { objectCanAccess = method.canAccess(obj); }
+        catch (IllegalArgumentException ignored) {}
+        // force set accessible if obj doesn't have access to method
+        if (!objectCanAccess)
+            method.setAccessible(true);
+        return obj;
+    }
 }

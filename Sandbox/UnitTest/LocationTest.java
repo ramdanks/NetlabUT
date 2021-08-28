@@ -114,7 +114,7 @@ public class LocationTest extends ReflectorUnitTest
             Object obj = null;
             // meminta object yang dapat mengakses lokasi tersebut (apabila non static).
             // Ini juga memaksa akses terhadap method apabila memiliki modifier private.
-            try { obj = getForceAccess(Location, isIndonesia, null); }
+            try { obj = ClassR.getForceAccess(isIndonesia, null); }
             catch (Throwable ignored) {}
             assumeTrue(isIndonesia, obj, "indonesia");
             assumeTrue(isIndonesia, obj, "IndoNesIa");

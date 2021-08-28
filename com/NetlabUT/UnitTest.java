@@ -17,15 +17,25 @@ public abstract class UnitTest
 
     private String mTestName = null;
     private ArrayList<Profile<Object>> mTestProfile = new ArrayList<>();
-    
+
+    /** assign a test name using the name of the inherited class */
     protected UnitTest() { mTestName = this.getClass().getName(); }
+    /** assign a specific / custom test name */
     protected UnitTest(String testName) { mTestName = testName; }
 
+    /** get the name of the test */
     public String getTestName() { return mTestName; }
+    /** get the result of the test that was recorded using {@link UnitTest#record(Profile)} */
     public ArrayList<Profile<Object>> getTestProfile() { return mTestProfile; }
+    /** get how much test has been done and recorded */
     public int getTestCount() { return mTestCount; }
+    /** get how much test that is considered to be correct (success) */
     public int getSuccessCount() { return mSuccessCount; }
+    /** add a listener which will be called after the test has been recorded */
     public void addProfileReportListener(ProfileReport listener) { mReportListener = listener; }
+    /** add a listener which will be called before recording the result of the test.
+     * Listener will get an information about the test result passed to the function param of {@link ProfileFinalize#predicate(Profile)}.
+     * The correctness of the test will be determined by the return value of that function as well */
     protected void addProfileFinalizeListener(ProfileFinalize listener) { mFinalizeListener = listener; }
 
     /** entry point for calculating unit test, call assume function to record testing */
@@ -308,6 +318,7 @@ public abstract class UnitTest
         return false;
     }
 
+    /** check if both params are the same type of array */
     private <T> boolean arrayTypeMismatch(T a, T b)
     {
         // array should not be null object
