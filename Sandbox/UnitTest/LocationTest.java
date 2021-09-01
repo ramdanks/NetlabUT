@@ -10,26 +10,27 @@ import com.NetlabUT.*;
 // mapping class dengan menggunakan Reflector, jangan lupa "import java.lang.reflect"
 // disini kita juga akan extends ReflectorUnitTest dan beri definisi pada method scenario
 // sebagai entry point untuk melakukan unit test
-public class LocationTest extends ReflectorUnitTest
+public class LocationTest extends ReflectorUnitTest implements MonoPackageTester
 {
-    private final ClassR Location;
+    private ClassR Location;
 
-    private final Field city;
-    private final Field province;
-    private final Field country;
+    private Field city;
+    private Field province;
+    private Field country;
 
-    private final Constructor ctor0;
-    private final Constructor ctor1;
+    private Constructor<?> ctor0;
+    private Constructor<?> ctor1;
 
-    private final Method getCity;
-    private final Method getProvince;
-    private final Method isIndonesia;
+    private Method getCity;
+    private Method getProvince;
+    private Method isIndonesia;
 
-    public LocationTest()
+    @Override
+    public void obtainPackage(String packageName)
     {
         // package name adalah tempat dimana class berada. seperti contohnya
         // class "String" yang berada dalam package "java.lang".
-        this.Location       = new ClassR(Source.getPackageName(), "Location");
+        this.Location       = new ClassR(packageName, "Location");
         // meminta field yang dideklarasi dalam class Location,
         // alternatifnya menggunakan getField(), yang hanya membolehkan
         // untuk meminta field yang bersifat accessible (public).
@@ -48,10 +49,6 @@ public class LocationTest extends ReflectorUnitTest
         this.getCity        = Location.getDeclaredMethod("getCity");
         this.getProvince    = Location.getDeclaredMethod("getProvince");
         this.isIndonesia    = Location.getDeclaredMethod("isIndonesia", String.class);
-        // gunakan untuk melihat detail dari Class dalam bentuk GUI (opsional)
-        Class<?> cLocation  = Location.getContainingClass();
-        if (cLocation != null)
-            new ClassDetail(cLocation);
     }
 
     @Override
@@ -122,5 +119,4 @@ public class LocationTest extends ReflectorUnitTest
             assumeFalse(isIndonesia, obj, "Japan");
         }
     }
-    
 }

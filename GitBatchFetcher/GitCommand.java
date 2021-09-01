@@ -21,7 +21,8 @@ final class GitCommand
         return copy;
     }
 
-    public static String getTimestampFrom(boolean before, int year, int month, int day, int hour, int minute, int seconds, int nanoSeconds, ZoneId zoneId)
+    public static String getTimestampFrom(  boolean before, int year, int month, int day,
+                                            int hour, int minute, int seconds, int nanoSeconds, ZoneId zoneId)
     {
         String formatted = ZonedDateTime.of(year, month, day, hour, minute, seconds, nanoSeconds, zoneId)
                             .format(DateTimeFormatter.ISO_DATE_TIME);
