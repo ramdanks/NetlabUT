@@ -18,15 +18,10 @@ import com.NetlabUT.WindowProfiler;
  */
 public class PackageRunner
 {
-    public static String currentPackage = null;
-
-    /** current package needs to be tested. It is updated by {@link PackageRunner#run(String, ReflectorUnitTest[])} */
-    public static String getCurrentPackage() { return currentPackage; }
-
     /** run {@code unitTestClasses} for every packages that was
      * listed from [Property of "user.dir"]/TestedPackages.txt.
-     * Refer to your ReflectorUnitTest Classes to run the package
-     * from {@link PackageRunner#getCurrentPackage()}.
+     * Refer to your ReflectorUnitTest Classes to run the test
+     * from the given package name {@link MonoPackageTester#obtainPackage(String)}.
      * @param title the title of unit test passed to {@link com.NetlabUT.WindowProfiler}
      * @param unitTestClasses list of reflector unit test for each package to run */
     @SafeVarargs
@@ -47,20 +42,19 @@ public class PackageRunner
                 null,
                 "Please create a file: \n" +
                 file.getAbsolutePath() +
-                "\nand specify the list of packages you want to run using Reflector Unit Test" +
-                "\nThe list should be separated by line!" +
+                "\nSpecify the list of packages you want to run using Reflector Unit Test" +
+                "\nThe list should contains the name of existing packages and separated by line!" +
                 "\nIf empty, it will run under the scope of your unit test package!",
                 "Specify Packages",
                 JOptionPane.INFORMATION_MESSAGE
             );
         }
 
-        UnitTest[] unitTests = new UnitTest[unitTestClasses.length];
         for (String pkg : packages)
         {
             for (T unitTestClass : unitTestClasses)
                 unitTestClass.obtainPackage(pkg);
-            WindowProfiler wnd = new WindowProfiler(title, unitTests);
+            WindowProfiler wnd = new WindowProfiler(title, unitTestClasses);
             wnd.setTitle("Package: " + pkg);
         }
     }
