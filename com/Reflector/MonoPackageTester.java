@@ -1,4 +1,6 @@
 package com.Reflector;
-
-@FunctionalInterface
-public interface MonoPackageTester { void obtainPackage(String packageName); }
+public interface MonoPackageTester
+{
+    <T extends ReflectorUnitTest> T newInstance();
+    void obtainPackage(String packageName);
+}

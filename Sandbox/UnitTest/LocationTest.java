@@ -26,6 +26,12 @@ public class LocationTest extends ReflectorUnitTest implements MonoPackageTester
     private Method isIndonesia;
 
     @Override
+    public LocationTest newInstance()
+    {
+        return new LocationTest();
+    }
+
+    @Override
     public void obtainPackage(String packageName)
     {
         // package name adalah tempat dimana class berada. seperti contohnya

@@ -1,7 +1,7 @@
 package Sandbox.GoldenSample;
 
 // as a device under test
-public class Location
+class Location
 {
     private String city;
     private String province;

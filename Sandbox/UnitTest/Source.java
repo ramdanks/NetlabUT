@@ -4,6 +4,6 @@ public class Source
 {
     public static void main(String[] args)
     {
-        PackageRunner.run("Title", new LocationTest());
+        new PackageRunner("Title", new LocationTest()).setVisible(true);
     }
 }

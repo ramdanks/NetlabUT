@@ -22,13 +22,14 @@ public class WindowProfiler extends JFrame
     private JComboBox cbUnitTest;
     private ProfilingResultsForm[] formProfileResults;
 
+    private int totalSuccessCount = 0;
+    private int totalTestCount = 0;
+
     public WindowProfiler(String title, UnitTest[] unitList)
     {
         assert unitList != null;
 
         setTitle("Unit Test Grading");
-        setVisible(true);
-
         setSize(mainPanel.getPreferredSize());
         setMinimumSize(mainPanel.getMinimumSize());
         setContentPane(mainPanel);
@@ -52,6 +53,10 @@ public class WindowProfiler extends JFrame
         btnAllTest.addActionListener(this::onRunAllTest);
         btnSelectedTest.addActionListener(this::onRunSelectedTest);
     }
+
+    public int getTotalSuccessCount() { return totalSuccessCount; }
+
+    public int getTotalTestCount() { return totalTestCount; }
 
     private void runUnitTest(int index)
     {
@@ -104,8 +109,8 @@ public class WindowProfiler extends JFrame
 
     private void refreshTestCount()
     {
-        int totalTestCount = 0;
-        int totalSuccessCount = 0;
+        totalTestCount = 0;
+        totalSuccessCount = 0;
         for (int i = 0; i < formProfileResults.length; i++)
         {
             UnitTest unitTest = formProfileResults[i].getUnitTest();
@@ -119,6 +124,5 @@ public class WindowProfiler extends JFrame
     public void onContextMenuAbout(ActionEvent evt) {
 
     }
-
 
 }
