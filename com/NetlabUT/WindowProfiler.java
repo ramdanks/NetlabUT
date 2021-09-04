@@ -3,11 +3,12 @@ package com.NetlabUT;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
 import java.util.Date;
 
 /** Class to display profile test from {@link com.NetlabUT.UnitTest} into a GUI
  * @author Ramadhan Kalih Sewu
- * @version 1.1
+ * @version 1.2
  */
 public class WindowProfiler extends JFrame
 {
@@ -19,16 +20,14 @@ public class WindowProfiler extends JFrame
     private JTabbedPane tabUnitTest;
     private JButton btnAllTest;
     private JButton btnSelectedTest;
-    private JComboBox cbUnitTest;
-    private ProfilingResultsForm[] formProfileResults;
+    private JComboBox<String> cbUnitTest;
+    private ArrayList<ProfilingResultsForm> formProfileResults;
 
     private int totalSuccessCount = 0;
     private int totalTestCount = 0;
 
-    public WindowProfiler(String title, UnitTest[] unitList)
+    public WindowProfiler(String title)
     {
-        assert unitList != null;
-
         setTitle("Unit Test Grading");
         setSize(mainPanel.getPreferredSize());
         setMinimumSize(mainPanel.getMinimumSize());
@@ -38,20 +37,25 @@ public class WindowProfiler extends JFrame
         labelTitle.setText(title);
         labelDate.setText(new Date().toString());
 
-        formProfileResults = new ProfilingResultsForm[unitList.length];
-        for (int i = 0; i < unitList.length; i++)
+        btnAllTest.addActionListener(this::onRunAllTest);
+        btnSelectedTest.addActionListener(this::onRunSelectedTest);
+    }
+
+    public void add(UnitTest... unitTests)
+    {
+        if (formProfileResults == null)
+            formProfileResults = new ArrayList<>(unitTests.length);
+        for (int i = 0; i < unitTests.length; i++)
         {
-            formProfileResults[i] = new ProfilingResultsForm(unitList[i]);
-            tabUnitTest.addTab(unitList[i].getTestName(), formProfileResults[i].getContentPanel());
-            cbUnitTest.addItem(unitList[i].getTestName());
+            ProfilingResultsForm form = new ProfilingResultsForm(unitTests[i]);
+            formProfileResults.add(form);
+            tabUnitTest.addTab(unitTests[i].getTestName(), form.getContentPane());
+            cbUnitTest.addItem(unitTests[i].getTestName());
 
             runUnitTest(i);
             refreshUnitTest(i);
         }
         refreshTestCount();
-
-        btnAllTest.addActionListener(this::onRunAllTest);
-        btnSelectedTest.addActionListener(this::onRunSelectedTest);
     }
 
     public int getTotalSuccessCount() { return totalSuccessCount; }
@@ -60,14 +64,14 @@ public class WindowProfiler extends JFrame
 
     private void runUnitTest(int index)
     {
-        UnitTest ut = formProfileResults[index].getUnitTest();
+        UnitTest ut = formProfileResults.get(index).getUnitTest();
         new UnitTestRunner(this, ut).setVisible(true);
     }
     private void refreshUnitTest(int index)
     {
-        UnitTest unitTest = formProfileResults[index].getUnitTest();
+        UnitTest unitTest = formProfileResults.get(index).getUnitTest();
         // refresh profile results panel
-        formProfileResults[index].refresh();
+        formProfileResults.get(index).refresh();
         // set tooltip
         int failCount = unitTest.getTestCount() - unitTest.getSuccessCount();
         String tooltip = String.format("%s | Fail: %d", unitTest.getTestName(), failCount);
@@ -92,7 +96,7 @@ public class WindowProfiler extends JFrame
 
     private void onRunAllTest(ActionEvent evt)
     {
-        for (int i = 0; i < formProfileResults.length; i++)
+        for (int i = 0; i < formProfileResults.size(); i++)
         {
             runUnitTest(i);
             refreshUnitTest(i);
@@ -111,9 +115,9 @@ public class WindowProfiler extends JFrame
     {
         totalTestCount = 0;
         totalSuccessCount = 0;
-        for (int i = 0; i < formProfileResults.length; i++)
+        for (ProfilingResultsForm form : formProfileResults)
         {
-            UnitTest unitTest = formProfileResults[i].getUnitTest();
+            UnitTest unitTest = form.getUnitTest();
             totalTestCount += unitTest.getTestCount();
             totalSuccessCount += unitTest.getSuccessCount();
         }

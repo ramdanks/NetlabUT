@@ -14,7 +14,7 @@ import java.util.function.Function;
  * @author Ramadhan Kalih Sewu
  * @version 1.1
  */
-final class ProfilingResultsForm
+final class ProfilingResultsForm extends JFrame
 {
     private static final String[] COLUMN_PROFILE = { "Assumption", "Message", "Time (ns)", "Reference", "Actual" };
 
@@ -29,11 +29,11 @@ final class ProfilingResultsForm
 
     public ProfilingResultsForm(UnitTest unitTest)
     {
+        setContentPane(mainPanel);
         initTable();
         setProfileResults(unitTest);
     }
 
-    public JPanel getContentPanel() { return mainPanel; }
     public void refresh() { setProfileResults(unitTest); }
     public UnitTest getUnitTest() { return unitTest; }
     public void setProfileResults(UnitTest unitTest)

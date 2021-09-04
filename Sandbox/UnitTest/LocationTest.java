@@ -10,7 +10,7 @@ import com.NetlabUT.*;
 // mapping class dengan menggunakan Reflector, jangan lupa "import java.lang.reflect"
 // disini kita juga akan extends ReflectorUnitTest dan beri definisi pada method scenario
 // sebagai entry point untuk melakukan unit test
-public class LocationTest extends ReflectorUnitTest implements MonoPackageTester
+public class LocationTest extends ReflectorUnitTest implements MonoPackageTester<LocationTest>
 {
     private ClassR Location;
 
@@ -71,7 +71,15 @@ public class LocationTest extends ReflectorUnitTest implements MonoPackageTester
             assumeNotNull(getProvince);
             assumeNotNull(isIndonesia);
         }
-        
+
+        // poin untuk modifier yang sesuai
+        {
+            String msg = "Modifier ";
+            assumeModifier(msg + "getCity", ReflectorModifier.PUBLIC, getCity);
+            assumeModifier(msg + "getProvince", ReflectorModifier.PUBLIC, getProvince);
+            assumeModifier(msg + "isIndonesia", ReflectorModifier.PUBLIC, isIndonesia);
+        }
+
         // poin untuk return type method yang sesuai
         {
             // assumeSame akan menggunakan operand ==

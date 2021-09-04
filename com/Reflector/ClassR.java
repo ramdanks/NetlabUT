@@ -3,7 +3,6 @@ import sun.reflect.ReflectionFactory;
 
 import java.lang.reflect.*;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 /** Class type wrapper to interface with {@code java.lang.reflect}. Almost every method declared in this class
  * is suppressing {@link java.lang.Throwable}. it will return {@code null} on fail attempt.

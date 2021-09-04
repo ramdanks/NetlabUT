@@ -1,12 +1,12 @@
 package com.Reflector;
 
 import com.NetlabUT.*;
+import com.NetlabUT.Executable;
 import sun.reflect.ReflectionFactory;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
+import java.lang.reflect.*;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 /** extended class from {@link UnitTest}, add support to {@link java.lang.reflect.Method}.
  * It helps translate a valid {@link Throwable} caused by underlying {@code Method}
@@ -21,13 +21,39 @@ public abstract class ReflectorUnitTest extends UnitTest
     /** call {@link UnitTest#UnitTest(String)} */
     protected ReflectorUnitTest(String testName) { super(testName); }
 
+    protected void assumeModifier(ReflectorModifier modifier, Class<?> clazz)
+    { assumeModifier(null, modifier, clazz); }
+    protected void assumeModifier(ReflectorModifier modifier, Method method)
+    { assumeModifier(null, modifier, method); }
+    protected void assumeModifier(ReflectorModifier modifier, Constructor<?> constructor)
+    { assumeModifier(null, modifier, constructor); }
+    protected void assumeModifier(ReflectorModifier modifier, Field field)
+    { assumeModifier(null, modifier, field); }
+
+    protected void assumeModifier(String message, ReflectorModifier modifier, Class<?> clazz)
+    { recordModifierAssumption(message, modifier, clazz == null, Logic.isModifier(modifier, clazz)); }
+    protected void assumeModifier(String message, ReflectorModifier modifier, Method method)
+    { recordModifierAssumption(message, modifier, method == null, Logic.isModifier(modifier, method)); }
+    protected void assumeModifier(String message, ReflectorModifier modifier, Constructor<?> constructor)
+    { recordModifierAssumption(message, modifier, constructor == null, Logic.isModifier(modifier, constructor)); }
+    protected void assumeModifier(String message, ReflectorModifier modifier, Field field)
+    { recordModifierAssumption(message, modifier, field == null, Logic.isModifier(modifier, field)); }
+
+    private void recordModifierAssumption(String message, ReflectorModifier modifier, boolean isNull, boolean correct)
+    {
+        Metric<Object> metric = new Metric<>(correct ? modifier : "other", 0, null);
+        if (isNull) metric.returns = "null";
+        Profile<Object> profile = new Profile<>(metric, modifier, Status.EQUAL, correct, message);
+        record(profile);
+    }
+
     /** It will run {@link java.lang.reflect.Method#invoke(Object, Object...)} through
      * {@link Benchmark#run(Executable)}. When invoked, expect to throw a type of {@link java.lang.Throwable}.
      * This was done by observing an {@link java.lang.reflect.InvocationTargetException}
      * @param method a method that will be invoked
      * @param obj an object to run the {@code method} (can be null if static method)
      * @param args an argument passed to the {@code method} */
-    protected void assumeThrows(Method method, Object obj, Object... args)
+    protected void assumeThrows(String message, Method method, Object obj, Object... args)
     {
         Metric<Object> metric = Benchmark.run(() -> method.invoke(obj, args));
         if (metric.isThrowing())
@@ -36,7 +62,7 @@ public abstract class ReflectorUnitTest extends UnitTest
             {
                 metric.throwable = ((InvocationTargetException) metric.throwable).getTargetException();
                 boolean correct = Logical.throwing(metric.throwable);
-                record(new Profile<Object>(metric, Throwable.class, Status.THROWS, correct, null));
+                record(new Profile<Object>(metric, Throwable.class, Status.THROWS, correct, message));
                 return;
             }
             metric.throwable = new ReflectorException(method, metric.throwable);
@@ -51,7 +77,7 @@ public abstract class ReflectorUnitTest extends UnitTest
      * @param method a method that will be invoked
      * @param obj an object to run the {@code method} (can be null if static method)
      * @param args an argument passed to the {@code method} */
-    protected void assumeThrows(Class<?> expected, Method method, Object obj, Object... args)
+    protected void assumeThrows(String message, Class<?> expected, Method method, Object obj, Object... args)
     {
         Metric<Object> metric = Benchmark.run(() -> method.invoke(obj, args));
         if (metric.isThrowing())
@@ -60,7 +86,7 @@ public abstract class ReflectorUnitTest extends UnitTest
             {
                 metric.throwable = ((InvocationTargetException) metric.throwable).getTargetException();
                 boolean correct = Logical.throwing(expected, metric.throwable);
-                record(new Profile<Object>(metric, expected, Status.THROWS_TYPE, correct, null));
+                record(new Profile<Object>(metric, expected, Status.THROWS_TYPE, correct, message));
                 return;
             }
             metric.throwable = new ReflectorException(method, metric.throwable);
@@ -69,15 +95,23 @@ public abstract class ReflectorUnitTest extends UnitTest
     }
 
     /** It will run {@link java.lang.reflect.Method#invoke(Object, Object...)} through
-     * {@link Benchmark#run(Executable)}. When invoked, expect to throw a type of {@code expected}.
+     * {@link Benchmark#run(Executable)}. When invoked, expect to throw a type of {@link java.lang.Throwable}.
      * This was done by observing an {@link java.lang.reflect.InvocationTargetException}
-     * @param expected contains a type that is expected from throws event caused by {@code method}. this was
-     *                 achieved by calling {@link ClassR#getContainingClass()}
      * @param method a method that will be invoked
      * @param obj an object to run the {@code method} (can be null if static method)
      * @param args an argument passed to the {@code method} */
-    protected void assumeThrows(ClassR expected, Method method, Object obj, Object... args)
-    { assumeThrows(expected.getContainingClass(), method, obj, args); }
+    protected void assumeThrows(Method method, Object obj, Object... args)
+    { assumeThrows((String) null, method, obj, args); }
+
+    /** It will run {@link java.lang.reflect.Method#invoke(Object, Object...)} through
+     * {@link Benchmark#run(Executable)}. When invoked, expect to throw a type of {@code expected}.
+     * This was done by observing an {@link java.lang.reflect.InvocationTargetException}
+     * @param expected a type that is expected from throws event caused by {@code method}
+     * @param method a method that will be invoked
+     * @param obj an object to run the {@code method} (can be null if static method)
+     * @param args an argument passed to the {@code method} */
+    protected void assumeThrows(Class<?> expected, Method method, Object obj, Object... args)
+    { assumeThrows(null, expected, method, obj, args); }
 
     /** When invoked using {@link java.lang.reflect.Method#invoke(Object, Object...)},
      * expect to return {@code null}

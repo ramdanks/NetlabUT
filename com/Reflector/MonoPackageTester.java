@@ -1,6 +1,6 @@
 package com.Reflector;
-public interface MonoPackageTester
+public interface MonoPackageTester <T extends ReflectorUnitTest>
 {
-    <T extends ReflectorUnitTest> T newInstance();
+    T newInstance();
     void obtainPackage(String packageName);
 }

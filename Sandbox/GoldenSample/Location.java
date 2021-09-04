@@ -1,7 +1,7 @@
 package Sandbox.GoldenSample;
 
 // as a device under test
-class Location
+public class Location
 {
     private String city;
     private String province;
@@ -18,5 +18,5 @@ class Location
     public String getCity() { return city; }
     public String getProvince() { return province; }
 
-    private boolean isIndonesia(String country) { return country != null && country.equalsIgnoreCase("indonesia"); }
+    public boolean isIndonesia(String country) { return country != null && country.equalsIgnoreCase("indonesia"); }
 }
