@@ -7,12 +7,12 @@ import java.util.ArrayList;
 /** Class type wrapper to interface with {@code java.lang.reflect}. Almost every method declared in this class
  * is suppressing {@link java.lang.Throwable}. it will return {@code null} on fail attempt.
  * @author Ramadhan Kalih Sewu
- * @version 1.2
+ * @version 1.2.1
  */
 public class ClassR
 {
     private Class<?> mClass;
-    private ArrayList<Throwable> mThrowableList = new ArrayList<>();
+    private final ArrayList<Throwable> mThrowableList = new ArrayList<>();
 
     /** assign containing class */
     public ClassR(Class<?> aClass) { mClass = aClass; }
@@ -145,9 +145,46 @@ public class ClassR
         return true;
     }
 
+    /** create instantiation of the containing class using default constructor.
+     * it will force the constructor to accessible and then call it. This helps to create
+     * an instantiation even though the ctor was declared private, protected, or package isn't accessible. */
+    public Object getDefaultInstantiation()
+            throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException
+    {
+        return getDefaultInstantiation(mClass);
+    }
+
+    /** create an instantiation without calling the constructor (bypassing or faking a creation) */
+    public Object getBypassInstantiation()
+            throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException
+    {
+        return getBypassInstantiation(mClass);
+    }
+
+    /** create instantiation of the{@code clazz} using default constructor.
+     * it will force the constructor to accessible and then call it. This helps to create
+     * an instantiation even though the ctor was declared private, protected, or package isn't accessible. */
+    public static <T> T getDefaultInstantiation(Class<T> clazz)
+            throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException
+    {
+        Constructor<T> constructor = clazz.getDeclaredConstructor();
+        constructor.setAccessible(true);
+        return (T) constructor.newInstance();
+    }
+
+    /** create an instantiation without calling the constructor */
+    @SuppressWarnings("unchecked")
+    public static <T> T getBypassInstantiation(Class<T> clazz)
+            throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException
+    {
+        final ReflectionFactory reflection = ReflectionFactory.getReflectionFactory();
+        final Constructor<?> constructor = reflection.newConstructorForSerialization(clazz, Object.class.getDeclaredConstructor());
+        return (T) constructor.newInstance(new Object[0]);
+    }
+
     /** This will try to find an object that has access to call {@code method}.
-     * If {@code method} is instance method (not static) and the given {@code obj} is null,
-     * it will try to create an instance of a class that declares the {@code method}.
+     * If {@code method} is instance method (not static) and the given {@code obj} is null, it will try to create
+     * an instance from the declaring class of {@code method} using {@link ClassR#getBypassInstantiation(Class)}.
      * After that, it will check the given {@code obj} or the instance that was previously constructed
      * does have access to {@code method}. If it doesn't, it will make your {@code method} accessible
      * using {@link java.lang.reflect.Method#setAccessible(boolean)}.
@@ -167,13 +204,7 @@ public class ClassR
         if (method == null) throw new NoSuchMethodException("the given Method can not be null");
         // if static method, we need an object
         if (obj == null && !Modifier.isStatic(method.getModifiers()))
-        {
-            final Class<?> clazz = method.getDeclaringClass();
-            final ReflectionFactory reflection = ReflectionFactory.getReflectionFactory();
-            final Constructor<?> constructor = reflection.newConstructorForSerialization(
-                    clazz, Object.class.getDeclaredConstructor(new Class[0]));
-            obj = constructor.newInstance(new Object[0]);
-        }
+            obj = getBypassInstantiation(method.getDeclaringClass());
         // ask if obj can have access to method
         boolean objectCanAccess = false;
         try { objectCanAccess = method.canAccess(obj); }
