@@ -10,67 +10,34 @@ import com.NetlabUT.*;
 // mapping class dengan menggunakan Reflector, jangan lupa "import java.lang.reflect"
 // disini kita juga akan extends ReflectorUnitTest dan beri definisi pada method scenario
 // sebagai entry point untuk melakukan unit test
-public class LocationTest extends ReflectorUnitTest implements MonoPackageTester<LocationTest>
+@ReflectTester("Location")
+public class LocationTest
 {
-    private ClassR Location;
-
+    @ReflectField
     private Field city;
+    @ReflectField
     private Field province;
+    @ReflectField
     private Field country;
-
+    
+    @ReflectCtor
     private Constructor<?> ctor0;
+    @ReflectCtor(params={String.class, String.class, String.class})
     private Constructor<?> ctor1;
-
+    
+    @ReflectMethod(params={})
     private Method getCity;
+    @ReflectMethod(params={})
     private Method getProvince;
+    @ReflectMethod(params={String.class})
     private Method isIndonesia;
-
-    @Override
-    public LocationTest newInstance()
-    {
-        return new LocationTest();
-    }
-
-    @Override
-    public void obtainPackage(String packageName)
-    {
-        // package name adalah tempat dimana class berada. seperti contohnya
-        // class "String" yang berada dalam package "java.lang".
-        this.Location       = new ClassR(packageName, "Location");
-        // meminta field yang dideklarasi dalam class Location,
-        // alternatifnya menggunakan getField(), yang hanya membolehkan
-        // untuk meminta field yang bersifat accessible (public).
-        // baiknya selalu gunakan getDeclaredField() untuk mengantisipasi access modifier yg tak pasti.
-        this.city           = Location.getDeclaredField("city");
-        this.province       = Location.getDeclaredField("province");
-        this.country        = Location.getDeclaredField("country");
-        // meminta constructor pada class Location
-        // sesuaikan argumen pada getConstructor() sesuai dengan parameter ctor yang diharapkan
-        this.ctor0          = Location.getConstructor();
-        this.ctor1          = Location.getConstructor(String.class, String.class, String.class);
-        // meminta method yang dideklarasi dalam class Location,
-        // alternatifnya menggunakan getMethod(), yang hanya membolehkan
-        // untuk meminta method yang bersifat accessible (public).
-        // baiknya selalu gunakan getDeclaredField() untuk mengantisipasi access modifier yg tak pasti.
-        this.getCity        = Location.getDeclaredMethod("getCity");
-        this.getProvince    = Location.getDeclaredMethod("getProvince");
-        this.isIndonesia    = Location.getDeclaredMethod("isIndonesia", String.class);
-    }
+    
+    @ReflectTest
+    void modifier() throws Exception { assumeModifier(ReflectorModifier.PUBLIC, getCity);  }
 
     @Override
     protected void scenario()
     {
-        // poin untuk deklarasi field, method, dan ctor sesuai dengan (nama, parameter)
-        {
-            assumeNotNull(city);
-            assumeNotNull(province);
-            assumeNotNull(country);
-            assumeNotNull(ctor0);
-            assumeNotNull(ctor1);
-            assumeNotNull(getCity);
-            assumeNotNull(getProvince);
-            assumeNotNull(isIndonesia);
-        }
 
         // poin untuk modifier yang sesuai
         {

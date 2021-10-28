@@ -1,10 +1,19 @@
 package com.NetlabUT;
 
 import javax.swing.*;
+
+import org.reflections.Reflections;
+
+import com.Reflector.ReflectTest;
+import com.Reflector.ReflectTester;
+
 import java.awt.*;
 import java.awt.event.*;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Set;
 
 /** Class to display profile test from {@link com.NetlabUT.UnitTest} into a GUI
  * @author Ramadhan Kalih Sewu
@@ -26,7 +35,9 @@ public class WindowProfiler extends JFrame
     private int totalSuccessCount = 0;
     private int totalTestCount = 0;
 
-    public WindowProfiler(String title)
+    public WindowProfiler(Class<?> sourceClass, String title) 
+    		throws ClassNotFoundException, IllegalAccessException, IllegalArgumentException,
+    		InvocationTargetException, InstantiationException, NoSuchMethodException, SecurityException
     {
         setTitle("Unit Test Grading");
         setSize(mainPanel.getPreferredSize());
@@ -39,6 +50,22 @@ public class WindowProfiler extends JFrame
 
         btnAllTest.addActionListener(this::onRunAllTest);
         btnSelectedTest.addActionListener(this::onRunSelectedTest);
+        
+        String packageName = sourceClass.getPackageName();
+        
+        Reflections reflections = new Reflections(packageName);
+        Set<Class<?>> classes = reflections.getTypesAnnotatedWith(ReflectTester.class);
+        for (Class<?> ut : classes)
+        {
+        	ReflectTester tester = ut.getAnnotation(ReflectTester.class);
+        	Class<?> clazz = Class.forName(packageName + "." + tester.value());
+        	Set<Method> methods = new Reflections(clazz).getMethodsAnnotatedWith(ReflectTest.class);
+        	Object instance = clazz.getDeclaredConstructor().newInstance();
+        	for (Method m : methods)
+        	{
+        		m.invoke(instance);
+        	}
+        }
     }
 
     public void add(UnitTest... unitTests)

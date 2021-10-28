@@ -16,11 +16,7 @@ import java.util.function.Supplier;
  */
 public abstract class ReflectorUnitTest extends UnitTest
 {
-    /** call {@link UnitTest#UnitTest()} */
-    protected ReflectorUnitTest() {}
-    /** call {@link UnitTest#UnitTest(String)} */
-    protected ReflectorUnitTest(String testName) { super(testName); }
-
+	
     protected void assumeModifier(ReflectorModifier modifier, Class<?> clazz)
     { assumeModifier(null, modifier, clazz); }
     protected void assumeModifier(ReflectorModifier modifier, Method method)

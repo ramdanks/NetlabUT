@@ -7,3 +7,4 @@ out/**
 
 # compiled program
 *.class
+/bin/
