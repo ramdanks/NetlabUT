@@ -1,9 +1,10 @@
 package Sandbox.UnitTest;
-import com.Reflector.PackageRunner;
+import com.NetlabUT.NetlabTestApp;
+
 public class Source
 {
     public static void main(String[] args)
     {
-        PackageRunner runner = new PackageRunner("Title");
+        NetlabTestApp.run(Source.class, "Test");
     }
 }
