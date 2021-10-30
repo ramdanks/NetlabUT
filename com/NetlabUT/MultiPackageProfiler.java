@@ -1,13 +1,9 @@
 package com.NetlabUT;
 
-import com.NetlabUT.annotations.NetlabTest;
-
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -35,7 +31,7 @@ public class MultiPackageProfiler extends JFrame
 
     /** prepare every packages listed from [Property of "user.dir"]/TestedPackages.txt.
      * and creates an initial window.
-     * @param title the title of unit test passed to {@link SinglePackageProfiler} */
+     * @param title the title of unit test passed to {@link WindowGrading} */
     public MultiPackageProfiler(String title, List<?> unitTests)
             throws InvocationTargetException, IllegalAccessException
     {
@@ -88,7 +84,7 @@ public class MultiPackageProfiler extends JFrame
             }
         });
 
-        SinglePackageProfiler profiler = new SinglePackageProfiler(title, unitTests);
+        WindowGrading profiler = new WindowGrading(title, unitTests);
         profiler.setVisible(true);
     }
 }

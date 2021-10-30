@@ -2,20 +2,15 @@ package com.NetlabUT;
 
 import com.NetlabUT.annotations.*;
 import org.reflections.Reflections;
-import org.reflections.util.ClasspathHelper;
-import org.reflections.util.ConfigurationBuilder;
 
 import javax.tools.JavaCompiler;
 import javax.tools.ToolProvider;
 import java.io.*;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.util.*;
-import java.util.function.BiFunction;
-import java.util.function.Function;
+import java.util.function.Consumer;
 
 public class NetlabTestApp
 {
@@ -31,21 +26,39 @@ public class NetlabTestApp
     {
         try
         {
-            List<Object> tests               = null;
-            Reflections reflections          = new Reflections(sourceClass.getPackageName());
-            Set<Class<?>> internalTestSet    = reflections.getTypesAnnotatedWith(NetlabTest.class);
-            Set<Class<?>> reflectTestSet     = reflections.getTypesAnnotatedWith(NetlabReflectTest.class);
-            // if only contain internal test
-            if (reflectTestSet.size() == 0)
+            List<Object> tests          = null;
+            boolean reflectKindPresent  = false;
+            Reflections reflections     = new Reflections(sourceClass.getPackageName());
+            Set<Class<?>> testClasses   = reflections.getTypesAnnotatedWith(NetlabTest.class);
+            if (testClasses.size() == 0)
             {
-                tests = new ArrayList<>(internalTestSet.size());
-                for (Class<?> testClass : internalTestSet)
+                System.out.println("No NetlabTest detected in " + sourceClass.getPackageName());
+                return;
+            }
+            // TODO: replace with elegant way to use meta annotations, find by ReflectKind.class
+            FIND_REFLECT_KIND:
+            for (Class<?> ut : testClasses)
+            {
+                for (Field f : ut.getDeclaredFields())
                 {
-                    Object testUnit = testClass.getConstructor().newInstance();
+                    if (f.isAnnotationPresent(ReflectClass.class) ||
+                        f.isAnnotationPresent(ReflectMethod.class) ||
+                        f.isAnnotationPresent(ReflectField.class) ||
+                        f.isAnnotationPresent(ReflectCtor.class))
+                        reflectKindPresent = true;
+                        break FIND_REFLECT_KIND;
+                }
+            }
+            // run in the current environment
+            if (!reflectKindPresent)
+            {
+                tests = new ArrayList<>(testClasses.size());
+                for (Class<?> ut : testClasses)
+                {
+                    Object testUnit = ut.getConstructor().newInstance();
                     tests.add(testUnit);
                 }
-
-                try { new SinglePackageProfiler(title, tests).setVisible(true); }
+                try { new WindowGrading(title, tests).setVisible(true); }
                 catch (Throwable t)
                 {
                     t.printStackTrace();
@@ -54,113 +67,126 @@ public class NetlabTestApp
                 }
                 return;
             }
-            // else merge them so it can be displayed using MultiPackageProfiler
+            // reflect test for every package tested
             String currentDir = System.getProperty("user.dir");
             File file = new File(currentDir + "/TestedPackages.txt");
             Scanner scanner = new Scanner(file);
-            Set<Class<?>> classes = new HashSet<>(100);
             while (scanner.hasNextLine())
             {
-                String lookupPath = scanner.nextLine();
-                File dir = new File(lookupPath);
-                for (Class<?> rt : reflectTestSet)
+                File lookupDirPath = new File(scanner.nextLine());
+                if (!lookupDirPath.isDirectory())
                 {
-                    if (!dir.isDirectory())
-                    {
-                        System.err.println(dir + " is not a directory");
-                        continue;
-                    }
-                    NetlabReflectTest annotation = rt.getAnnotation(NetlabReflectTest.class);
-                    File fileCode = new File(dir, annotation.value() + ".java");
-                    if (!fileCode.exists())
-                    {
-                        System.err.println(fileCode + " is not exists");
-                        continue;
-                    }
-                    JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-                    int returnCompiler = compiler.run(null, null, null, fileCode.getAbsolutePath());
-                    if (returnCompiler != 0)
-                    {
-                        String msg = "Java compile exit code: " + returnCompiler;
-                        System.err.println(msg);
-                        continue;
-                    }
-                    File fileClass = new File(dir, annotation.value() + ".class");
-                    if (!fileClass.exists())
-                    {
-                        System.err.println(fileClass + " is not exists");
-                        continue;
-                    }
-                    byte[] bytes = Files.readAllBytes(fileClass.toPath());
-                    Class<?> clazz = new ByteClassLoader().defineClass(bytes);
-                    classes.add(clazz);
+                    System.err.println(lookupDirPath + " is not a directory");
+                    continue;
                 }
+                // find all classes reference in NetlabTest to compile
+                HashMap<String, Class<?>> subjectClasses = new HashMap<>();
+                for (Class<?> ut : testClasses)
+                {
+                    for (Field f : ut.getDeclaredFields())
+                    {
+                        // find needed class from all annotation presents
+                        String className     = "";
+                        if (f.isAnnotationPresent(ReflectClass.class))
+                            className = f.getAnnotation(ReflectClass.class).value();
+                        else if (f.isAnnotationPresent(ReflectField.class))
+                            className = f.getAnnotation(ReflectField.class).owner();
+                        else if (f.isAnnotationPresent(ReflectMethod.class))
+                            className = f.getAnnotation(ReflectMethod.class).owner();
+                        else if (f.isAnnotationPresent(ReflectCtor.class))
+                            className = f.getAnnotation(ReflectCtor.class).owner();
+                        // invalid value for class type
+                        if (className == null || className.isEmpty())
+                            continue;
+                        // no need to recompile
+                        if (subjectClasses.get(className) != null)
+                            continue;
+                        // proceed to find a source code with .java extension
+                        File fileCode  = new File(lookupDirPath, className + ".java");
+                        File fileClass = new File(lookupDirPath, className + ".class");
+                        if (!fileCode.exists())
+                        {
+                            System.err.println(fileCode + " is not exists");
+                            continue;
+                        }
+                        // compile the .java code
+                        JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+                        int returnCompiler    = compiler.run(null, null, null, fileCode.getAbsolutePath());
+                        if (returnCompiler != 0)
+                        {
+                            String msg = "Java compile exit code: " + returnCompiler;
+                            System.err.println(msg);
+                            continue;
+                        }
+                        // it should produce a file with the same name but with .class extension
+                        if (!fileClass.exists())
+                        {
+                            System.err.println(fileClass + " is not exists");
+                            continue;
+                        }
+                        // load class from byte[]
+                        byte[] bytes = Files.readAllBytes(fileClass.toPath());
+                        Class<?> clazz = new ByteClassLoader().defineClass(bytes);
+                        subjectClasses.put(className, clazz);
+                    }
+                }
+                // now set the rest of ReflectKind
+                tests = new ArrayList<>(testClasses.size());
+                for (Class<?> ut : testClasses)
+                {
+                    Object utInstance = ut.getDeclaredConstructor().newInstance();
+                    for (Field f : ut.getDeclaredFields())
+                    {
+                        Consumer<Executable> setReflectField = (e) -> { try {
+                                f.setAccessible(true);
+                                f.set(utInstance, e.execute());
+                            } catch (Throwable ignored) {}
+                        };
+                        if (f.isAnnotationPresent(ReflectClass.class))
+                        {
+                            ReflectClass annField = f.getAnnotation(ReflectClass.class);
+                            String expectedName   = annField.value().isEmpty() ? f.getName() : annField.value();
+                            Class<?> subjectClass = subjectClasses.get(expectedName);
+                            if (subjectClass == null)
+                                continue;
+                            setReflectField.accept(() -> subjectClass);
+                        }
+                        else if (f.isAnnotationPresent(ReflectField.class))
+                        {
+                            ReflectField annField = f.getAnnotation(ReflectField.class);
+                            String owner          = annField.owner();
+                            Class<?> subjectClass = subjectClasses.get(owner);
+                            if (subjectClass == null)
+                                continue;
+                            String expectedName   = annField.value().isEmpty() ? f.getName() : annField.value();
+                            setReflectField.accept(() -> subjectClass.getDeclaredField(expectedName));
+                        }
+                        else if (f.isAnnotationPresent(ReflectCtor.class))
+                        {
+                            ReflectCtor annField    = f.getAnnotation(ReflectCtor.class);
+                            String owner            = annField.owner();
+                            Class<?> subjectClass   = subjectClasses.get(owner);
+                            if (subjectClass == null)
+                                continue;
+                            Class<?>[] expectedParams = annField.params();
+                            setReflectField.accept(() -> subjectClass.getDeclaredConstructor(expectedParams));
+                        }
+                        else if (f.isAnnotationPresent(ReflectMethod.class))
+                        {
+                            ReflectMethod annField    = f.getAnnotation(ReflectMethod.class);
+                            String owner              = annField.owner();
+                            Class<?> subjectClass     = subjectClasses.get(owner);
+                            if (subjectClass == null)
+                                continue;
+                            String expectedName       = annField.value().isEmpty() ? f.getName() : annField.value();
+                            Class<?>[] expectedParams = annField.params();
+                            setReflectField.accept(() -> subjectClass.getDeclaredMethod(expectedName, expectedParams));
+                        }
+                    }
+                    tests.add(utInstance);
+                }
+                new MultiPackageProfiler(title, tests);
             }
-
-            Function<String, Class<?>> getClass = (name) -> {
-                for (Class<?> c : classes)
-                    if (c.getSimpleName().equals(name))
-                        return c;
-                return null;
-            };
-
-            tests = new ArrayList<>(reflectTestSet.size());
-            for (Class<?> rt : reflectTestSet)
-            {
-                Field[] reflectFields = rt.getDeclaredFields();
-                Function<Class<? extends Annotation>, Set<Field>> getFieldsAnnotatedWith = (a) -> {
-                    Set set = new HashSet<>();
-                    for (Field f : reflectFields)
-                        if (f.isAnnotationPresent(a))
-                            set.add(f);
-                    return set;
-                };
-
-                Set<Field> reflectField      = getFieldsAnnotatedWith.apply(ReflectField.class);
-                Set<Field> reflectMethod     = getFieldsAnnotatedWith.apply(ReflectMethod.class);
-                Set<Field> reflectCtor       = getFieldsAnnotatedWith.apply(ReflectCtor.class);
-                NetlabReflectTest annotation = rt.getAnnotation(NetlabReflectTest.class);
-                Class<?> targetClass         = getClass.apply(annotation.value());
-                if (targetClass == null) continue;
-
-                Constructor<?>[] classCtors  = targetClass.getDeclaredConstructors();
-                Field[] classFields          = targetClass.getDeclaredFields();
-                Method[] classMethods        = targetClass.getDeclaredMethods();
-
-                Object unitTestInstance      = rt.getConstructor().newInstance();
-
-                for (Field fField : reflectField)
-                {
-                    fField.setAccessible(true);
-                    ReflectField annField = fField.getAnnotation(ReflectField.class);
-                    String expectedName   = annField.value().isEmpty() ? fField.getName() : annField.value();
-                    Field field           = Arrays.stream(classFields).filter(f ->
-                            f.getName().equals(expectedName)).findFirst().orElse(null);
-                    fField.set(unitTestInstance, field);
-                }
-                for (Field fMethod : reflectMethod)
-                {
-                    fMethod.setAccessible(true);
-                    ReflectMethod annField    = fMethod.getAnnotation(ReflectMethod.class);
-                    String expectedName       = annField.value().isEmpty() ? fMethod.getName() : annField.value();
-                    Class<?>[] expectedParams = annField.params();
-                    Method method             = Arrays.stream(classMethods).filter(m ->
-                            m.getName().equals(expectedName) &&
-                            Arrays.equals(expectedParams, m.getParameterTypes())).findFirst().orElse(null);
-                    fMethod.set(unitTestInstance, method);
-                }
-                for (Field fCtor : reflectCtor)
-                {
-                    fCtor.setAccessible(true);
-                    ReflectCtor annField      = fCtor.getAnnotation(ReflectCtor.class);
-                    Class<?>[] expectedParams = annField.params();
-                    Constructor<?> ctor       = Arrays.stream(classCtors).filter(c ->
-                            Arrays.equals(expectedParams, c.getParameterTypes())).findFirst().orElse(null);
-                    fCtor.set(unitTestInstance, ctor);
-                }
-                tests.add(unitTestInstance);
-            }
-            new MultiPackageProfiler(title, tests);
         }
         catch (IOException exception)
         {

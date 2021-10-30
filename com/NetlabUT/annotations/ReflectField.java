@@ -7,11 +7,12 @@ import java.lang.annotation.Target;
 
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
+@ReflectKind
 public @interface ReflectField
 {
 	/** specify a field name */
 	String value() default "";
 	
 	/** specify a class declaring this field */
-	String clazz() default "";
+	String owner();
 }

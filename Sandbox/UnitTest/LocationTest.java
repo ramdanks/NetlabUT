@@ -7,31 +7,35 @@ import java.lang.reflect.Method;
 import static com.NetlabUT.UnitTest.*;
 import com.NetlabUT.annotations.*;
 
-@NetlabReflectTest("Location")
+@NetlabTest
 public class LocationTest
 {
-    @ReflectField
+    @ReflectClass
+    private Class<?> Location;
+
+    @ReflectField(owner="Location")
     private Field city;
-    @ReflectField
+    @ReflectField(owner="Location")
     private Field province;
-    @ReflectField
+    @ReflectField(owner="Location")
     private Field country;
     
-    @ReflectCtor(params={})
+    @ReflectCtor(owner="Location", params={})
     private Constructor<?> ctor0;
-    @ReflectCtor(params={String.class, String.class, String.class})
+    @ReflectCtor(owner="Location", params={String.class, String.class, String.class})
     private Constructor<?> ctor1;
     
-    @ReflectMethod(params={})
+    @ReflectMethod(owner="Location", params={})
     private Method getCity;
-    @ReflectMethod(params={})
+    @ReflectMethod(owner="Location", params={})
     private Method getProvince;
-    @ReflectMethod(params={String.class})
+    @ReflectMethod(owner="Location", params={String.class})
     private Method isIndonesia;
     
     @Test
     void test()
     {
+        assumeNotNull(Location);
         assumeNotNull(city);
         assumeNotNull(province);
         assumeNotNull(country);

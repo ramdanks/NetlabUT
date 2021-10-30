@@ -13,7 +13,7 @@ import java.util.List;
  * @author Ramadhan Kalih Sewu
  * @version 1.2
  */
-public class SinglePackageProfiler extends JFrame
+public class WindowGrading extends JFrame
 {
     private JPanel mainPanel;
     private JLabel labelDate;
@@ -27,7 +27,7 @@ public class SinglePackageProfiler extends JFrame
     private int totalSuccessCount = 0;
     private int totalTestCount = 0;
 
-    public SinglePackageProfiler(String title, List<?> unitTests)
+    public WindowGrading(String title, List<?> unitTests)
     		throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, SecurityException
     {
         setTitle("Unit Test Grading");

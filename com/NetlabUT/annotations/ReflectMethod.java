@@ -7,13 +7,14 @@ import java.lang.annotation.Target;
 
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
+@ReflectKind
 public @interface ReflectMethod
 {
 	/** specify a name of the method */
 	String value() default "";
 	
 	/** specify a class containing this method */
-	String clazz() default "";
+	String owner();
 	
 	/** specify a parameter signature of this method */
 	Class<String>[] params();

@@ -2,7 +2,7 @@ package com.NetlabUT;
 
 import java.awt.*;
 
-/** standardized color used by {@link SinglePackageProfiler}
+/** standardized color used by {@link WindowGrading}
  * @author Ramadhan Kalih Sewu
  * @version 1.0
  */

@@ -7,10 +7,11 @@ import java.lang.annotation.Target;
 
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
+@ReflectKind
 public @interface ReflectCtor
 {
 	/** specify a class name which contain this constructor */
-	String value() default "";
+	String owner();
 	
 	/** specify a parameter signature of this constructor */
 	Class<?>[] params();
