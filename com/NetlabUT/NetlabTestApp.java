@@ -88,7 +88,10 @@ public class NetlabTestApp
                         // find needed class from all annotation presents
                         String className     = "";
                         if (f.isAnnotationPresent(ReflectClass.class))
-                            className = f.getAnnotation(ReflectClass.class).value();
+                        {
+                            String avalue = f.getAnnotation(ReflectClass.class).value();
+                            className     = avalue.isEmpty() ? f.getName() : avalue;
+                        }
                         else if (f.isAnnotationPresent(ReflectField.class))
                             className = f.getAnnotation(ReflectField.class).owner();
                         else if (f.isAnnotationPresent(ReflectMethod.class))
