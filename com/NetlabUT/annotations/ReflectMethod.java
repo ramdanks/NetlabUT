@@ -17,5 +17,5 @@ public @interface ReflectMethod
 	String owner();
 	
 	/** specify a parameter signature of this method */
-	Class<String>[] params();
+	Class<?>[] params();
 }
