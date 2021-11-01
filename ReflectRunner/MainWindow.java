@@ -2,6 +2,7 @@ import com.NetlabUT.NetlabTestApp;
 import com.NetlabUT.annotations.NetlabTest;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 import javax.tools.JavaCompiler;
 import javax.tools.ToolProvider;
@@ -14,7 +15,6 @@ import java.awt.event.*;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.SimpleFileVisitor;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
@@ -29,6 +29,7 @@ public class MainWindow extends JFrame
     private static final String[] SELECTION_FETCH  = { "Latest Commit", "After Date and Time", "Before Date and Time" };
     private static final String[] COLUMN_REPORT    = { "Subject", "Git", "Search", "Compile", "Test", "Score" };
     private static final String[] COLUMN_UNIT_TEST = { "Unit Test File", "Status" };
+    private static final String[] COLUMN_SUBJECT_FILES = { "Path", "Hint" };
 
     private JPanel mainPanel;
     private JButton btnStart;
@@ -40,12 +41,11 @@ public class MainWindow extends JFrame
     private JSpinner sbMinute;
     private JSpinner spHour;
     private JComboBox<String> cbTimezone;
-    private JButton btnAdd;
-    private JButton btnRemove;
-    private JButton btnClear;
+    private JButton btnAddDirFiles;
+    private JButton btnRemoveFiles;
+    private JButton btnClearFiles;
     private JPanel panelFiles;
     private JPanel panelGitRemote;
-    private JList listFiles;
     private JTable tableGitRemote;
     private JButton clearButton;
     private JButton removeButton;
@@ -61,11 +61,17 @@ public class MainWindow extends JFrame
     private JButton unitTestGradingButton;
     private JButton btnClearMain;
     private JButton btnRemoveMain;
-    private JButton addUnitTestButton;
-    private JButton addScanDirectoryButton;
+    private JButton addButton1;
+    private JButton scanFromDirectoryButton;
     private JTextField textField1;
     private JTable tableUnitTest;
     private JPanel panelMain;
+    private JRadioButton onlyIncludeClassRadioButton;
+    private JRadioButton onlyIncludeJavaRadioButton;
+    private JRadioButton prioritizeJavaRadioButton;
+    private JRadioButton prioritizeClassRadioButton;
+    private JCheckBox useHintCheckBox;
+    private JTable tableFiles;
 
     public static void main(String[] args)
     {
@@ -82,6 +88,22 @@ public class MainWindow extends JFrame
         String cloneDir   = "clone";
         File clonePath    = new File(workingDir, cloneDir);
 
+        ButtonGroup group = new ButtonGroup();
+        group.add(onlyIncludeClassRadioButton);
+        group.add(onlyIncludeJavaRadioButton);
+        group.add(prioritizeJavaRadioButton);
+        group.add(prioritizeClassRadioButton);
+        onlyIncludeJavaRadioButton.setSelected(true);
+
+        useHintCheckBox.setToolTipText(
+            "<html>" +
+            "Look for specific directory that may contained in the $Path directory tree." + "<br>" +
+            "If the hint directory doesn't exists anywhere in the tree, no subject to be tested" +
+            "</html>"
+        );
+
+        tableFiles.setToolTipText("Path to directory that contain subject files needed for the unit test");
+
         labelClonePath.setText(clonePath.getAbsolutePath());
         tableGitRemote.setModel(new DefaultTableModel(null, TABLE_GIT_REMOTE));
         tableReport.setModel(new DefaultTableModel(null, COLUMN_REPORT){
@@ -95,9 +117,14 @@ public class MainWindow extends JFrame
         tableUnitTest.getColumnModel().getColumn(1).setMinWidth(200);
         tableUnitTest.getColumnModel().getColumn(1).setMaxWidth(200);
 
+        tableFiles.setModel(new DefaultTableModel(null, COLUMN_SUBJECT_FILES){
+            @Override /* all cells are not editable */
+            public boolean isCellEditable(int row, int column) { return column == 1; }
+        });
+
         panelMain.setDropTarget(new DropTarget() {
             public synchronized void drop(DropTargetDropEvent evt) {
-                autoCatchWithDialog((o) -> {
+                autoCatchWithDialog(o -> {
                     evt.acceptDrop(DnDConstants.ACTION_REFERENCE);
                     List<File> list = (List<File>) evt.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
                     for (File f : list)
@@ -105,6 +132,22 @@ public class MainWindow extends JFrame
                         Files.walk(f.toPath())
                                 .filter(Files::isRegularFile)
                                 .forEach(MainWindow.this::processUnitTestFile);
+                    }
+                    return null;
+                });
+            }
+        });
+
+        panelFiles.setDropTarget(new DropTarget() {
+            public synchronized void drop(DropTargetDropEvent evt) {
+                autoCatchWithDialog(o -> {
+                    evt.acceptDrop(DnDConstants.ACTION_REFERENCE);
+                    List<File> list = (List<File>) evt.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
+                    for (File f : list)
+                    {
+                        if (!f.isDirectory()) continue;
+                        DefaultTableModel model = (DefaultTableModel) tableFiles.getModel();
+                        model.addRow(new Object[]{f, null});
                     }
                     return null;
                 });
@@ -141,11 +184,49 @@ public class MainWindow extends JFrame
                 cbTimezone.setSelectedIndex(cbTimezone.getItemCount() - 1);
         }
         addButton.addActionListener(this::onAddButton);
-        removeButton.addActionListener(createTableClearListener(tableGitRemote));
-        clearButton.addActionListener(createTableRemoveListener(tableGitRemote));
+        removeButton.addActionListener(createTableRemoveListener(tableGitRemote));
+        clearButton.addActionListener(createTableClearListener(tableGitRemote));
         btnStart.addActionListener(this::onStartButton);
         btnClearMain.addActionListener(createTableClearListener(tableUnitTest));
         btnRemoveMain.addActionListener(createTableRemoveListener(tableUnitTest));
+        btnRemoveFiles.addActionListener(createTableRemoveListener(tableFiles));
+        btnClearFiles.addActionListener(createTableClearListener(tableFiles));
+        btnAddDirFiles.addActionListener(actionEvent -> {
+            JFileChooser f = new JFileChooser();
+            f.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+            int ret = f.showOpenDialog(this);
+            if (ret == JFileChooser.APPROVE_OPTION)
+            {
+                DefaultTableModel model = (DefaultTableModel) tableFiles.getModel();
+                model.addRow(new Object[]{f.getSelectedFile(), null});
+            }
+        });
+        scanFromDirectoryButton.addActionListener(actionEvent -> {
+            JFileChooser f = new JFileChooser();
+            f.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+            int ret = f.showOpenDialog(this);
+            if (ret == JFileChooser.APPROVE_OPTION)
+            {
+                autoCatchWithDialog(o -> {
+                    Files.walk(f.getSelectedFile().toPath())
+                        .filter(Files::isRegularFile)
+                        .forEach(MainWindow.this::processUnitTestFile);
+                    return null;
+                });
+            }
+        });
+        addButton1.addActionListener(actionEvent -> {
+            JFileChooser f = new JFileChooser();
+            f.setFileSelectionMode(JFileChooser.FILES_ONLY);
+            f.setAcceptAllFileFilterUsed(false);
+            f.addChoosableFileFilter(new FileNameExtensionFilter("Java Source Code", "java"));
+            f.addChoosableFileFilter(new FileNameExtensionFilter("Java Byte Code", "class"));
+            int ret = f.showOpenDialog(this);
+            if (ret == JFileChooser.APPROVE_OPTION)
+            {
+                processUnitTestFile(f.getSelectedFile().toPath());
+            }
+        });
     }
 
     private static Set<String> getAllZoneIdOffset()
