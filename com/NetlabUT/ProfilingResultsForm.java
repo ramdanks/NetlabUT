@@ -1,8 +1,6 @@
 package com.NetlabUT;
 
-import com.NetlabUT.annotations.NetlabTest;
 import com.NetlabUT.annotations.Test;
-import org.reflections.Reflections;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -14,7 +12,6 @@ import java.awt.event.MouseAdapter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Set;
 import java.util.function.Function;
 
 /**
@@ -47,8 +44,8 @@ final class ProfilingResultsForm extends JFrame implements UnitTestListener
             public boolean isCellEditable(int row, int column) { return false; }
         });
 
-        tableProfile.getColumnModel().getColumn(0).setMinWidth(100);
-        tableProfile.getColumnModel().getColumn(0).setMaxWidth(100);
+        tableProfile.getColumnModel().getColumn(0).setMinWidth(120);
+        tableProfile.getColumnModel().getColumn(0).setMaxWidth(120);
 
         checkboxMessage.addActionListener(this::onHideMessage);
         checkboxToString.addActionListener(this::onObjectToString);
@@ -94,9 +91,6 @@ final class ProfilingResultsForm extends JFrame implements UnitTestListener
         double percentage = 100.0 * testSuccessCount / testTotalCount;
         labelPercentage.setText(String.format("%.2f %%", percentage));
         labelPoints.setText(String.format("%d out of %d", testSuccessCount, testTotalCount));
-
-        DefaultTableModel model = (DefaultTableModel) tableProfile.getModel();
-        model.setRowCount(0);
     }
 
     public int getTestSuccessCount() { return testSuccessCount; }

@@ -14,11 +14,7 @@ public class LocationTest
     private Class<?> Location;
 
     @ReflectField(owner="Location")
-    private Field city;
-    @ReflectField(owner="Location")
-    private Field province;
-    @ReflectField(owner="Location")
-    private Field country;
+    private Field city, province, country;
     
     @ReflectCtor(owner="Location", params={})
     private Constructor<?> ctor0;

@@ -36,6 +36,20 @@ public class WindowGrading extends JFrame
         setContentPane(mainPanel);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
+        cbUnitTest.addActionListener((e) -> {
+            int tabCount = tabUnitTest.getTabCount();
+            int idx = cbUnitTest.getSelectedIndex();
+            if (idx != -1 && idx < tabCount)
+                tabUnitTest.setSelectedIndex(idx);
+        });
+
+        tabUnitTest.addChangeListener((e) -> {
+            int itemCount = cbUnitTest.getItemCount();
+            int idx = tabUnitTest.getSelectedIndex();
+            if (idx != -1 && idx < itemCount)
+                cbUnitTest.setSelectedIndex(idx);
+        });
+
         labelTitle.setText(title);
         labelDate.setText(new Date().toString());
 
@@ -62,8 +76,10 @@ public class WindowGrading extends JFrame
             // set tab background color, if found any error, it will show red
             tabUnitTest.setForegroundAt(idx,  Color.BLACK);
             tabUnitTest.setBackgroundAt(idx, failCount == 0 ? Style.CORRECT_COLOR : Style.WRONG_COLOR);
-
+            // add unit test to combobox
+            cbUnitTest.addItem(utName);
         }
+
         labelPoints.setText(String.format("%d out of %d", totalSuccessCount, totalTestCount));
         labelPercentage.setText(String.format("%.2f %%", 100.0 * totalSuccessCount / totalTestCount));
         labelDate.setText(new Date().toString());
