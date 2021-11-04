@@ -5,6 +5,6 @@ public class Source
 {
     public static void main(String[] args)
     {
-        NetlabTestApp.run(Source.class, "Test");
+        NetlabTestApp.runReflect(Source.class, "Test", new String[]{"Sandbox.GoldenSample"});
     }
 }

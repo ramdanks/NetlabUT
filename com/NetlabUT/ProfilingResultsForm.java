@@ -141,7 +141,7 @@ final class ProfilingResultsForm extends JFrame implements UnitTestListener
                 StringFormatter::toString : StringFormatter::idString;
 
         RECORD_BUFFER[0] = metric.status.toString();
-        RECORD_BUFFER[1] = "";
+        RECORD_BUFFER[1] = metric.message;
         RECORD_BUFFER[2] = Long.toString(metric.nanoTime);
         RECORD_BUFFER[3] = translator.apply(metric.reference);
         RECORD_BUFFER[4] = translator.apply(metric.actual);

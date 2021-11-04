@@ -5,4 +5,4 @@ package com.NetlabUT;
  * @version 1.0
  */
 @FunctionalInterface
-public interface Executable { Object execute() throws Throwable; }
+public interface Executable<T> { T execute() throws Throwable; }

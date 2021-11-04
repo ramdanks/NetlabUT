@@ -7,6 +7,7 @@ package com.NetlabUT;
 public class Metric
 {
 	public Status status;
+    public String message    = null;
 	public Object reference  = null;
     public Object actual     = null;
     public long nanoTime     = 0;

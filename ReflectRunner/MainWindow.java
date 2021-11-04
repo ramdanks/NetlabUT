@@ -1,10 +1,9 @@
 import com.NetlabUT.NetlabTestApp;
-import com.NetlabUT.annotations.NetlabTest;
+import com.NetlabUT.annotations.NetlabReflectTest;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.text.html.Option;
 import javax.tools.JavaCompiler;
 import javax.tools.ToolProvider;
 import java.awt.*;
@@ -33,15 +32,11 @@ public class MainWindow extends JFrame
     private JPanel mainPanel;
     private JButton btnStart;
     private JButton btnExit;
-    private JComboBox<String> cbFetch;
-    private JComboBox<String> cbTimezone;
     private JButton btnAddDirFiles;
     private JButton btnRemoveFiles;
     private JButton btnClearFiles;
     private JPanel panelFiles;
     private JTabbedPane tabbedPane1;
-    private JCheckBox fromFilesCheckBox;
-    private JCheckBox fromGitRemoteCheckBox;
     private JProgressBar progressBar1;
     private JProgressBar progressBar2;
     private JTable tableReport;
@@ -314,7 +309,7 @@ public class MainWindow extends JFrame
                     }
                 }
                 // provide all the test classes
-                List<Class<? extends NetlabTest>> tests = new ArrayList<>();
+                List<Class<? extends NetlabReflectTest>> tests = new ArrayList<>();
                 // verify unit test file
                 // expect table to only contain .java and .class
                 model = (DefaultTableModel) tableUnitTest.getModel();
@@ -353,12 +348,12 @@ public class MainWindow extends JFrame
                     {
                         byte[] bytes = Files.readAllBytes(new File(filepath).toPath());
                         Class<?> ut  = new NetlabTestApp.ByteClassLoader().defineClass(bytes);
-                        if (!ut.isAnnotationPresent(NetlabTest.class))
+                        if (!ut.isAnnotationPresent(NetlabReflectTest.class))
                         {
                             model.setValueAt("Not a NetlabTest", i, 1);
                             continue;
                         }
-                        tests.add((Class<? extends NetlabTest>) ut);
+                        tests.add((Class<? extends NetlabReflectTest>) ut);
                         model.setValueAt("Verified", i, 1);
                     }
                     catch (IOException e)
@@ -396,8 +391,8 @@ public class MainWindow extends JFrame
                 else if (prioritizeClassRadioButton.isSelected()) subjectHook = NetlabTestApp.SUBJECT_PRIORITIZE_CLASS;
                 else if (prioritizeJavaRadioButton.isSelected()) subjectHook = NetlabTestApp.SUBJECT_PRIORITIZE_JAVA;
 
-                NetlabTestApp.run(
-                    (Class<? extends NetlabTest>[]) tests.toArray(),
+                NetlabTestApp.runReflect(
+                    (Class<? extends NetlabReflectTest>[]) tests.toArray(),
                     tfTitle.getText(),
                     (File[]) subjectDirs.toArray(),
                     subjectHook

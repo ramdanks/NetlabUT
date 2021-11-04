@@ -216,6 +216,7 @@ public final class UnitTest
     	Metric metric    = new Metric();
     	metric.status    = comparison;
     	metric.reference = reference;
+        metric.message   = message;
     	
     	BiFunction<Object, Object, Boolean> cpEqual    = Object::equals;
     	BiFunction<Object, Object, Boolean> cpRef      = (a, b) -> a == b;
