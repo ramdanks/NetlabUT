@@ -1,6 +1,6 @@
 package com.NetlabUT;
 
-/** interface for {@link UnitTest} to run a method that also handles a throwable
+/** interface for {@link Assumptions} to run a method that also handles a throwable
  * @author Ramadhan Kalih Sewu
  * @version 1.0
  */

@@ -1,7 +1,6 @@
 package com.NetlabUT;
 
 import javax.swing.*;
-import com.NetlabUT.annotations.NetlabTest;
 
 import java.awt.*;
 import java.lang.reflect.InvocationTargetException;
@@ -9,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-/** Class to display profile test from {@link com.NetlabUT.UnitTest} into a GUI
+/** Class to display profile test from {@link Assumptions} into a GUI
  * @author Ramadhan Kalih Sewu
  * @version 1.2
  */
@@ -22,7 +21,7 @@ public class WindowGrading extends JFrame
     private JLabel labelTitle;
     private JTabbedPane tabUnitTest;
     private JComboBox<String> cbUnitTest;
-    private ArrayList<ProfilingResultsForm> formProfileResults;
+    private ArrayList<UnitTestResults> formProfileResults;
 
     private int totalSuccessCount = 0;
     private int totalTestCount = 0;
@@ -59,7 +58,7 @@ public class WindowGrading extends JFrame
 
         for (Object ut : unitTests)
         {
-            ProfilingResultsForm form = new ProfilingResultsForm(ut);
+            UnitTestResults form = new UnitTestResults(ut);
             String utName = ut.getClass().getSimpleName();
 
             formProfileResults.add(form);

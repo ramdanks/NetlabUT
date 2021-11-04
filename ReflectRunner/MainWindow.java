@@ -1,5 +1,6 @@
 import com.NetlabUT.NetlabTestApp;
 import com.NetlabUT.annotations.NetlabReflectTest;
+import com.sun.tools.javac.Main;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -56,6 +57,7 @@ public class MainWindow extends JFrame
     private JRadioButton prioritizeClassRadioButton;
     private JCheckBox useHintCheckBox;
     private JTable tableFiles;
+    private JTextField tfCompileArgs;
 
     public static void main(String[] args)
     {
@@ -201,24 +203,6 @@ public class MainWindow extends JFrame
         useHintCheckBox.setSelected(true);
     }
 
-    private static Set<String> getAllZoneIdOffset()
-    {
-        Set<String> result = new HashSet<>();
-        LocalDateTime localDateTime = LocalDateTime.now();
-        for (String zoneId : ZoneId.getAvailableZoneIds())
-            result.add(getZoneIdOffset(zoneId));
-        return result;
-    }
-
-    private static String getZoneIdOffset(String zoneId)
-    {
-        LocalDateTime localDateTime = LocalDateTime.now();
-        ZoneId id = ZoneId.of(zoneId);
-        ZonedDateTime zonedDateTime = localDateTime.atZone(id);
-        ZoneOffset zoneOffset = zonedDateTime.getOffset();
-        return zoneOffset.getId().replaceAll("Z", "+00:00");
-    }
-
     private BufferedReader commandLineExecutor(String[] args, String workingDirectory) throws IOException
     {
         ProcessBuilder builder = new ProcessBuilder(args);
@@ -238,9 +222,7 @@ public class MainWindow extends JFrame
         // do it in another thread
         // we should revive the button upon completion
         new SwingWorker<Void, Void>() {
-            @Override
-            protected Void doInBackground()
-            {
+            private final Runnable bkgProcess = () -> {
                 // error handling
                 if (tableUnitTest.getModel().getRowCount() == 0)
                 {
@@ -251,8 +233,7 @@ public class MainWindow extends JFrame
                         "Empty Unit Test",
                         JOptionPane.INFORMATION_MESSAGE
                     );
-                    btnStart.setEnabled(true);
-                    return null;
+                    return;
                 }
                 else if (tableFiles.getModel().getRowCount() == 0)
                 {
@@ -263,8 +244,7 @@ public class MainWindow extends JFrame
                         "Empty Subject",
                         JOptionPane.INFORMATION_MESSAGE
                     );
-                    btnStart.setEnabled(true);
-                    return null;
+                    return;
                 }
                 tabbedPane1.setSelectedIndex(2);
                 DefaultTableModel model = (DefaultTableModel) tableFiles.getModel();
@@ -282,7 +262,7 @@ public class MainWindow extends JFrame
                             "Empty Subject",
                             JOptionPane.YES_NO_OPTION
                         );
-                        if (modal != 0) return null;
+                        if (modal != 0) return;
                         break;
                     }
                     // hint is null
@@ -302,11 +282,7 @@ public class MainWindow extends JFrame
                         "Contain Empty Hint",
                         JOptionPane.OK_CANCEL_OPTION
                     );
-                    if (ret != 0)
-                    {
-                        btnStart.setEnabled(true);
-                        return null;
-                    }
+                    if (ret != 0) return;
                 }
                 // provide all the test classes
                 List<Class<? extends NetlabReflectTest>> tests = new ArrayList<>();
@@ -314,6 +290,7 @@ public class MainWindow extends JFrame
                 // expect table to only contain .java and .class
                 model = (DefaultTableModel) tableUnitTest.getModel();
                 int utCount = model.getRowCount();
+                boolean badUnitTestPresent = false;
                 for (int i = 0; i < utCount; ++i)
                 {
                     String filepath   = (String) model.getValueAt(i, 0);
@@ -326,21 +303,26 @@ public class MainWindow extends JFrame
                         if (fileClass.exists() && !fileClass.delete())
                         {
                             model.setValueAt("Error Delete Existing .class", i, 1);
+                            badUnitTestPresent = true;
                             continue;
                         }
                         // compile the .java code
-                        JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-                        if (compiler == null)
+                        try
                         {
-                            model.setValueAt("System Java Compiler not Found", i, 1);
-                            continue;
+                            String args = tfCompileArgs.getText();
+                            Process process = Runtime.getRuntime().exec("javac " + args + " " + filepath);
+                            if (returnCompiler != 0)
+                            {
+                                model.setValueAt("Fail Compiling, Return Code: " + returnCompiler, i, 1);
+                                badUnitTestPresent = true;
+                                continue;
+                            };
                         }
-                        int returnCompiler = compiler.run(null, null, null, filepath);
-                        if (returnCompiler != 0)
+                        catch (IOException e)
                         {
-                            model.setValueAt("Fail Compiling, Return Code: " + returnCompiler, i, 1);
-                            continue;
-                        };
+                            JOptionPane.showMessageDialog(MainWindow.this, e, "Compile Process Error", JOptionPane.ERROR_MESSAGE);
+                        }
+
                         filepath = fileClass.getAbsolutePath();
                     }
                     // load the class
@@ -361,6 +343,18 @@ public class MainWindow extends JFrame
                         model.setValueAt("Fail Reading Class, IOException", i, 1);
                     }
                 }
+                // before testing the subject make sure unit test is ok
+                if (badUnitTestPresent)
+                {
+                    tabbedPane1.setSelectedIndex(0);
+                    JOptionPane.showMessageDialog(
+                            MainWindow.this,
+                            "Please resolve bad unit test before continuing!",
+                            "Bad Unit Test",
+                            JOptionPane.ERROR_MESSAGE
+                    );
+                    return;
+                }
 
                 model = (DefaultTableModel) tableFiles.getModel();
                 int subjectDirCount = model.getRowCount();
@@ -376,11 +370,11 @@ public class MainWindow extends JFrame
                     }
                     autoCatchWithDialog(o -> {
                         Files.walk(new File(rootDir).toPath())
-                            .filter(Files::isDirectory)
-                            .forEach(path -> {
-                                if (path.getFileName().equals(hintDir))
-                                    subjectDirs.add(path.toFile());
-                            });
+                                .filter(Files::isDirectory)
+                                .forEach(path -> {
+                                    if (path.getFileName().equals(hintDir))
+                                        subjectDirs.add(path.toFile());
+                                });
                         return null;
                     });
                 }
@@ -397,7 +391,12 @@ public class MainWindow extends JFrame
                     (File[]) subjectDirs.toArray(),
                     subjectHook
                 );
+            };
 
+            @Override
+            protected Void doInBackground()
+            {
+                bkgProcess.run();
                 btnStart.setEnabled(true);
                 tableFiles.setEnabled(true);
                 tableUnitTest.setEnabled(true);

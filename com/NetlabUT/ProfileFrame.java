@@ -2,12 +2,16 @@ package com.NetlabUT;
 
 import javax.swing.*;
 
-/**
+/** a frame to show a detail of {@link com.NetlabUT.Profile}
  * @author Ramadhan Kalih Sewu
- * @version 1.3
+ * @version 1.0
+ * @param <T> type of profile
  */
-final class ProfileFrame extends JFrame
+@Deprecated
+final class ProfileFrame<T> extends JFrame
 {
+    private final Profile<T> profile;
+
     private static final byte TYPE_NULL      = 0;
     private static final byte TYPE_OBJECT    = 1;
     private static final byte TYPE_ARRAY     = 2;
@@ -25,27 +29,31 @@ final class ProfileFrame extends JFrame
     private JButton buttonObjectActual;
     private JTextPane textActual;
 
-    public ProfileFrame(Metric metric)
+    public ProfileFrame(Profile<T> profile)
     {
+        this.profile = profile;
+
         setTitle("Profile Frame");
         setContentPane(mainPanel);
+        int status = profile.getReferenceStatus();
 
-        labelCorrect.setText(metric.correct ? "Correct" : "Wrong");
-        labelStatus.setText(metric.status.name());
-        labelTime.setText(String.format("%d ns", metric.nanoTime));
-        textMessage.setText("");
+        labelCorrect.setText(profile.isCorrect() ? "Correct" : "Wrong");
+        labelStatus.setText(Status.toString(status));
+        labelTime.setText(String.format("%d ns", profile.getProfileTime()));
+        textMessage.setText(profile.getMessage());
 
-        textReference.setText(StringFormatter.idString(metric.reference));
-        textActual.setText(StringFormatter.idString(metric.actual));
+        String strReference = profile.getReferenceString(StringFormatter::idString);
+        String strActual = profile.getActualString(StringFormatter::idString);
+
+        textReference.setText(strReference);
+        textActual.setText(strActual);
 
         setSize(getMinimumSize());
         setMinimumSize(getMinimumSize());
         setVisible(true);
 
-        /*
-
         Class<?> classReference = profile.getClassReference();
-        Class<?> classActual    = profile.getClassActual();
+        Class<?> classActual = profile.getClassActual();
 
         byte typeObjectReference = getTypeObject(profile.getReference());
         byte typeObjectActual    = getTypeObject(profile.getActual());
@@ -58,8 +66,6 @@ final class ProfileFrame extends JFrame
 
         buttonObjectReference.addActionListener((e) -> newObjectWindow(profile.getReference(), typeObjectReference));
         buttonObjectActual.addActionListener((e) -> newObjectWindow(profile.getActual(), typeObjectActual));
-
-         */
     }
 
     private void newObjectWindow(Object object, byte typeObject)

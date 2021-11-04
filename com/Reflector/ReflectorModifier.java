@@ -1,5 +1,6 @@
-package com.NetlabUT;
+package com.Reflector;
 
+@Deprecated
 public enum ReflectorModifier
 {
     PUBLIC("public"),

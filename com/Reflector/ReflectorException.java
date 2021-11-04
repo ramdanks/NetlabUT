@@ -1,4 +1,4 @@
-package com.NetlabUT;
+package com.Reflector;
 
 import java.lang.reflect.Method;
 
@@ -7,6 +7,7 @@ import java.lang.reflect.Method;
  * @author Ramadhan Kalih Sewu
  * @version 1.0
  */
+@Deprecated
 public class ReflectorException extends Throwable
 {
     private final Method method;
