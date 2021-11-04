@@ -12,7 +12,7 @@ import javax.swing.plaf.basic.BasicComboBoxRenderer;
 import javax.swing.table.DefaultTableModel;
 
 /** Run ReflectorUnitTest with a single or multiple packages specified by the user.
- * This class expect your {@link ReflectorUnitTest} to obtained it subject from {@link ClassR#ClassR(String, String)}
+ * This class expect your {@link ReflectorUnitTest} to obtained it subject from {@link Instantiator#Instantiator(String, String)}
  * using a specific package. This will help automate test for a multiple packages.
  * @author Ramadhan Kalih Sewu
  * @version 1.3

@@ -1,4 +1,4 @@
-package com.NetlabUT;
+package com.Reflector;
 import sun.reflect.ReflectionFactory;
 
 import java.lang.reflect.*;
@@ -9,6 +9,7 @@ import java.util.ArrayList;
  * @author Ramadhan Kalih Sewu
  * @version 1.2.1
  */
+@Deprecated
 public class ClassR
 {
     private Class<?> mClass;

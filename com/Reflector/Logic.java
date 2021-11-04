@@ -1,10 +1,11 @@
-package com.NetlabUT;
+package com.Reflector;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
+@Deprecated
 public class Logic
 {
     public static boolean isModifier(ReflectorModifier modifier, Class<?> clazz)
