@@ -4,10 +4,10 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-import static com.NetlabUT.UnitTest.*;
+import static com.NetlabUT.Assumptions.*;
 import com.NetlabUT.annotations.*;
 
-@NetlabTest
+@NetlabReflectTest
 public class LocationTest
 {
     @ReflectClass

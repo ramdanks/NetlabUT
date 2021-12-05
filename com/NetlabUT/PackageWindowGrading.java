@@ -6,6 +6,7 @@ import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -19,13 +20,14 @@ public class PackageWindowGrading extends JFrame
     private JLabel labelTitle;
     private ArrayList<WindowGrading> windowGradings;
     private Map<String, List<Object>> mapPackageUT;
+    private List<WindowGrading> packageGrading;
 
     public PackageWindowGrading(String title, Map<String, List<Object>> mapPackageUT)
     {
         super("Window Grading - " + title);
         this.mapPackageUT = mapPackageUT;
 
-        labelTitle.setText(" " + title);
+        labelTitle.setText(title);
         setContentPane(mainPanel);
         setMinimumSize(new Dimension(600, 400));
 
@@ -65,10 +67,14 @@ public class PackageWindowGrading extends JFrame
 
         header.addColumnGroup(colGroupUT);
         scrollPane.setViewportView(table1);
+
+        gradingWindowButton.addActionListener(this::onGradingButton);
     }
 
     public void runTester()
     {
+        packageGrading = new ArrayList<>();
+
         new SwingWorker<Void, Void>() {
             @Override
             protected Void doInBackground() throws Exception {
@@ -78,10 +84,30 @@ public class PackageWindowGrading extends JFrame
                     int idxRow = idx.getAndIncrement();
                     int totalSuccessCount = 0;
                     int totalTestCount    = 0;
+
+                    WindowGrading grading = null;
+                    try { grading = new WindowGrading(labelTitle.getText(), listUT); }
+                    catch (Throwable t)
+                    {
+                        JOptionPane.showMessageDialog(
+                            PackageWindowGrading.this,
+                            t,
+                            "Exception on Grading",
+                            JOptionPane.ERROR_MESSAGE
+                        );
+                        return;
+                    }
+
+                    grading.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                    grading.setTitle("Window Grading: " + pkg);
+                    packageGrading.add(grading);
+                    ArrayList<UnitTestResults> results = grading.formProfileResults;
+
                     for (int idxCol = 0; idxCol < listUT.size(); ++idxCol)
                     {
-                        int successCount  = 0;
-                        int testCount     = 0;
+                        UnitTestResults result = results.get(idxCol);
+                        int successCount  = result.getTestSuccessCount();
+                        int testCount     = result.getTestTotalCount();
                         totalSuccessCount += successCount;
                         totalTestCount    += testCount;
                         double percentage = 100.0 * successCount / testCount;
@@ -95,5 +121,13 @@ public class PackageWindowGrading extends JFrame
                 return null;
             }
         }.execute();
+    }
+
+    private void onGradingButton(ActionEvent evt)
+    {
+        int idx = table1.getSelectedRow();
+        if (idx < 0 || idx >= packageGrading.size())
+            return;
+        packageGrading.get(idx).setVisible(true);
     }
 }

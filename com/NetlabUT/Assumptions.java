@@ -1,5 +1,6 @@
 package com.NetlabUT;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.function.BiFunction;
 
 /** provides a test through comparing 2 object using {@code assumeXXX} method. it's a non-blocking test
@@ -15,13 +16,13 @@ public final class Assumptions
     public static <T extends Throwable> void assumeThrows(Class<T> expected, Executable executable)
     { record(null, Expectation.THROWS_TYPE, expected, executable); }
     /** expect executable to throws {@code expected} that extends from {@link java.lang.Throwable} */
-    public static <T extends Throwable> void assumeThrows(Class<T> expected, Executable executable, String message)
+    public static <T extends Throwable> void assumeThrows(String message, Class<T> expected, Executable executable)
     { record(message, Expectation.THROWS_TYPE, expected, executable); }
     /** expect executable to throws any instance of {@link java.lang.Throwable} */
-    public static <T extends Throwable> void assumeThrows(Executable executable)
+    public static void assumeThrows(Executable executable)
     { record(null, Expectation.THROWS, Throwable.class, executable); }
     /** expect executable to throws any instance of {@link java.lang.Throwable} */
-    public static <T extends Throwable> void assumeThrows(Executable executable, String message)
+    public static void assumeThrows(String message, Executable executable)
     { record(message, Expectation.THROWS, Throwable.class, executable); }
 
     /** expect {@code actual} to be {@code null} */
@@ -254,8 +255,17 @@ public final class Assumptions
         	metric.throwing = true;
         	switch (comparison)
         	{
-        	case THROWS:			metric.correct = true;
-        	case THROWS_TYPE:		metric.correct = t.getClass() == (Class<?>) reference;
+        	case THROWS:
+                metric.correct = true;
+                break;
+        	case THROWS_TYPE:
+                metric.correct = false;
+                if (t instanceof InvocationTargetException)
+                {
+                    Throwable targetException = ((InvocationTargetException) t).getTargetException();
+                    metric.actual   = targetException;
+                    metric.correct  = targetException.getClass() == reference;
+                }
         	default: break;
         	}
         }

@@ -1,11 +1,11 @@
 package Sandbox.UnitTest;
 
 import com.NetlabUT.annotations.*;
-import static com.NetlabUT.UnitTest.*;
+import static com.NetlabUT.Assumptions.*;
 
 import java.lang.reflect.Field;
 
-@NetlabTest
+@NetlabReflectTest
 public class AccountTest
 {
     @ReflectClass

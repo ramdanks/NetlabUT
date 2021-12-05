@@ -21,7 +21,7 @@ public class WindowGrading extends JFrame
     private JLabel labelTitle;
     private JTabbedPane tabUnitTest;
     private JComboBox<String> cbUnitTest;
-    private ArrayList<UnitTestResults> formProfileResults;
+    ArrayList<UnitTestResults> formProfileResults;
 
     private int totalSuccessCount = 0;
     private int totalTestCount = 0;
